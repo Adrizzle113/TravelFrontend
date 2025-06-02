@@ -1,0 +1,1 @@
+export { ImageGalleryWrapperSection } from "./ImageGalleryWrapperSection";
