@@ -127,29 +127,36 @@ export const SearchBar = (): JSX.Element => {
         console.log(`✅ Search successful: ${data.hotels?.length || 0} hotels found`);
         
         // Store results and search params for the List page
-        const searchResults = {
-          hotels: data.hotels || [],
-          totalHotels: data.totalHotels || 0,
-          availableHotels: data.availableHotels || 0,
-          searchParams: {
-            destination: location,
-            destinationId: destinationId,
-            checkin: format(checkIn, 'yyyy-MM-dd'),
-            checkout: format(checkOut, 'yyyy-MM-dd'),
-            guests: guestsNumber,
-            rooms: roomsNumber,
-            formattedGuests: formattedGuests
-          },
-          filters: {
-            starRating,
-            citizenship,
-            earlyCheckIn,
-            lateCheckOut,
-            freeCancellation
-          },
-          searchSessionId: data.searchSessionId,
-          timestamp: new Date().toISOString()
-        };
+          const searchResults = {
+            hotels: data.hotels || [],
+            totalHotels: data.totalHotels || 0,
+            availableHotels: data.availableHotels || 0,
+            searchParams: {
+              destination: location,
+              destinationId: destinationId,
+              checkin: format(checkIn, 'yyyy-MM-dd'),
+              checkout: format(checkOut, 'yyyy-MM-dd'),
+              guests: guestsNumber,
+              rooms: roomsNumber,
+              formattedGuests: formattedGuests
+            },
+            filters: {
+              starRating,
+              citizenship,
+              earlyCheckIn,
+              lateCheckOut,
+              freeCancellation
+            },
+            searchSessionId: data.searchSessionId,
+            pagination: data.pagination || { // NEW: Store pagination info
+              currentPage: 1,
+              totalPages: 1,
+              hasNext: false,
+              hasPrevious: false,
+              hotelsPerPage: 20
+            },
+            timestamp: new Date().toISOString()
+          };
 
         console.log("💾 Storing search results:", searchResults);
         localStorage.setItem('hotelSearchResults', JSON.stringify(searchResults));

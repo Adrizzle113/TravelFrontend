@@ -63,19 +63,20 @@ export const ratehawkApi = {
 
   // ✅ FIXED: Updated guest format to match backend expectation
   searchHotels: async (searchParams: {
-    userId: string;
-    destination: string;
-    checkin: string;
-    checkout: string;
-    guests: Array<{adults: number}>; // ✅ CORRECT FORMAT: Array of room objects
-    residency?: string;
-    currency?: string;
-  }) => {
-    return apiCall(API_CONFIG.ENDPOINTS.RATEHAWK_SEARCH, {
-      method: 'POST',
-      body: JSON.stringify(searchParams),
-    });
-  },
+  userId: string;
+  destination: string;
+  checkin: string;
+  checkout: string;
+  guests: Array<{adults: number}>;
+  residency?: string;
+  currency?: string;
+  page?: number; // NEW: Add page parameter
+}) => {
+  return apiCall(API_CONFIG.ENDPOINTS.RATEHAWK_SEARCH, {
+    method: 'POST',
+    body: JSON.stringify(searchParams),
+  });
+},
 
   getStats: async () => {
     return apiCall(API_CONFIG.ENDPOINTS.RATEHAWK_STATS, {
