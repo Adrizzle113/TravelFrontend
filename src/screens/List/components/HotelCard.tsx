@@ -1,4 +1,5 @@
 import { StarIcon, MapPinIcon } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { Badge } from "../../../components/ui/badge";
 import { Button } from "../../../components/ui/button";
 import { Card, CardContent } from "../../../components/ui/card";
@@ -12,6 +13,54 @@ interface HotelCardProps {
 }
 
 export const HotelCard = ({ hotel, onViewMore, onQuickBook }: HotelCardProps): JSX.Element => {
+  const navigate = useNavigate();
+
+  // 🧪 DIRECT TEST FUNCTION - Bypass props
+  const handleDirectTest = () => {
+    console.log('🧪 DIRECT TEST: Button clicked!');
+    console.log('🏨 Hotel object:', hotel);
+    console.log('🆔 Hotel ID:', hotel.id);
+    
+    try {
+      const testData = {
+        hotel: hotel,
+        searchContext: {
+          destination: "Rio de Janeiro, Brazil",
+          destinationId: "2998",
+          checkin: "2025-06-04",
+          checkout: "2025-06-08",
+          guests: 2,
+          totalHotels: 50,
+          availableHotels: 45,
+          searchTimestamp: new Date().toISOString()
+        },
+        testTimestamp: new Date().toISOString(),
+        directTest: true
+      };
+      
+      console.log('💾 About to store test data:', testData);
+      
+      // Store in localStorage
+      localStorage.setItem('selectedHotel', JSON.stringify(testData));
+      
+      // Verify immediately
+      const verification = localStorage.getItem('selectedHotel');
+      console.log('✅ Verification result:', verification ? 'SUCCESS' : 'FAILED');
+      
+      if (verification) {
+        console.log('📋 Stored data length:', verification.length);
+        console.log('📄 Stored data preview:', verification.substring(0, 200) + '...');
+      }
+      
+      // Navigate
+      console.log('🚀 Navigating to:', `/hoteldetails/${hotel.id}`);
+      navigate(`/hoteldetails/${hotel.id}`);
+      
+    } catch (error) {
+      console.error('💥 Direct test error:', error);
+    }
+  };
+
   return (
     <Card className="rounded-[20px] shadow-shadow-shape hover:shadow-lg transition-shadow duration-200">
       <CardContent className="p-0">
@@ -143,13 +192,32 @@ export const HotelCard = ({ hotel, onViewMore, onQuickBook }: HotelCardProps): J
 
               {/* Action Buttons */}
               <div className="flex flex-col sm:flex-row gap-3">
+                {/* 🧪 DIRECT TEST BUTTON */}
+                <Button 
+                  className="bg-red-600 text-white rounded-full border-4 border-solid px-7 py-4 text-[15.4px] hover:bg-red-500 transition-colors"
+                  onClick={handleDirectTest}
+                >
+                  🧪 DIRECT TEST
+                </Button>
+                
+                {/* Original button */}
                 <Button 
                   className="bg-[#588157] text-[#ffffff] rounded-full border-4 border-solid px-7 py-4 text-[15.4px] hover:bg-[#588157]/90 transition-colors"
-                  onClick={() => onViewMore(hotel.id)}
+                  onClick={() => {
+                    console.log('🔘 Original button clicked:', hotel.id);
+                    onViewMore(hotel.id);
+                  }}
                 >
-                  View Hotel
+                  View Hotel (Original)
                 </Button>
               </div>
+
+              {/* Debug Info */}
+              {process.env.NODE_ENV === 'development' && (
+                <div className="mt-4 p-3 bg-gray-100 rounded-lg text-xs">
+                  <strong>Debug:</strong> Hotel ID: {hotel.id}
+                </div>
+              )}
             </div>
           </div>
         </div>

@@ -23,16 +23,53 @@ export const HotelListSection = ({ filters }: HotelListSectionProps): JSX.Elemen
     loadMoreHotels
   } = useHotelData();
 
+  // ✅ ENHANCED: Store comprehensive hotel data with search context
   const handleViewMore = (hotelId: string) => {
+    console.log(`🔗 Navigating to hotel details: ${hotelId}`);
+    
     const selectedHotel = allHotels.find(h => h.id === hotelId);
     if (selectedHotel) {
-      localStorage.setItem('selectedHotel', JSON.stringify(selectedHotel));
+      // Create comprehensive hotel data package
+      const hotelDataPackage = {
+        hotel: selectedHotel,
+        searchContext: {
+          destination: searchInfo?.destination || "Unknown Destination",
+          destinationId: "2998", // You might want to store this in searchInfo
+          checkin: searchInfo?.checkin || "",
+          checkout: searchInfo?.checkout || "",
+          guests: searchInfo?.guests || 2,
+          totalHotels: searchInfo?.totalHotels || 0,
+          availableHotels: searchInfo?.availableHotels || 0,
+          searchTimestamp: new Date().toISOString()
+        },
+        // Include any additional data that might be useful
+        allAvailableHotels: allHotels.length, // For context
+        selectedFromPage: Math.ceil((allHotels.findIndex(h => h.id === hotelId) + 1) / 20) // Which page this hotel was on
+      };
+      
+      console.log('💾 Storing hotel data package:', {
+        hotelId: selectedHotel.id,
+        hotelName: selectedHotel.name,
+        searchContext: hotelDataPackage.searchContext
+      });
+      
+      // Store the comprehensive data
+      localStorage.setItem('selectedHotel', JSON.stringify(hotelDataPackage));
+      
+      // Also store a timestamp for cache invalidation (optional)
+      localStorage.setItem('selectedHotelTimestamp', Date.now().toString());
+      
+    } else {
+      console.error('❌ Hotel not found in allHotels:', hotelId);
     }
+    
+    // Navigate to hotel details page with hotel ID in URL
     navigate(`/hoteldetails/${hotelId}`);
   };
 
   const handleQuickBook = (hotelId: string) => {
-    console.log("Quick book:", hotelId);
+    console.log("🚀 Quick book:", hotelId);
+    // TODO: Implement quick booking functionality
   };
 
   // Apply filters to get displayed hotels
@@ -223,7 +260,7 @@ export const HotelListSection = ({ filters }: HotelListSectionProps): JSX.Elemen
           </div>
         </div>
 
-        {/* Back to Search Button */}
+        {/* Back to Search Button 
         <div className="mt-8 text-center">
           <Button
             variant="outline"
@@ -232,7 +269,7 @@ export const HotelListSection = ({ filters }: HotelListSectionProps): JSX.Elemen
           >
             Modify Search
           </Button>
-        </div>
+        </div>*/}
       </div>
     </section>
   );
