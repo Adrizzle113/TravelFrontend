@@ -1,1 +1,1 @@
-export { HotelListSection } from "./HotelListSection";
+export { SearchResultsSection } from "./SearchResultsSection";

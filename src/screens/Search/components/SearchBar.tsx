@@ -1,17 +1,28 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { Button } from "../../../components/ui/button";
 import { Card, CardContent } from "../../../components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../../components/ui/select";
 import { Popover, PopoverContent, PopoverTrigger } from "../../../components/ui/popover";
 import { Calendar } from "../../../components/ui/calendar";
-import { SearchIcon, CalendarIcon, UsersIcon, BedIcon, WifiIcon, UtensilsIcon, DumbbellIcon, FilterIcon, XIcon } from "lucide-react";
+import { SearchIcon, CalendarIcon, UsersIcon, FilterIcon, XIcon } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "../../../lib/utils";
 import { ratehawkApi } from "../../../lib/api";
 
-export const SearchBar = (): JSX.Element => {
-  const navigate = useNavigate();
+interface SearchBarProps {
+  onSearchStart?: () => void;
+  onSearchComplete?: (results: any) => void;
+  onSearchError?: (error: string) => void;
+  isSearching?: boolean;
+}
+
+export const SearchBar = ({ 
+  onSearchStart, 
+  onSearchComplete, 
+  onSearchError,
+  isSearching: externalSearching = false 
+}: SearchBarProps): JSX.Element => {
+  // Form state
   const [location, setLocation] = useState("");
   const [checkIn, setCheckIn] = useState<Date>();
   const [checkOut, setCheckOut] = useState<Date>();
@@ -24,11 +35,14 @@ export const SearchBar = (): JSX.Element => {
   const [freeCancellation, setFreeCancellation] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   
-  // RateHawk integration states
+  // Internal state
   const [searching, setSearching] = useState(false);
   const [searchError, setSearchError] = useState<string | null>(null);
+  
+  // Use external searching state if provided
+  const isCurrentlySearching = externalSearching || searching;
 
-  // FIXED: Destination mapping with correct RateHawk frontend IDs
+  // Destination mapping with correct RateHawk IDs
   const destinationMapping: { [key: string]: string } = {
     "Rio de Janeiro, Brazil": "965847972",
     "New York, USA": "70308", 
@@ -43,6 +57,8 @@ export const SearchBar = (): JSX.Element => {
     "Los Angeles, USA": "2011"
   };
 
+  const destinationOptions = Object.keys(destinationMapping);
+
   // Get user ID from auth system
   const getUserId = () => {
     return localStorage.getItem('userId') || 
@@ -52,10 +68,14 @@ export const SearchBar = (): JSX.Element => {
 
   const handleSearch = async () => {
     if (!location || !checkIn || !checkOut) {
-      setSearchError("Please fill in destination and dates");
+      const error = "Please fill in destination and dates";
+      setSearchError(error);
+      onSearchError?.(error);
       return;
     }
 
+    // Notify parent that search is starting
+    onSearchStart?.();
     setSearching(true);
     setSearchError(null);
 
@@ -68,14 +88,18 @@ export const SearchBar = (): JSX.Element => {
       try {
         const { data: sessionCheck } = await ratehawkApi.checkSession(userId);
         if (!sessionCheck.hasSession) {
-          setSearchError("Please login to RateHawk first from the dashboard");
+          const error = "Please login to RateHawk first from the dashboard";
+          setSearchError(error);
+          onSearchError?.(error);
           setSearching(false);
           return;
         }
         console.log("✅ Valid RateHawk session confirmed");
       } catch (sessionError) {
         console.error("❌ Session check failed:", sessionError);
-        setSearchError("Unable to verify RateHawk session. Please login again.");
+        const error = "Unable to verify RateHawk session. Please login again.";
+        setSearchError(error);
+        onSearchError?.(error);
         setSearching(false);
         return;
       }
@@ -84,7 +108,7 @@ export const SearchBar = (): JSX.Element => {
       const destinationId = destinationMapping[location] || location;
       console.log("🗺️ Destination mapping:", { location, destinationId });
 
-      // ✅ FIX: Properly format guests for RateHawk API
+      // Format guests for RateHawk API
       const guestsNumber = parseInt(guests) || 2;
       const roomsNumber = parseInt(rooms) || 1;
       
@@ -101,17 +125,12 @@ export const SearchBar = (): JSX.Element => {
         formattedGuests
       });
 
-      console.log('🔍 About to call ratehawkApi.searchHotels');
-      console.log('🔧 API CONFIG BASE_URL:', 'http://localhost:3001');
-      console.log('🔧 Search endpoint:', '/api/ratehawk/search');
-      console.log('🔧 Full URL should be:', 'http://localhost:3001/api/ratehawk/search');
-
       const searchData = {
         userId: userId,
         destination: destinationId,
         checkin: format(checkIn, 'yyyy-MM-dd'),
         checkout: format(checkOut, 'yyyy-MM-dd'),
-        guests: formattedGuests, // ✅ CORRECT FORMAT: [{"adults": 2}]
+        guests: formattedGuests,
         residency: citizenship || 'en-us',
         currency: 'USD'
       };
@@ -126,61 +145,57 @@ export const SearchBar = (): JSX.Element => {
       if (data.success) {
         console.log(`✅ Search successful: ${data.hotels?.length || 0} hotels found`);
         
-        // Store results and search params for the List page
-          const searchResults = {
-            hotels: data.hotels || [],
-            totalHotels: data.totalHotels || 0,
-            availableHotels: data.availableHotels || 0,
-            searchParams: {
-              destination: location,
-              destinationId: destinationId,
-              checkin: format(checkIn, 'yyyy-MM-dd'),
-              checkout: format(checkOut, 'yyyy-MM-dd'),
-              guests: guestsNumber,
-              rooms: roomsNumber,
-              formattedGuests: formattedGuests
-            },
-            filters: {
-              starRating,
-              citizenship,
-              earlyCheckIn,
-              lateCheckOut,
-              freeCancellation
-            },
-            searchSessionId: data.searchSessionId,
-            pagination: data.pagination || { // NEW: Store pagination info
-              currentPage: 1,
-              totalPages: 1,
-              hasNext: false,
-              hasPrevious: false,
-              hotelsPerPage: 20
-            },
-            timestamp: new Date().toISOString()
-          };
+        const searchResults = {
+          hotels: data.hotels || [],
+          totalHotels: data.totalHotels || 0,
+          availableHotels: data.availableHotels || 0,
+          searchParams: {
+            destination: location,
+            destinationId: destinationId,
+            checkin: format(checkIn, 'yyyy-MM-dd'),
+            checkout: format(checkOut, 'yyyy-MM-dd'),
+            guests: guestsNumber,
+            rooms: roomsNumber,
+            formattedGuests: formattedGuests
+          },
+          filters: {
+            starRating,
+            citizenship,
+            earlyCheckIn,
+            lateCheckOut,
+            freeCancellation
+          },
+          searchSessionId: data.searchSessionId,
+          hasMorePages: data.hasMorePages || false,
+          timestamp: new Date().toISOString()
+        };
 
         console.log("💾 Storing search results:", searchResults);
         localStorage.setItem('hotelSearchResults', JSON.stringify(searchResults));
         
-        // Navigate to results page
-        console.log("🚀 Navigating to results page...");
-        navigate("/dashboard/orders");
+        // Notify parent with results instead of navigating
+        onSearchComplete?.(searchResults);
+        
       } else {
         console.error("❌ Search failed:", data.error);
-        setSearchError(data.error || "Search failed. Please try again.");
+        const error = data.error || "Search failed. Please try again.";
+        setSearchError(error);
+        onSearchError?.(error);
       }
     } catch (err: any) {
       console.error("💥 Search error:", err);
       
-      // Enhanced error handling
+      let error = `Search failed: ${err.message}. Please try again.`;
       if (err.message.includes('No RateHawk session')) {
-        setSearchError("Please login to RateHawk first from the dashboard");
+        error = "Please login to RateHawk first from the dashboard";
       } else if (err.message.includes('Failed to connect')) {
-        setSearchError("Unable to connect to search service. Please check your connection and try again.");
+        error = "Unable to connect to search service. Please check your connection and try again.";
       } else if (err.message.includes('rate limit')) {
-        setSearchError("Too many requests. Please wait a moment and try again.");
-      } else {
-        setSearchError(`Search failed: ${err.message}. Please try again.`);
+        error = "Too many requests. Please wait a moment and try again.";
       }
+      
+      setSearchError(error);
+      onSearchError?.(error);
     } finally {
       setSearching(false);
     }
@@ -190,14 +205,6 @@ export const SearchBar = (): JSX.Element => {
     setSearchError(null);
   };
 
-  const amenities = [
-    { icon: WifiIcon, label: "RO", code: "RO" },
-    { icon: BedIcon, label: "BB", code: "BB" },
-    { icon: UtensilsIcon, label: "HB", code: "HB" },
-    { icon: DumbbellIcon, label: "FB", code: "FB" },
-    { icon: WifiIcon, label: "AI", code: "AI" }
-  ];
-
   const starOptions = [
     { value: "2", label: "2 stars" },
     { value: "3", label: "3 stars" },
@@ -205,12 +212,11 @@ export const SearchBar = (): JSX.Element => {
     { value: "5", label: "5 stars" }
   ];
 
-  const destinationOptions = Object.keys(destinationMapping);
-
   return (
     <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <Card className="bg-white/95 backdrop-blur-sm rounded-2xl lg:rounded-[30px] shadow-xl border-0 relative overflow-hidden">
         <CardContent className="p-4 sm:p-6 lg:p-8">
+          
           {/* Error Display */}
           {searchError && (
             <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center justify-between">
@@ -230,6 +236,7 @@ export const SearchBar = (): JSX.Element => {
 
           {/* Main Search Form */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4 lg:gap-3">
+            
             {/* Destination */}
             <div className="relative lg:col-span-1">
               <label className="block text-sm font-medium text-gray-700 mb-1">Destination</label>
@@ -337,10 +344,10 @@ export const SearchBar = (): JSX.Element => {
               <label className="block text-sm font-medium text-transparent mb-1">Search</label>
               <Button 
                 onClick={handleSearch}
-                disabled={searching}
+                disabled={isCurrentlySearching}
                 className="w-full h-11 sm:h-12 lg:h-14 bg-app-primary text-white rounded-xl sm:rounded-[15px] hover:bg-app-primary/90 active:bg-app-primary/95 text-sm sm:text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
               >
-                {searching ? (
+                {isCurrentlySearching ? (
                   <>
                     <div className="animate-spin rounded-full h-4 w-4 sm:h-5 sm:w-5 border-b-2 border-white mr-2"></div>
                     Searching...
@@ -370,8 +377,10 @@ export const SearchBar = (): JSX.Element => {
           {/* Additional Filters */}
           {showFilters && (
             <div className="mt-6 space-y-6 border-t pt-6">
+              
               {/* First Row */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                
                 {/* Guests' Citizenship */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Guests' citizenship</label>
@@ -423,24 +432,9 @@ export const SearchBar = (): JSX.Element => {
                 </div>
               </div>
 
-              {/* Second Row - Board Type */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Board type</label>
-                <div className="flex flex-wrap gap-2">
-                  {amenities.map((amenity, index) => (
-                    <Button
-                      key={index}
-                      variant="outline"
-                      className="h-10 px-4 text-xs rounded-lg border-gray-200 hover:bg-app-primary/10 hover:border-app-primary hover:text-app-primary transition-all duration-200 bg-gray-50/80 flex-shrink-0"
-                    >
-                      {amenity.label}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Third Row */}
+              {/* Second Row */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                
                 {/* Early Check-in */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Early check-in</label>
@@ -493,7 +487,7 @@ export const SearchBar = (): JSX.Element => {
           )}
 
           {/* Search Status */}
-          {searching && (
+          {isCurrentlySearching && (
             <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
               <div className="flex items-center">
                 <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600 mr-3"></div>
