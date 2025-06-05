@@ -1,0 +1,1 @@
+export { HotelInfoSection } from "./HotelInfoSection";
