@@ -1,6 +1,6 @@
 import { Card, CardContent } from "../../../../components/ui/card";
 
-export const HotelListSection = (): JSX.Element => {
+export const SearchResultsSection = (): JSX.Element => {
   // Data for hotel images
   const hotelImages = [
     {
