@@ -1,0 +1,1 @@
+export { FacilitiesGridSection } from "./FacilitiesGridSection";

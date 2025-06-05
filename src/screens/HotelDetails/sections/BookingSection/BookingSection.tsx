@@ -49,10 +49,11 @@ interface ProcessedRoom {
 }
 
 interface BookingSectionProps {
-  hotel: Hotel;
-  searchContext: SearchContext;
+  hotel: any;
+  searchContext: any;
   onBookNow: () => void;
   selectedRoom?: ProcessedRoom | null;
+  selectedQuantity?: number;
 }
 
 const formatCurrency = (amount: number, currency: string = 'USD'): string => {

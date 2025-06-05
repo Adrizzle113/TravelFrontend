@@ -2,12 +2,13 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Card, CardContent } from "../../components/ui/card";
 
-// Import Sections
+// Import All Sections
 import { HeroSection } from "./sections/HeroSection";
 import { RoomSelectionSection } from "./sections/RoomSelectionSection";
 import { BookingSection } from "./sections/BookingSection";
-import { AmenitiesSection } from "./sections/AmenitiesSection";
 import { HotelInfoSection } from "./sections/HotelInfoSection";
+import { FacilitiesGridSection } from "./sections/FacilitiesGridSection";
+import { MapSection } from "./sections/MapSection";
 
 // Types
 interface Hotel {
@@ -59,6 +60,7 @@ interface ProcessedRoom {
   amenities: string[];
   cancellation: string;
   paymentType: string;
+  availability: number;
   originalRate?: any;
 }
 
@@ -66,12 +68,13 @@ export const HotelDetails = (): JSX.Element => {
   const { hotelId } = useParams<{ hotelId: string }>();
   const navigate = useNavigate();
   
-  // State
+  // State Management
   const [hotelData, setHotelData] = useState<HotelData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isFavorite, setIsFavorite] = useState(false);
   const [selectedRoom, setSelectedRoom] = useState<ProcessedRoom | null>(null);
+  const [selectedQuantity, setSelectedQuantity] = useState(1);
 
   // Load hotel data on mount
   useEffect(() => {
@@ -93,7 +96,8 @@ export const HotelDetails = (): JSX.Element => {
           console.log('✅ Hotel data loaded successfully:', {
             hotelId: parsedData.hotel.id,
             hotelName: parsedData.hotel.name,
-            destination: parsedData.searchContext.destination
+            destination: parsedData.searchContext.destination,
+            hasRatehawkData: !!parsedData.hotel.ratehawk_data
           });
           
           setHotelData(parsedData);
@@ -115,7 +119,7 @@ export const HotelDetails = (): JSX.Element => {
     }
   };
 
-  // Enhanced back navigation
+  // Navigation handlers
   const handleBackToResults = () => {
     console.log('🔙 Navigating back to search results...');
     
@@ -141,7 +145,7 @@ export const HotelDetails = (): JSX.Element => {
     navigate('/dashboard/search');
   };
 
-  // Toggle favorite
+  // Favorite management
   const toggleFavorite = () => {
     if (!hotelId) return;
     
@@ -156,9 +160,11 @@ export const HotelDetails = (): JSX.Element => {
     
     localStorage.setItem('favoriteHotels', JSON.stringify(newFavorites));
     setIsFavorite(!isFavorite);
+    
+    console.log(`${isFavorite ? '💔' : '❤️'} Hotel ${isFavorite ? 'removed from' : 'added to'} favorites`);
   };
 
-  // Share hotel
+  // Share functionality
   const shareHotel = async () => {
     if (!hotelData) return;
     
@@ -171,31 +177,57 @@ export const HotelDetails = (): JSX.Element => {
     try {
       if (navigator.share) {
         await navigator.share(shareData);
+        console.log('✅ Hotel shared successfully');
       } else {
         await navigator.clipboard.writeText(window.location.href);
         console.log('✅ Hotel link copied to clipboard');
+        // You could show a toast notification here
       }
     } catch (error) {
       console.log('Share failed:', error);
     }
   };
 
-  // Handle room selection
-  const handleRoomSelect = (room: ProcessedRoom) => {
-    console.log('🏨 Room selected:', room.name, room.price);
+  // Room selection handler
+  const handleRoomSelect = (room: ProcessedRoom, quantity: number) => {
+    console.log('🏨 Room selected:', {
+      name: room.name,
+      price: room.price,
+      quantity: quantity,
+      totalPrice: room.price * quantity
+    });
+    
     setSelectedRoom(room);
+    setSelectedQuantity(quantity);
   };
 
-  // Handle booking action - use selected room price if available
+  // Booking handler
   const handleBookNow = () => {
-    const bookingPrice = selectedRoom ? selectedRoom.price : hotelData?.hotel.price.amount;
+    const bookingPrice = selectedRoom ? (selectedRoom.price * selectedQuantity) : hotelData?.hotel.price.amount;
     const bookingCurrency = selectedRoom ? selectedRoom.currency : hotelData?.hotel.price.currency;
     
-    console.log('🎯 Booking hotel:', hotelData?.hotel.name);
-    console.log('🏨 Selected room:', selectedRoom?.name || 'Default room');
-    console.log('💰 Price:', bookingPrice, bookingCurrency);
+    console.log('🎯 Initiating booking:', {
+      hotel: hotelData?.hotel.name,
+      room: selectedRoom?.name || 'Default room',
+      quantity: selectedQuantity,
+      price: bookingPrice,
+      currency: bookingCurrency
+    });
     
-    // Add booking logic here
+    // Store booking data for potential booking page
+    const bookingData = {
+      hotel: hotelData?.hotel,
+      selectedRoom: selectedRoom,
+      quantity: selectedQuantity,
+      searchContext: hotelData?.searchContext,
+      totalPrice: bookingPrice,
+      currency: bookingCurrency,
+      bookingTimestamp: new Date().toISOString()
+    };
+    
+    localStorage.setItem('pendingBooking', JSON.stringify(bookingData));
+    
+    // For now, open RateHawk in new tab
     window.open('https://www.ratehawk.com', '_blank');
   };
 
@@ -230,13 +262,13 @@ export const HotelDetails = (): JSX.Element => {
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <button
                 onClick={handleBackToResults}
-                className="border border-app-primary text-app-primary hover:bg-app-primary hover:text-white px-4 py-2 rounded"
+                className="border border-app-primary text-app-primary hover:bg-app-primary hover:text-white px-4 py-2 rounded transition-colors"
               >
                 Back to Search
               </button>
               <button
                 onClick={() => navigate("/dashboard/search")}
-                className="bg-app-primary text-white hover:bg-app-primary/90 px-4 py-2 rounded"
+                className="bg-app-primary text-white hover:bg-app-primary/90 px-4 py-2 rounded transition-colors"
               >
                 New Search
               </button>
@@ -292,31 +324,41 @@ export const HotelDetails = (): JSX.Element => {
               searchContext={searchContext}
               onRoomSelect={handleRoomSelect}
               selectedRoomId={selectedRoom?.id}
+              selectedQuantity={selectedQuantity}
             />
 
-            {/* Amenities Section */}
-            <AmenitiesSection 
+            {/* Facilities Grid Section */}
+            <FacilitiesGridSection 
               hotel={hotel}
               amenities={hotel.amenities}
+            />
+
+            {/* Map Section */}
+            <MapSection 
+              hotel={hotel}
+              searchContext={searchContext}
             />
 
           </div>
           
           {/* Right Column - Booking Section */}
           <div className="lg:col-span-1">
-            <BookingSection 
-              hotel={hotel}
-              searchContext={searchContext}
-              onBookNow={handleBookNow}
-              selectedRoom={selectedRoom}
-            />
+            <div className="sticky top-8">
+              <BookingSection 
+                hotel={hotel}
+                searchContext={searchContext}
+                onBookNow={handleBookNow}
+                selectedRoom={selectedRoom}
+                selectedQuantity={selectedQuantity}
+              />
+            </div>
           </div>
         </div>
       </div>
 
       {/* Debug Panel (Development Only) */}
       {process.env.NODE_ENV === 'development' && hotel.ratehawk_data && (
-        <Card className="max-w-7xl mx-auto mt-8 mx-4 bg-gray-50 border-gray-200">
+        <Card className="max-w-7xl mx-auto mt-8 px-4 bg-gray-50 border-gray-200">
           <CardContent className="p-4">
             <details>
               <summary className="text-sm font-medium text-gray-600 cursor-pointer mb-2">
@@ -326,7 +368,10 @@ export const HotelDetails = (): JSX.Element => {
                 <div><strong>Hotel ID:</strong> {hotel.id}</div>
                 <div><strong>Is Favorite:</strong> {isFavorite ? 'Yes' : 'No'}</div>
                 <div><strong>Selected Room:</strong> {selectedRoom?.name || 'None'}</div>
-                <div><strong>Room Price:</strong> {selectedRoom ? `$${selectedRoom.price}` : 'N/A'}</div>
+                <div><strong>Room Quantity:</strong> {selectedQuantity}</div>
+                <div><strong>Room Price:</strong> {selectedRoom ? `${selectedRoom.price} × ${selectedQuantity} = ${selectedRoom.price * selectedQuantity}` : 'N/A'}</div>
+                <div><strong>Total Amenities:</strong> {hotel.amenities?.length || 0}</div>
+                <div><strong>RateHawk Rates:</strong> {hotel.ratehawk_data?.rates?.length || 0}</div>
                 <details className="mt-2">
                   <summary className="cursor-pointer">Raw RateHawk Data</summary>
                   <pre className="mt-2 text-xs overflow-auto bg-white p-2 rounded border max-h-40">
