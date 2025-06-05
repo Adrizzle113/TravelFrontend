@@ -170,10 +170,11 @@ export const SearchBar = ({
           timestamp: new Date().toISOString()
         };
 
-        console.log("💾 Storing search results:", searchResults);
+        console.log("💾 Storing search results in localStorage:", searchResults);
         localStorage.setItem('hotelSearchResults', JSON.stringify(searchResults));
         
-        // Notify parent with results instead of navigating
+        // ✅ FIXED: Use callback instead of navigation
+        console.log("📢 Notifying parent component of search completion");
         onSearchComplete?.(searchResults);
         
       } else {
@@ -505,6 +506,7 @@ export const SearchBar = ({
               <br />• Backend URL: http://localhost:3001
               <br />• Selected destination: {location} → {destinationMapping[location] || 'Not mapped'}
               <br />• Guests format: {guests} guests, {rooms} room(s) → {JSON.stringify(Array.from({ length: parseInt(rooms) || 1 }, () => ({ adults: Math.max(1, Math.floor((parseInt(guests) || 2) / (parseInt(rooms) || 1))) })))}
+              <br />• Uses callbacks: {onSearchComplete ? 'Yes' : 'No'} (No navigation)
             </div>
           )}
         </CardContent>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { SearchBar } from "./components/SearchBar";
 import { SearchResultsSection } from "./sections/HotelListSection"; // Now using renamed section
 import { WhyChooseUsSection } from "./sections/WhyChooseUsSection";
@@ -27,6 +27,42 @@ export const Search = (): JSX.Element => {
   const [hasSearched, setHasSearched] = useState(false);
   const [searchError, setSearchError] = useState<string | null>(null);
 
+  // ✅ NEW: Load previous search results on component mount
+  useEffect(() => {
+    console.log('🔄 Search component mounted, checking for previous results...');
+    
+    try {
+      const savedResults = localStorage.getItem('hotelSearchResults');
+      if (savedResults) {
+        const parsedResults = JSON.parse(savedResults);
+        
+        // Check if results are recent (within last 30 minutes)
+        const resultAge = Date.now() - new Date(parsedResults.timestamp).getTime();
+        const maxAge = 30 * 60 * 1000; // 30 minutes
+        
+        if (resultAge < maxAge) {
+          console.log('✅ Found recent search results, restoring them:', {
+            hotels: parsedResults.hotels?.length || 0,
+            destination: parsedResults.searchParams?.destination,
+            timestamp: parsedResults.timestamp
+          });
+          
+          setSearchResults(parsedResults);
+          setHasSearched(true);
+          setSearchError(null);
+        } else {
+          console.log('⏰ Previous search results are too old, clearing them');
+          localStorage.removeItem('hotelSearchResults');
+        }
+      } else {
+        console.log('📭 No previous search results found');
+      }
+    } catch (error) {
+      console.error('💥 Error loading previous search results:', error);
+      localStorage.removeItem('hotelSearchResults'); // Clear corrupted data
+    }
+  }, []);
+
   const handleSearchStart = () => {
     console.log('🔄 Search started...');
     setIsSearching(true);
@@ -40,6 +76,19 @@ export const Search = (): JSX.Element => {
     setHasSearched(true);
     setIsSearching(false);
     setSearchError(null);
+    
+    // ✅ ENHANCED: Store results with timestamp for back navigation
+    try {
+      const enhancedResults = {
+        ...results,
+        timestamp: new Date().toISOString(),
+        searchCompletedAt: Date.now()
+      };
+      localStorage.setItem('hotelSearchResults', JSON.stringify(enhancedResults));
+      console.log('💾 Search results saved to localStorage for back navigation');
+    } catch (error) {
+      console.error('💥 Error saving search results:', error);
+    }
   };
 
   const handleSearchError = (error: string) => {
@@ -50,9 +99,30 @@ export const Search = (): JSX.Element => {
   };
 
   const clearSearch = () => {
+    console.log('🗑️ Clearing search results and localStorage');
     setSearchResults(null);
     setHasSearched(false);
     setSearchError(null);
+    
+    // Clear from localStorage so we start fresh
+    localStorage.removeItem('hotelSearchResults');
+  };
+
+  // ✅ NEW: Function to refresh/reload current search
+  const handleRefreshSearch = () => {
+    if (searchResults?.searchParams) {
+      console.log('🔄 Refreshing current search...');
+      
+      // You could trigger a new search with the same parameters
+      // For now, we'll just reload from localStorage if available
+      const savedResults = localStorage.getItem('hotelSearchResults');
+      if (savedResults) {
+        const parsedResults = JSON.parse(savedResults);
+        setSearchResults(parsedResults);
+        setHasSearched(true);
+        setSearchError(null);
+      }
+    }
   };
 
   return (
@@ -71,12 +141,44 @@ export const Search = (): JSX.Element => {
             </p>
           </div>
           
-          <SearchBar 
-            onSearchStart={handleSearchStart}
-            onSearchComplete={handleSearchComplete}
-            onSearchError={handleSearchError}
-            isSearching={isSearching}
-          />
+          {/* ✅ ENHANCED: Show different UI states based on current state */}
+          {hasSearched && searchResults && !isSearching ? (
+            // Show compact search bar when results are displayed
+            <div className="bg-white/95 backdrop-blur-sm rounded-2xl lg:rounded-[30px] p-4 shadow-lg">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div className="flex-1">
+                  <h3 className="text-lg font-medium text-app-accent mb-1">
+                    Current Search: {searchResults.searchParams.destination}
+                  </h3>
+                  <p className="text-sm text-gray-600">
+                    {searchResults.searchParams.checkin} - {searchResults.searchParams.checkout} • {searchResults.searchParams.guests} guests • {searchResults.hotels.length} hotels found
+                  </p>
+                </div>
+                <div className="flex gap-3">
+                  <button
+                    onClick={handleRefreshSearch}
+                    className="px-4 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                  >
+                    Refresh Results
+                  </button>
+                  <button 
+                    onClick={clearSearch}
+                    className="px-4 py-2 text-sm bg-app-primary text-white rounded-lg hover:bg-app-primary/90 transition-colors"
+                  >
+                    New Search
+                  </button>
+                </div>
+              </div>
+            </div>
+          ) : (
+            // Show full search bar when no results or searching
+            <SearchBar 
+              onSearchStart={handleSearchStart}
+              onSearchComplete={handleSearchComplete}
+              onSearchError={handleSearchError}
+              isSearching={isSearching}
+            />
+          )}
         </div>
       </section>
 
@@ -95,23 +197,41 @@ export const Search = (): JSX.Element => {
                   <p className="text-gray-600">
                     {searchResults.searchParams.checkin} - {searchResults.searchParams.checkout} • {searchResults.searchParams.guests} guests
                   </p>
+                  {/* ✅ NEW: Show when results were loaded */}
+                  <p className="text-xs text-gray-500 mt-1">
+                    {searchResults.timestamp && (
+                      <>Results from {new Date(searchResults.timestamp).toLocaleTimeString()}</>
+                    )}
+                  </p>
                 </div>
                 <div className="text-right">
                   <p className="text-app-accent font-medium">
                     {searchResults.hotels.length} hotels found
                   </p>
-                  <button 
-                    onClick={clearSearch}
-                    className="text-sm text-app-primary hover:underline"
-                  >
-                    New Search
-                  </button>
+                  <div className="flex gap-2 mt-2">
+                    <button 
+                      onClick={handleRefreshSearch}
+                      className="text-xs text-gray-600 hover:text-app-primary hover:underline"
+                    >
+                      Refresh
+                    </button>
+                    <span className="text-xs text-gray-400">•</span>
+                    <button 
+                      onClick={clearSearch}
+                      className="text-xs text-app-primary hover:underline"
+                    >
+                      New Search
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
 
             {/* Hotel Results */}
-            <SearchResultsSection searchResults={searchResults} />
+            <SearchResultsSection 
+              searchResults={searchResults} 
+              onSearchUpdate={setSearchResults}
+            />
           </div>
         ) : hasSearched && searchError ? (
           /* Show error state */
@@ -146,6 +266,19 @@ export const Search = (): JSX.Element => {
           </>
         )}
       </div>
+
+      {/* ✅ NEW: Debug info in development */}
+      {process.env.NODE_ENV === 'development' && (
+        <div className="fixed bottom-4 right-4 bg-black/80 text-white text-xs p-3 rounded-lg max-w-sm">
+          <strong>Search State Debug:</strong>
+          <br />• Has searched: {hasSearched ? 'Yes' : 'No'}
+          <br />• Has results: {searchResults ? 'Yes' : 'No'}
+          <br />• Is searching: {isSearching ? 'Yes' : 'No'}
+          <br />• Has error: {searchError ? 'Yes' : 'No'}
+          <br />• Hotels count: {searchResults?.hotels?.length || 0}
+          <br />• localStorage: {localStorage.getItem('hotelSearchResults') ? 'Has data' : 'Empty'}
+        </div>
+      )}
     </main>
   );
 };

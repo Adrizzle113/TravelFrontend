@@ -1,72 +1,59 @@
-{/*}
-import { AmenitiesSection } from "./sections/AmenitiesSection";
-import { AmenitiesWrapperSection } from "./sections/AmenitiesWrapperSection/AmenitiesWrapperSection";
-import { ImageGallerySection } from "./sections/ImageGallerySection/ImageGallerySection";
-import { ImageGalleryWrapperSection } from "./sections/ImageGalleryWrapperSection";
-import { RoomDetailsSection } from "./sections/RoomDetailsSection/RoomDetailsSection";
-import { RoomDetailsWrapperSection } from "./sections/RoomDetailsWrapperSection/RoomDetailsWrapperSection";
-
-export const HotelDetails = (): JSX.Element => {
-  return (
-    <div className="flex flex-col w-full">
-      <RoomDetailsSection />
-      <ImageGallerySection />
-      <ImageGalleryWrapperSection />
-      <RoomDetailsWrapperSection />
-      <AmenitiesSection />
-      <AmenitiesWrapperSection />
-    </div>
-  );
-};
-*/}
-
 import { useState, useEffect } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { 
   StarIcon, 
   MapPinIcon, 
   ArrowLeftIcon, 
   CalendarIcon, 
   UsersIcon,
+  ShareIcon,
+  HeartIcon,
   WifiIcon,
   CarIcon,
   UtensilsIcon,
-  DumbbellIcon
+  DumbbellIcon,
+  CheckCircleIcon,
+  ExternalLinkIcon,
+  RefreshCwIcon
 } from "lucide-react";
 import { Button } from "../../components/ui/button";
-import { Card, CardContent } from "../../components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
 import { Badge } from "../../components/ui/badge";
-import { formatCurrency, getRatingText } from "../List/utils/filterUtils";
+import { Separator } from "../../components/ui/separator";
 
-// Types for our hotel data
+// Types for hotel data
+interface Hotel {
+  id: string;
+  name: string;
+  location: string;
+  rating: number;
+  reviewScore: number;
+  reviewCount: number;
+  price: {
+    amount: number;
+    currency: string;
+    period: string;
+  };
+  image: string;
+  amenities: string[];
+  description?: string;
+  ratehawk_data?: any;
+}
+
+interface SearchContext {
+  destination: string;
+  destinationId: string;
+  checkin: string;
+  checkout: string;
+  guests: number;
+  totalHotels: number;
+  availableHotels: number;
+  searchTimestamp: string;
+}
+
 interface HotelData {
-  hotel: {
-    id: string;
-    name: string;
-    location: string;
-    rating: number;
-    reviewScore: number;
-    reviewCount: number;
-    price: {
-      amount: number;
-      currency: string;
-      period: string;
-    };
-    image: string;
-    amenities: string[];
-    description?: string;
-    ratehawk_data?: any;
-  };
-  searchContext: {
-    destination: string;
-    destinationId: string;
-    checkin: string;
-    checkout: string;
-    guests: number;
-    totalHotels: number;
-    availableHotels: number;
-    searchTimestamp: string;
-  };
+  hotel: Hotel;
+  searchContext: SearchContext;
   allAvailableHotels: number;
   selectedFromPage: number;
 }
@@ -78,25 +65,38 @@ export const HotelDetails = (): JSX.Element => {
   const [hotelData, setHotelData] = useState<HotelData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [imageError, setImageError] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(false);
 
+  // Load hotel data on mount
   useEffect(() => {
+    loadHotelData();
+  }, [hotelId]);
+
+  const loadHotelData = () => {
     console.log('🏨 Loading hotel details for ID:', hotelId);
+    setLoading(true);
+    setError(null);
     
     try {
-      // Try to load hotel data from localStorage
       const savedData = localStorage.getItem('selectedHotel');
       
       if (savedData) {
         const parsedData: HotelData = JSON.parse(savedData);
-        console.log('✅ Hotel data loaded from localStorage:', {
-          hotelId: parsedData.hotel.id,
-          hotelName: parsedData.hotel.name,
-          searchDestination: parsedData.searchContext.destination
-        });
         
-        // Verify this is the correct hotel (URL hotel ID matches stored hotel ID)
+        // Verify this is the correct hotel
         if (parsedData.hotel.id === hotelId) {
+          console.log('✅ Hotel data loaded successfully:', {
+            hotelId: parsedData.hotel.id,
+            hotelName: parsedData.hotel.name,
+            destination: parsedData.searchContext.destination
+          });
+          
           setHotelData(parsedData);
+          
+          // Check if this hotel is in favorites
+          const favorites = JSON.parse(localStorage.getItem('favoriteHotels') || '[]');
+          setIsFavorite(favorites.includes(hotelId));
         } else {
           console.log('⚠️ Hotel ID mismatch:', {
             urlHotelId: hotelId,
@@ -114,19 +114,108 @@ export const HotelDetails = (): JSX.Element => {
     } finally {
       setLoading(false);
     }
-  }, [hotelId]);
+  };
 
-  // Calculate stay duration
-  const getStayDuration = () => {
+  // Enhanced back navigation
+  const handleBackToResults = () => {
+    console.log('🔙 Navigating back to search results...');
+    
+    // Check if we have recent search results
+    const searchResults = localStorage.getItem('hotelSearchResults');
+    
+    if (searchResults) {
+      try {
+        const parsedResults = JSON.parse(searchResults);
+        const resultAge = Date.now() - new Date(parsedResults.timestamp).getTime();
+        const maxAge = 30 * 60 * 1000; // 30 minutes
+        
+        if (resultAge < maxAge) {
+          console.log('✅ Recent search results found, navigating back');
+          navigate('/dashboard/search');
+          return;
+        } else {
+          console.log('⏰ Search results expired, clearing...');
+          localStorage.removeItem('hotelSearchResults');
+        }
+      } catch (error) {
+        console.error('💥 Error checking search results:', error);
+        localStorage.removeItem('hotelSearchResults');
+      }
+    }
+    
+    // Fallback: navigate to search page
+    navigate('/dashboard/search');
+  };
+
+  // Calculate stay duration and total price
+  const getStayInfo = () => {
     if (!hotelData?.searchContext.checkin || !hotelData?.searchContext.checkout) {
-      return 1;
+      return { duration: 1, totalPrice: hotelData?.hotel.price.amount || 0 };
     }
     
     const checkin = new Date(hotelData.searchContext.checkin);
     const checkout = new Date(hotelData.searchContext.checkout);
     const diffTime = Math.abs(checkout.getTime() - checkin.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays || 1;
+    const duration = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) || 1;
+    const totalPrice = (hotelData?.hotel.price.amount || 0) * duration;
+    
+    return { duration, totalPrice };
+  };
+
+  // Format currency
+  const formatCurrency = (amount: number, currency: string = 'USD'): string => {
+    if (currency === 'USD') return `$${amount.toLocaleString()}`;
+    return `${amount.toLocaleString()} ${currency}`;
+  };
+
+  // Get rating text
+  const getRatingText = (score: number): string => {
+    if (score >= 9) return "Excellent";
+    if (score >= 8) return "Very Good";
+    if (score >= 7) return "Good";
+    if (score >= 6) return "Pleasant";
+    return "Fair";
+  };
+
+  // Toggle favorite
+  const toggleFavorite = () => {
+    if (!hotelId) return;
+    
+    const favorites = JSON.parse(localStorage.getItem('favoriteHotels') || '[]');
+    let newFavorites;
+    
+    if (isFavorite) {
+      newFavorites = favorites.filter((id: string) => id !== hotelId);
+    } else {
+      newFavorites = [...favorites, hotelId];
+    }
+    
+    localStorage.setItem('favoriteHotels', JSON.stringify(newFavorites));
+    setIsFavorite(!isFavorite);
+  };
+
+  // Share hotel
+  const shareHotel = async () => {
+    if (!hotelData) return;
+    
+    const shareData = {
+      title: hotelData.hotel.name,
+      text: `Check out this hotel: ${hotelData.hotel.name} in ${hotelData.hotel.location}`,
+      url: window.location.href
+    };
+    
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        // Fallback: copy to clipboard
+        await navigator.clipboard.writeText(window.location.href);
+        // You could show a toast notification here
+        console.log('✅ Hotel link copied to clipboard');
+      }
+    } catch (error) {
+      console.log('Share failed:', error);
+    }
   };
 
   // Loading state
@@ -134,8 +223,11 @@ export const HotelDetails = (): JSX.Element => {
     return (
       <div className="min-h-screen bg-[#f3ecdc] flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-app-primary mx-auto mb-4"></div>
-          <p className="text-app-accent text-lg">Loading hotel details...</p>
+          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-app-primary mx-auto mb-4"></div>
+          <h2 className="text-xl font-heading-standar text-app-accent mb-2">
+            Loading Hotel Details
+          </h2>
+          <p className="text-gray-600">Please wait while we load the information...</p>
         </div>
       </div>
     );
@@ -145,58 +237,92 @@ export const HotelDetails = (): JSX.Element => {
   if (error || !hotelData) {
     return (
       <div className="min-h-screen bg-[#f3ecdc] flex items-center justify-center">
-        <div className="text-center max-w-md mx-auto px-6">
-          <div className="text-red-600 text-6xl mb-4">🚫</div>
-          <h2 className="text-2xl font-heading-big text-app-accent mb-4">
-            Hotel Not Found
-          </h2>
-          <p className="text-gray-600 mb-6">
-            {error || "The hotel information could not be loaded."}
-          </p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Button
-              onClick={() => navigate(-1)}
-              variant="outline"
-              className="border-app-primary text-app-primary hover:bg-app-primary hover:text-white"
-            >
-              <ArrowLeftIcon className="w-4 h-4 mr-2" />
-              Go Back
-            </Button>
-            <Button
-              onClick={() => navigate("/dashboard/search")}
-              className="bg-app-primary text-white hover:bg-app-primary/90"
-            >
-              New Search
-            </Button>
-          </div>
-        </div>
+        <Card className="max-w-md mx-auto">
+          <CardContent className="p-8 text-center">
+            <div className="text-red-600 text-6xl mb-4">🚫</div>
+            <h2 className="text-2xl font-heading-big text-app-accent mb-4">
+              Hotel Not Found
+            </h2>
+            <p className="text-gray-600 mb-6">
+              {error || "The hotel information could not be loaded."}
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <Button
+                onClick={handleBackToResults}
+                variant="outline"
+                className="border-app-primary text-app-primary hover:bg-app-primary hover:text-white"
+              >
+                <ArrowLeftIcon className="w-4 h-4 mr-2" />
+                Back to Search
+              </Button>
+              <Button
+                onClick={() => navigate("/dashboard/search")}
+                className="bg-app-primary text-white hover:bg-app-primary/90"
+              >
+                New Search
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     );
   }
 
   const { hotel, searchContext } = hotelData;
-  const stayDuration = getStayDuration();
-  const totalPrice = hotel.price.amount * stayDuration;
+  const { duration, totalPrice } = getStayInfo();
 
   return (
     <div className="min-h-screen bg-[#f3ecdc]">
-      {/* Header with Back Button */}
-      <div className="bg-white border-b border-gray-200">
+      {/* Header Navigation */}
+      <div className="bg-white border-b border-gray-200 sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
-            <Button
-              onClick={() => navigate(-1)}
-              variant="ghost"
-              className="flex items-center text-app-accent hover:text-app-primary"
-            >
-              <ArrowLeftIcon className="w-5 h-5 mr-2" />
-              Back to Results
-            </Button>
+            <div className="flex items-center gap-4">
+              <Button
+                onClick={handleBackToResults}
+                variant="ghost"
+                className="flex items-center text-app-accent hover:text-app-primary"
+              >
+                <ArrowLeftIcon className="w-5 h-5 mr-2" />
+                Back to Results
+              </Button>
+              
+              <Separator orientation="vertical" className="h-6" />
+              
+              <div className="hidden sm:block">
+                <p className="text-sm text-gray-600">
+                  Hotel {hotelData.selectedFromPage} of {hotelData.allAvailableHotels} in {searchContext.destination}
+                </p>
+              </div>
+            </div>
             
-            <div className="text-right">
-              <p className="text-sm text-gray-600">
-                Hotel {hotelData.selectedFromPage} of {hotelData.allAvailableHotels} in {searchContext.destination}
-              </p>
+            <div className="flex items-center gap-2">
+              <Button
+                onClick={toggleFavorite}
+                variant="ghost"
+                size="sm"
+                className={isFavorite ? "text-red-500" : "text-gray-500"}
+              >
+                <HeartIcon className={`w-5 h-5 ${isFavorite ? "fill-current" : ""}`} />
+              </Button>
+              
+              <Button
+                onClick={shareHotel}
+                variant="ghost"
+                size="sm"
+                className="text-gray-500"
+              >
+                <ShareIcon className="w-5 h-5" />
+              </Button>
+              
+              <Button
+                onClick={loadHotelData}
+                variant="ghost"
+                size="sm"
+                className="text-gray-500"
+              >
+                <RefreshCwIcon className="w-4 h-4" />
+              </Button>
             </div>
           </div>
         </div>
@@ -206,63 +332,69 @@ export const HotelDetails = (): JSX.Element => {
         
         {/* Hotel Header */}
         <div className="mb-8">
-          <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
+          <div className="flex flex-col lg:flex-row gap-8">
             
-            {/* Hotel Basic Info */}
+            {/* Hotel Info */}
             <div className="flex-1">
-              <h1 className="text-3xl lg:text-4xl font-heading-big text-app-accent mb-4">
-                {hotel.name}
-              </h1>
-              
-              {/* Rating and Reviews */}
-              <div className="flex flex-wrap items-center gap-4 mb-4">
-                {hotel.rating > 0 && (
-                  <div className="flex items-center">
-                    {[...Array(5)].map((_, i) => (
-                      <StarIcon 
-                        key={i}
-                        className={`h-5 w-5 ${
-                          i < hotel.rating 
-                            ? 'text-yellow-400 fill-current' 
-                            : 'text-gray-300'
-                        }`} 
-                      />
-                    ))}
-                    <span className="ml-2 text-app-accent font-medium">
-                      {hotel.rating} stars
-                    </span>
-                  </div>
-                )}
+              <div className="mb-6">
+                <h1 className="text-3xl lg:text-4xl font-heading-big text-app-accent mb-4">
+                  {hotel.name}
+                </h1>
                 
-                {hotel.reviewScore > 0 && (
-                  <div className="flex items-center">
-                    <span className="bg-app-primary text-white px-2 py-1 rounded text-sm font-bold">
-                      {hotel.reviewScore}
-                    </span>
-                    <div className="ml-2">
-                      <span className="text-app-accent font-medium">
-                        {getRatingText(hotel.reviewScore)}
+                {/* Rating and Reviews */}
+                <div className="flex flex-wrap items-center gap-6 mb-4">
+                  {hotel.rating > 0 && (
+                    <div className="flex items-center">
+                      <div className="flex">
+                        {[...Array(5)].map((_, i) => (
+                          <StarIcon 
+                            key={i}
+                            className={`h-5 w-5 ${
+                              i < hotel.rating 
+                                ? 'text-yellow-400 fill-current' 
+                                : 'text-gray-300'
+                            }`} 
+                          />
+                        ))}
+                      </div>
+                      <span className="ml-2 text-app-accent font-medium">
+                        {hotel.rating} stars
                       </span>
-                      {hotel.reviewCount > 0 && (
-                        <span className="text-gray-600 text-sm ml-1">
-                          ({hotel.reviewCount.toLocaleString()} reviews)
-                        </span>
-                      )}
                     </div>
-                  </div>
-                )}
+                  )}
+                  
+                  {hotel.reviewScore > 0 && (
+                    <div className="flex items-center">
+                      <Badge variant="secondary" className="bg-app-primary text-white px-3 py-1">
+                        {hotel.reviewScore}/10
+                      </Badge>
+                      <div className="ml-3">
+                        <span className="text-app-accent font-medium">
+                          {getRatingText(hotel.reviewScore)}
+                        </span>
+                        {hotel.reviewCount > 0 && (
+                          <span className="text-gray-600 text-sm ml-1">
+                            ({hotel.reviewCount.toLocaleString()} reviews)
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+                
+                {/* Location */}
+                <div className="flex items-center text-gray-600 mb-6">
+                  <MapPinIcon className="w-5 h-5 mr-2" />
+                  <span className="text-lg">{hotel.location}</span>
+                </div>
               </div>
               
-              {/* Location */}
-              <div className="flex items-center text-gray-600 mb-6">
-                <MapPinIcon className="w-5 h-5 mr-2" />
-                <span className="text-lg">{hotel.location}</span>
-              </div>
-              
-              {/* Search Context */}
-              <Card className="bg-blue-50 border-blue-200">
-                <CardContent className="p-4">
-                  <h3 className="font-medium text-app-accent mb-3">Your Search Details</h3>
+              {/* Search Context Card */}
+              <Card className="bg-blue-50 border-blue-200 mb-6">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-lg text-app-accent">Your Booking Details</CardTitle>
+                </CardHeader>
+                <CardContent className="pt-0">
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
                     <div className="flex items-center">
                       <CalendarIcon className="w-4 h-4 mr-2 text-blue-600" />
@@ -286,97 +418,128 @@ export const HotelDetails = (): JSX.Element => {
                       </div>
                     </div>
                   </div>
-                  <div className="mt-3 pt-3 border-t border-blue-200 text-sm text-gray-600">
-                    <span className="font-medium">{stayDuration} night{stayDuration !== 1 ? 's' : ''}</span> • 
-                    <span className="ml-1">Found {searchContext.availableHotels} of {searchContext.totalHotels} hotels</span>
+                  <Separator className="my-4" />
+                  <div className="text-sm text-gray-600">
+                    <span className="font-medium">{duration} night{duration !== 1 ? 's' : ''}</span> • 
+                    <span className="ml-1">Found among {searchContext.availableHotels} available hotels</span>
                   </div>
                 </CardContent>
               </Card>
             </div>
             
             {/* Pricing Card */}
-            <Card className="lg:w-80 bg-white shadow-lg">
+            <Card className="lg:w-80 bg-white shadow-lg sticky top-24 h-fit">
               <CardContent className="p-6">
-                <div className="text-center mb-4">
+                <div className="text-center mb-6">
                   <div className="text-3xl font-bold text-app-accent">
                     {formatCurrency(hotel.price.amount, hotel.price.currency)}
                   </div>
                   <div className="text-gray-600">per {hotel.price.period}</div>
                 </div>
                 
-                {stayDuration > 1 && (
-                  <div className="text-center mb-4 p-3 bg-gray-50 rounded-lg">
-                    <div className="text-sm text-gray-600">Total for {stayDuration} nights</div>
-                    <div className="text-xl font-bold text-app-accent">
+                {duration > 1 && (
+                  <div className="text-center mb-6 p-4 bg-gray-50 rounded-lg">
+                    <div className="text-sm text-gray-600">Total for {duration} nights</div>
+                    <div className="text-2xl font-bold text-app-accent">
                       {formatCurrency(totalPrice, hotel.price.currency)}
                     </div>
                   </div>
                 )}
                 
-                <Button className="w-full bg-app-primary text-white hover:bg-app-primary/90 py-3 text-lg">
+                <Button className="w-full bg-app-primary text-white hover:bg-app-primary/90 py-3 text-lg mb-4">
                   Book Now
                 </Button>
                 
-                <div className="mt-4 text-center">
-                  <p className="text-xs text-gray-500">
-                    Free cancellation available
+                <div className="text-center">
+                  <p className="text-xs text-gray-500 mb-2">
+                    ✅ Free cancellation available
                   </p>
+                  <p className="text-xs text-gray-500">
+                    💳 Pay now or at the hotel
+                  </p>
+                </div>
+                
+                <Separator className="my-4" />
+                
+                <div className="text-center">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => window.open('https://www.ratehawk.com', '_blank')}
+                    className="text-sm"
+                  >
+                    <ExternalLinkIcon className="w-4 h-4 mr-2" />
+                    View on RateHawk
+                  </Button>
                 </div>
               </CardContent>
             </Card>
           </div>
         </div>
 
-        {/* Hotel Image and Details */}
+        {/* Hotel Content */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
           
           {/* Main Image */}
           <div className="lg:col-span-2">
             <Card className="overflow-hidden">
               <CardContent className="p-0">
-                <img
-                  src={hotel.image}
-                  alt={hotel.name}
-                  className="w-full h-96 object-cover"
-                  onError={(e) => {
-                    e.currentTarget.src = "/placeholder-hotel.jpg";
-                  }}
-                />
+                <div className="relative">
+                  <img
+                    src={imageError ? "/placeholder-hotel.jpg" : hotel.image}
+                    alt={hotel.name}
+                    className="w-full h-96 object-cover"
+                    onError={() => setImageError(true)}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+                  <Badge 
+                    className="absolute top-4 left-4 bg-white/90 text-app-accent"
+                  >
+                    Verified Hotel
+                  </Badge>
+                </div>
               </CardContent>
             </Card>
           </div>
           
           {/* Amenities */}
           <div>
-            <h3 className="text-xl font-heading-standar text-app-accent mb-4">
-              Hotel Amenities
-            </h3>
-            <div className="space-y-3">
-              {hotel.amenities.length > 0 ? (
-                hotel.amenities.map((amenity, index) => (
-                  <div key={index} className="flex items-center">
-                    <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-3">
-                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <CheckCircleIcon className="w-5 h-5 mr-2 text-green-600" />
+                  Hotel Amenities
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-0">
+                <div className="space-y-3">
+                  {hotel.amenities.length > 0 ? (
+                    hotel.amenities.map((amenity, index) => (
+                      <div key={index} className="flex items-center">
+                        <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                          <CheckCircleIcon className="w-4 h-4 text-green-600" />
+                        </div>
+                        <span className="text-gray-700">{amenity}</span>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-gray-500 text-sm italic">
+                      Amenity information not available
                     </div>
-                    <span className="text-gray-700">{amenity}</span>
-                  </div>
-                ))
-              ) : (
-                <div className="text-gray-500 text-sm">
-                  Amenity information not available
+                  )}
                 </div>
-              )}
-            </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
 
         {/* Description */}
         {hotel.description && (
           <Card className="mb-8">
-            <CardContent className="p-6">
-              <h3 className="text-xl font-heading-standar text-app-accent mb-4">
-                About This Hotel
-              </h3>
+            <CardHeader>
+              <CardTitle>About This Hotel</CardTitle>
+            </CardHeader>
+            <CardContent>
               <p className="text-gray-700 leading-relaxed">
                 {hotel.description}
               </p>
@@ -384,40 +547,10 @@ export const HotelDetails = (): JSX.Element => {
           </Card>
         )}
 
-        {/* Debug Info (only in development) */}
-        {process.env.NODE_ENV === 'development' && (
-          <Card className="bg-gray-50 border-gray-200">
-            <CardContent className="p-4">
-              <details>
-                <summary className="text-sm font-medium text-gray-600 cursor-pointer">
-                  Debug Information (Development Only)
-                </summary>
-                <div className="mt-4 text-xs text-gray-600 space-y-2">
-                  <div><strong>Hotel ID:</strong> {hotel.id}</div>
-                  <div><strong>Search Timestamp:</strong> {searchContext.searchTimestamp}</div>
-                  <div><strong>Selected from Page:</strong> {hotelData.selectedFromPage}</div>
-                  <div><strong>Available Hotels:</strong> {hotelData.allAvailableHotels}</div>
-                  {hotel.ratehawk_data && (
-                    <div>
-                      <strong>RateHawk Data Available:</strong> Yes
-                      <details className="mt-2">
-                        <summary className="cursor-pointer">Raw RateHawk Data</summary>
-                        <pre className="mt-2 text-xs overflow-auto bg-white p-2 rounded border">
-                          {JSON.stringify(hotel.ratehawk_data, null, 2)}
-                        </pre>
-                      </details>
-                    </div>
-                  )}
-                </div>
-              </details>
-            </CardContent>
-          </Card>
-        )}
-
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Button
-            onClick={() => navigate(-1)}
+            onClick={handleBackToResults}
             variant="outline"
             className="border-app-primary text-app-primary hover:bg-app-primary hover:text-white"
           >
@@ -433,11 +566,47 @@ export const HotelDetails = (): JSX.Element => {
             New Search
           </Button>
           
-          <Button className="bg-app-primary text-white hover:bg-app-primary/90">
+          <Button 
+            onClick={shareHotel}
+            className="bg-app-primary text-white hover:bg-app-primary/90"
+          >
+            <ShareIcon className="w-4 h-4 mr-2" />
             Share Hotel
           </Button>
         </div>
       </div>
+
+      {/* Debug Panel (Development Only) */}
+      {process.env.NODE_ENV === 'development' && hotel.ratehawk_data && (
+        <Card className="max-w-7xl mx-auto mt-8 mx-4 bg-gray-50 border-gray-200">
+          <CardHeader>
+            <CardTitle className="text-sm text-gray-600">
+              Debug Information (Development Only)
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <details>
+              <summary className="text-sm font-medium text-gray-600 cursor-pointer mb-2">
+                Hotel Debug Data
+              </summary>
+              <div className="text-xs text-gray-600 space-y-2">
+                <div><strong>Hotel ID:</strong> {hotel.id}</div>
+                <div><strong>Search Timestamp:</strong> {searchContext.searchTimestamp}</div>
+                <div><strong>Selected from Page:</strong> {hotelData.selectedFromPage}</div>
+                <div><strong>Available Hotels:</strong> {hotelData.allAvailableHotels}</div>
+                <div><strong>Image Error:</strong> {imageError ? 'Yes' : 'No'}</div>
+                <div><strong>Is Favorite:</strong> {isFavorite ? 'Yes' : 'No'}</div>
+                <details className="mt-2">
+                  <summary className="cursor-pointer">Raw RateHawk Data</summary>
+                  <pre className="mt-2 text-xs overflow-auto bg-white p-2 rounded border max-h-40">
+                    {JSON.stringify(hotel.ratehawk_data, null, 2)}
+                  </pre>
+                </details>
+              </div>
+            </details>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };

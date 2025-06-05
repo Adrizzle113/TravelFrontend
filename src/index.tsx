@@ -6,7 +6,6 @@ import { DashboardLayout } from "./components/layout/DashboardLayout";
 import { Home } from "./screens/Home";
 import { ContactUs } from "./screens/ContactUs";
 import { Search } from "./screens/Search";
-import { List } from "./screens/List";
 import { HotelDetails } from "./screens/HotelDetails";
 import { About } from "./screens/About";
 import { Login, Register } from "./screens/Auth";
@@ -22,7 +21,6 @@ createRoot(document.getElementById("app") as HTMLElement).render(
         <Route path="/dashboard" element={<SimpleAuth><DashboardLayout /></SimpleAuth>}>
           <Route index element={<Dashboard />} />
           <Route path="search" element={<Search />} />
-          <Route path="orders" element={<List />} />
           <Route path="reports" element={<Dashboard />} />
           <Route path="profile" element={<Dashboard />} />
           <Route path="settings" element={<Dashboard />} />
@@ -32,7 +30,7 @@ createRoot(document.getElementById("app") as HTMLElement).render(
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<ContactUs />} />
           <Route path="/search" element={<Search />} />
-          <Route path="/list" element={<List />} />
+          
           <Route path="/hoteldetails" element={<HotelDetails />} />
           <Route path="/hoteldetails/:hotelId" element={<HotelDetails />} />
         </Route>
