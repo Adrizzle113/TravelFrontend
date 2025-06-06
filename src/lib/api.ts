@@ -144,3 +144,53 @@ export const authApi = {
     });
   }
 };
+
+export interface BookingOption {
+  rateIndex: number;
+  rateId: string;
+  rateKey: string;
+  roomName: string;
+  price: number;
+  currency: string;
+  bookingUrl: string;
+  fullBookingUrl: string;
+  cancellationPolicy: string;
+  mealPlan: string;
+}
+
+export interface DetailedRate {
+  id: string;
+  roomName: string;
+  price: number;
+  currency: string;
+  cancellationPolicy: string;
+  mealPlan: string;
+  bedding: string;
+  occupancy: string;
+  rateKey: string;
+}
+
+export interface EnhancedHotel {
+  // Your existing hotel properties
+  id: string;
+  name: string;
+  location: string;
+  rating: number;
+  reviewScore: number;
+  reviewCount: number;
+  price: {
+    amount: number;
+    currency: string;
+    period: string;
+  };
+  image: string;
+  amenities: string[];
+  description?: string;
+  
+  // New booking properties
+  hasBookingData: boolean;
+  detailedRates: DetailedRate[];
+  roomTypes: any[];
+  bookingOptions: BookingOption[];
+  bookingError?: string;
+}
