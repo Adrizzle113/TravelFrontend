@@ -1,17 +1,18 @@
 // API Configuration
 export const API_CONFIG = {
-  // Update this URL to match your backend server
+  // Backend server URL - matches your backend port
   BASE_URL: process.env.NODE_ENV === 'production' 
     ? 'https://your-backend-domain.com'  // Replace with your production URL
     : 'http://localhost:3001',            // Local development URL
 
-  // Updated API endpoints to match organized backend
+  // API endpoints
   ENDPOINTS: {
     RATEHAWK_LOGIN: '/api/ratehawk/login',
     RATEHAWK_SESSION: '/api/ratehawk/session',
     RATEHAWK_SEARCH: '/api/ratehawk/search',
     RATEHAWK_STATS: '/api/ratehawk/stats',
     RATEHAWK_TEST: '/api/ratehawk/test-auth',
+    RATEHAWK_LOGOUT: '/api/ratehawk/logout',
     AUTH_LOGIN: '/api/auth/login',
     AUTH_REGISTER: '/api/auth/register',
     AUTH_VERIFY: '/api/auth/verify',
@@ -35,14 +36,24 @@ export const apiCall = async (endpoint: string, options: RequestInit = {}) => {
   try {
     console.log(`🌐 API Call: ${options.method || 'GET'} ${url}`);
     const response = await fetch(url, defaultOptions);
-    const data = await response.json();
+    
+    let data;
+    try {
+      data = await response.json();
+    } catch (parseError) {
+      console.error('💥 Failed to parse JSON response:', parseError);
+      throw new Error(`Invalid JSON response from server (${response.status})`);
+    }
     
     console.log(`📡 API Response: ${response.status}`, data);
     
     return { response, data };
   } catch (error) {
     console.error('💥 API call failed:', error);
-    throw new Error(`Failed to connect to server: ${error}`);
+    if (error instanceof TypeError && error.message.includes('fetch')) {
+      throw new Error(`Failed to connect to server at ${API_CONFIG.BASE_URL}. Please check if the backend is running.`);
+    }
+    throw error;
   }
 };
 
@@ -61,22 +72,22 @@ export const ratehawkApi = {
     });
   },
 
-  // ✅ FIXED: Updated guest format to match backend expectation
   searchHotels: async (searchParams: {
-  userId: string;
-  destination: string;
-  checkin: string;
-  checkout: string;
-  guests: Array<{adults: number}>;
-  residency?: string;
-  currency?: string;
-  page?: number; // NEW: Add page parameter
-}) => {
-  return apiCall(API_CONFIG.ENDPOINTS.RATEHAWK_SEARCH, {
-    method: 'POST',
-    body: JSON.stringify(searchParams),
-  });
-},
+    userId: string;
+    destination: string;
+    checkin: string;
+    checkout: string;
+    guests: Array<{adults: number}>;
+    residency?: string;
+    currency?: string;
+    page?: number;
+    filters?: any;
+  }) => {
+    return apiCall(API_CONFIG.ENDPOINTS.RATEHAWK_SEARCH, {
+      method: 'POST',
+      body: JSON.stringify(searchParams),
+    });
+  },
 
   getStats: async () => {
     return apiCall(API_CONFIG.ENDPOINTS.RATEHAWK_STATS, {
@@ -91,22 +102,38 @@ export const ratehawkApi = {
     });
   },
 
+  logout: async (userId: string) => {
+    return apiCall(`${API_CONFIG.ENDPOINTS.RATEHAWK_LOGOUT}/${userId}`, {
+      method: 'POST',
+    });
+  },
+
   healthCheck: async () => {
-    const { response, data } = await apiCall('/api/health');
-    
-    // Log for debugging
-    console.log('Health check response:', data);
-    
-    return {
-      response,
-      data: {
-        status: data.status,
-        browserless: data.services?.browserless || 'unknown',
-        activeSessions: data.activeSessions || 0,
-        timestamp: data.timestamp,
-        services: data.services
-      }
-    };
+    try {
+      const { response, data } = await apiCall('/api/health');
+      
+      return {
+        response,
+        data: {
+          status: data.status,
+          browserless: data.services?.browserless || 'unknown',
+          activeSessions: data.activeSessions || 0,
+          timestamp: data.timestamp,
+          services: data.services,
+          uptime: data.uptime
+        }
+      };
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      return {
+        response: { ok: false },
+        data: {
+          status: 'error',
+          error: errorMessage,
+          timestamp: new Date().toISOString()
+        }
+      };
+    }
   }
 };
 
@@ -145,33 +172,24 @@ export const authApi = {
   }
 };
 
-export interface BookingOption {
-  rateIndex: number;
-  rateId: string;
-  rateKey: string;
-  roomName: string;
-  price: number;
-  currency: string;
-  bookingUrl: string;
-  fullBookingUrl: string;
-  cancellationPolicy: string;
-  mealPlan: string;
+// Type definitions for better TypeScript support
+export interface SearchParams {
+  userId: string;
+  destination: string;
+  checkin: string;
+  checkout: string;
+  guests: Array<{adults: number}>;
+  residency?: string;
+  currency?: string;
+  page?: number;
+  filters?: {
+    starRating?: string[];
+    priceRange?: [number, number];
+    meals?: string[];
+  };
 }
 
-export interface DetailedRate {
-  id: string;
-  roomName: string;
-  price: number;
-  currency: string;
-  cancellationPolicy: string;
-  mealPlan: string;
-  bedding: string;
-  occupancy: string;
-  rateKey: string;
-}
-
-export interface EnhancedHotel {
-  // Your existing hotel properties
+export interface Hotel {
   id: string;
   name: string;
   location: string;
@@ -186,11 +204,22 @@ export interface EnhancedHotel {
   image: string;
   amenities: string[];
   description?: string;
-  
-  // New booking properties
-  hasBookingData: boolean;
-  detailedRates: DetailedRate[];
-  roomTypes: any[];
-  bookingOptions: BookingOption[];
-  bookingError?: string;
+  ratehawk_data?: any;
+}
+
+export interface SearchResponse {
+  success: boolean;
+  hotels: Hotel[];
+  totalHotels: number;
+  availableHotels: number;
+  searchSessionId?: string;
+  hasMorePages?: boolean;
+  currentPage?: number;
+  searchDuration?: string;
+  timestamp?: string;
+  error?: string;
+  metadata?: {
+    strategy?: string;
+    sessionCreated?: boolean;
+  };
 }

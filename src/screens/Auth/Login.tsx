@@ -77,6 +77,11 @@ export const Login = (): JSX.Element => {
     }
   };
 
+  // Generate user ID from email (same format as backend)
+  const generateUserIdFromEmail = (email: string): string => {
+    return email.replace('@', '_').replace(/\./g, '_');
+  };
+
   // Handle RateHawk login
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -93,8 +98,9 @@ export const Login = (): JSX.Element => {
     try {
       console.log('🔐 Starting RateHawk authentication...');
       
-      // Generate unique user ID
-      const userId = `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      // ✅ FIXED: Generate user ID from email (same as backend)
+      const userId = generateUserIdFromEmail(email);
+      console.log(`👤 Generated User ID: ${userId} (from email: ${email})`);
       
       const response = await fetch('http://localhost:3001/api/ratehawk/login', {
         method: 'POST',
@@ -102,7 +108,7 @@ export const Login = (): JSX.Element => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          userId: userId,
+          userId: userId, // ✅ FIXED: Use email-based user ID
           email: email,
           password: password
         })
@@ -113,14 +119,18 @@ export const Login = (): JSX.Element => {
 
       if (data.success) {
         console.log('✅ Authentication successful!');
+        console.log(`🔑 Session ID: ${data.sessionId}`);
+        console.log(`👤 User ID: ${userId}`);
         
-        // Store session data
+        // ✅ FIXED: Store the correct user ID that matches backend
         localStorage.setItem('isLoggedIn', 'true');
         localStorage.setItem('ratehawkSessionId', data.sessionId);
         localStorage.setItem('ratehawkLoginUrl', data.loginUrl || '');
-        localStorage.setItem('userId', userId);
+        localStorage.setItem('userId', userId); // ✅ FIXED: Use email-based ID
         localStorage.setItem('userEmail', email);
         localStorage.setItem('ratehawkAuthTimestamp', new Date().toISOString());
+        
+        console.log(`💾 Stored session data for user ID: ${userId}`);
         
         setSuccess(true);
         
@@ -155,6 +165,9 @@ export const Login = (): JSX.Element => {
             <p className="text-[color:var(--body)] text-sm mb-4">
               Successfully logged into RateHawk platform.
             </p>
+            <div className="text-xs text-green-600 mb-4">
+              User ID: {generateUserIdFromEmail(email)}
+            </div>
             <div className="flex items-center justify-center mb-4">
               <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-app-primary mr-2"></div>
               <p className="text-[color:var(--body)] text-xs">
@@ -258,6 +271,18 @@ export const Login = (): JSX.Element => {
                 )}
               </CardContent>
             </Card>
+
+            {/* User ID Preview */}
+            {email && (
+              <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <div className="text-xs text-blue-700">
+                  <strong>User ID:</strong> {generateUserIdFromEmail(email)}
+                </div>
+                <div className="text-xs text-blue-600 mt-1">
+                  This ID will be used to match your session
+                </div>
+              </div>
+            )}
 
             {/* Login Form */}
             <form className="space-y-6" onSubmit={handleLogin}>

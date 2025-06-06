@@ -13,32 +13,53 @@ export const SimpleAuth = ({ children }: SimpleAuthProps) => {
     checkAuthentication();
   }, []);
 
+  // Generate user ID from email (same format as backend)
+  const generateUserIdFromEmail = (email: string): string => {
+    return email.replace('@', '_').replace(/\./g, '_');
+  };
+
   const checkAuthentication = async () => {
     console.log('🔐 Starting strict authentication check...');
     
     // Check for required authentication data
     const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
     const ratehawkSessionId = localStorage.getItem('ratehawkSessionId');
-    const userId = localStorage.getItem('userId');
+    const storedUserId = localStorage.getItem('userId');
     const userEmail = localStorage.getItem('userEmail');
     const authTimestamp = localStorage.getItem('ratehawkAuthTimestamp');
 
     console.log('🔍 Checking authentication data...', {
       isLoggedIn,
       hasSessionId: !!ratehawkSessionId,
-      hasUserId: !!userId,
+      hasUserId: !!storedUserId,
       hasEmail: !!userEmail,
-      hasTimestamp: !!authTimestamp
+      hasTimestamp: !!authTimestamp,
+      storedUserId: storedUserId
     });
 
     // STRICT CHECK: All required data must be present
-    if (!isLoggedIn || !ratehawkSessionId || !userId || !userEmail) {
+    if (!isLoggedIn || !ratehawkSessionId || !storedUserId || !userEmail) {
       console.log('❌ Missing required authentication data - redirecting to login');
       clearAuthData();
       setAuthStatus('invalid');
       navigate('/auth/login');
       return;
     }
+
+    // ✅ FIXED: Generate the expected user ID from email and compare
+    const expectedUserId = generateUserIdFromEmail(userEmail);
+    
+    if (storedUserId !== expectedUserId) {
+      console.log('🔄 User ID mismatch, updating to correct format...');
+      console.log(`   Stored: ${storedUserId}`);
+      console.log(`   Expected: ${expectedUserId}`);
+      
+      // Update to the correct user ID format
+      localStorage.setItem('userId', expectedUserId);
+    }
+
+    // Use the correct user ID for session validation
+    const correctUserId = expectedUserId;
 
     // Check if session is too old (24 hours)
     if (authTimestamp) {
@@ -58,12 +79,13 @@ export const SimpleAuth = ({ children }: SimpleAuthProps) => {
     // CRITICAL: Verify session with backend to ensure RateHawk session is still valid
     try {
       console.log('🔍 Verifying RateHawk session with backend...');
+      console.log(`👤 Using User ID: ${correctUserId}`);
       
       const API_BASE_URL = process.env.NODE_ENV === 'production' 
         ? 'https://your-production-domain.com'  
         : 'http://localhost:3001';
 
-      const response = await fetch(`${API_BASE_URL}/api/ratehawk/session/${userId}`, {
+      const response = await fetch(`${API_BASE_URL}/api/ratehawk/session/${correctUserId}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json'
@@ -82,10 +104,15 @@ export const SimpleAuth = ({ children }: SimpleAuthProps) => {
         console.log(`🔑 Session ID: ${data.sessionId}`);
         console.log(`👤 Email: ${data.email}`);
         console.log(`🕒 Login time: ${data.loginTime}`);
+        console.log(`⏰ Session age: ${data.sessionAge}`);
+        
+        // ✅ FIXED: Make sure we're using the correct user ID
+        localStorage.setItem('userId', correctUserId);
         
         setAuthStatus('valid');
       } else {
         console.log('❌ Backend reports no active RateHawk session');
+        console.log('🔄 User may need to login again...');
         clearAuthData();
         setAuthStatus('invalid');
         navigate('/auth/login');
