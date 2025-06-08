@@ -10,6 +10,7 @@ export const API_CONFIG = {
     RATEHAWK_LOGIN: '/api/ratehawk/login',
     RATEHAWK_SESSION: '/api/ratehawk/session',
     RATEHAWK_SEARCH: '/api/ratehawk/search',
+    RATEHAWK_HOTEL_DETAILS: '/api/ratehawk/hotel-details',
     RATEHAWK_STATS: '/api/ratehawk/stats',
     RATEHAWK_TEST: '/api/ratehawk/test-auth',
     RATEHAWK_LOGOUT: '/api/ratehawk/logout',
@@ -86,6 +87,24 @@ export const ratehawkApi = {
     return apiCall(API_CONFIG.ENDPOINTS.RATEHAWK_SEARCH, {
       method: 'POST',
       body: JSON.stringify(searchParams),
+    });
+  },
+
+  fetchHotelDetails: async (params: {
+    userId: string;
+    hotelId: string;
+    searchSessionId?: string;
+    searchParams?: {
+      checkin: string;
+      checkout: string;
+      guests: number;
+      residency?: string;
+      currency?: string;
+    };
+  }) => {
+    return apiCall(API_CONFIG.ENDPOINTS.RATEHAWK_HOTEL_DETAILS, {
+      method: 'POST',
+      body: JSON.stringify(params),
     });
   },
 
