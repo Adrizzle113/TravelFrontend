@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Card, CardContent } from "../../components/ui/card";
-import { Button } from "../../components/ui/button";
 
 // Import All Sections
 import { HeroSection } from "./sections/HeroSection";
@@ -80,132 +79,52 @@ export const HotelDetails = (): JSX.Element => {
   const [selectedRoom, setSelectedRoom] = useState<ProcessedRoom | null>(null);
   const [selectedQuantity, setSelectedQuantity] = useState(1);
   
-  // New state for hotel details fetching
-  const [fetchingDetails, setFetchingDetails] = useState(false);
+  // NEW: Enhanced room details state
+  const [enhancedHotelData, setEnhancedHotelData] = useState<any>(null);
+  const [detailsLoading, setDetailsLoading] = useState(false);
   const [detailsError, setDetailsError] = useState<string | null>(null);
-  const [hasDetailedData, setHasDetailedData] = useState(false);
+  const [hasDetailedRoomData, setHasDetailedRoomData] = useState(false);
 
   // Load hotel data on mount
   useEffect(() => {
-    loadHotelData();
+    if (hotelId) {
+      loadHotelData();
+    }
   }, [hotelId]);
 
   const loadHotelData = async (): Promise<void> => {
     console.log('🏨 Loading hotel details for ID:', hotelId);
     setLoading(true);
     setError(null);
-    setDetailsError(null);
     
     try {
-      // Step 1: Load basic hotel data from localStorage
       const savedData = localStorage.getItem('selectedHotel');
       
-      if (!savedData) {
-        setError("Hotel information not found. Please search for hotels first.");
-        return;
-      }
-
-      const parsedData: HotelData = JSON.parse(savedData);
-      
-      if (parsedData.hotel.id !== hotelId) {
-        setError("Hotel information mismatch. Please search again.");
-        return;
-      }
-
-      console.log('✅ Basic hotel data loaded:', {
-        hotelId: parsedData.hotel.id,
-        hotelName: parsedData.hotel.name,
-        destination: parsedData.searchContext.destination
-      });
-
-      // Set basic hotel data first
-      setHotelData(parsedData);
-      
-      // Check if this hotel is in favorites
-      const favorites = JSON.parse(localStorage.getItem('favoriteHotels') || '[]');
-      setIsFavorite(favorites.includes(hotelId));
-
-      // Step 2: Fetch detailed hotel data from RateHawk
-      console.log('🔍 Fetching detailed hotel data from RateHawk...');
-      setFetchingDetails(true);
-      
-      try {
-        const userId = localStorage.getItem('userId') || '';
+      if (savedData) {
+        const parsedData: HotelData = JSON.parse(savedData);
         
-        // Get search session ID from search results if available
-        const searchResults = localStorage.getItem('hotelSearchResults');
-        let searchSessionId = '';
-        
-        if (searchResults) {
-          const parsed = JSON.parse(searchResults);
-          searchSessionId = parsed.searchSessionId || '';
-        }
-
-        const detailsResponse = await ratehawkApi.fetchHotelDetails({
-          userId: userId,
-          hotelId: parsedData.hotel.id,
-          searchSessionId: searchSessionId,
-          searchParams: {
-            checkin: parsedData.searchContext.checkin,
-            checkout: parsedData.searchContext.checkout,
-            guests: parsedData.searchContext.guests,
-            residency: 'en-us',
-            currency: 'USD'
-          }
-        });
-
-        console.log('📡 Hotel details API response:', detailsResponse);
-
-        if (detailsResponse.data.success && detailsResponse.data.hotelDetails) {
-          const detailedData = detailsResponse.data.hotelDetails;
-          
-          console.log('✅ Detailed hotel data received:', {
-            rates: detailedData.rates?.length || 0,
-            roomTypes: detailedData.roomTypes?.length || 0,
-            bookingOptions: detailedData.bookingOptions?.length || 0,
-            room_groups: detailedData.room_groups?.length || 0
+        if (parsedData.hotel.id === hotelId) {
+          console.log('✅ Hotel data loaded successfully:', {
+            hotelId: parsedData.hotel.id,
+            hotelName: parsedData.hotel.name,
+            destination: parsedData.searchContext.destination,
+            hasRatehawkData: !!parsedData.hotel.ratehawk_data
           });
-
-          // Enhance hotel data with detailed information
-          const enhancedHotelData: HotelData = {
-            ...parsedData,
-            hotel: {
-              ...parsedData.hotel,
-              ratehawk_data: {
-                ...parsedData.hotel.ratehawk_data,
-                rates: detailedData.rates || [],
-                room_groups: detailedData.room_groups || [],
-                room_types: detailedData.roomTypes || [],
-                booking_options: detailedData.bookingOptions || [],
-                detailed_data: detailedData.detailedData || null,
-                details_fetched: true,
-                details_timestamp: new Date().toISOString()
-              }
-            }
-          };
-
-          setHotelData(enhancedHotelData);
-          setHasDetailedData(true);
-
-          // Update localStorage with enhanced data
-          localStorage.setItem('selectedHotel', JSON.stringify(enhancedHotelData));
           
-          console.log('💾 Enhanced hotel data stored in localStorage');
+          setHotelData(parsedData);
           
+          // Check if this hotel is in favorites
+          const favorites = JSON.parse(localStorage.getItem('favoriteHotels') || '[]');
+          setIsFavorite(favorites.includes(hotelId));
+          
+          // NEW: Fetch enhanced hotel details after basic data is loaded
+          await fetchEnhancedHotelDetails(parsedData);
         } else {
-          console.log('⚠️ Hotel details fetch unsuccessful:', detailsResponse.data.error);
-          setDetailsError('Could not load detailed room information');
-          // Keep basic data, just won't show room selection
+          setError("Hotel information mismatch. Please search again.");
         }
-        
-      } catch (detailsError: any) {
-        console.error('💥 Error fetching hotel details:', detailsError);
-        setDetailsError('Failed to load detailed room information');
-        // Keep basic data, just won't show room selection
-      } finally {
-        setFetchingDetails(false);
+      } else {
+        setError("Hotel information not found. Please search for hotels first.");
       }
-      
     } catch (err) {
       console.error('💥 Error loading hotel data:', err);
       setError("Failed to load hotel information. Please try again.");
@@ -214,8 +133,100 @@ export const HotelDetails = (): JSX.Element => {
     }
   };
 
+  // NEW: Fetch enhanced hotel details with room data
+  const fetchEnhancedHotelDetails = async (basicHotelData: HotelData): Promise<void> => {
+    if (!hotelId) return;
+
+    setDetailsLoading(true);
+    setDetailsError(null);
+
+    try {
+      console.log('🔍 Fetching enhanced hotel details from RateHawk...');
+      
+      const userId = localStorage.getItem('userId') || 
+                     localStorage.getItem('userEmail')?.replace('@', '_').replace('.', '_') ||
+                     'default_user';
+
+      // Get search session if available
+      const searchResults = localStorage.getItem('hotelSearchResults');
+      let searchSessionId = null;
+      if (searchResults) {
+        const parsedResults = JSON.parse(searchResults);
+        searchSessionId = parsedResults.searchSessionId;
+      }
+
+      // Create search parameters from context
+      const searchParams = {
+        checkin: basicHotelData.searchContext.checkin,
+        checkout: basicHotelData.searchContext.checkout,
+        guests: basicHotelData.searchContext.guests,
+        residency: 'en-us',
+        currency: 'USD'
+      };
+
+      console.log('📡 Calling hotel details API with:', {
+        userId,
+        hotelId,
+        searchSessionId,
+        searchParams
+      });
+
+      const { data } = await ratehawkApi.fetchHotelDetails({
+        userId,
+        hotelId,
+        searchSessionId,
+        searchParams
+      });
+
+      if (data.success && data.hotelDetails) {
+        console.log('✅ Enhanced hotel details received:', {
+          hasRates: data.hotelDetails.rates?.length > 0,
+          hasRoomGroups: data.hotelDetails.room_groups?.length > 0,
+          hasBookingOptions: data.hotelDetails.bookingOptions?.length > 0
+        });
+
+        // Merge enhanced data with basic hotel data
+        const mergedHotelData = {
+          ...basicHotelData,
+          hotel: {
+            ...basicHotelData.hotel,
+            ratehawk_data: {
+              ...basicHotelData.hotel.ratehawk_data,
+              rates: data.hotelDetails.rates || [],
+              room_groups: data.hotelDetails.room_groups || [],
+              booking_options: data.hotelDetails.bookingOptions || [],
+              detailed_data: data.hotelDetails.detailedData || null
+            }
+          }
+        };
+
+        setEnhancedHotelData(mergedHotelData);
+        setHasDetailedRoomData(
+          (data.hotelDetails.rates?.length > 0) || 
+          (data.hotelDetails.room_groups?.length > 0)
+        );
+
+        // Update localStorage with enhanced data
+        localStorage.setItem('selectedHotel', JSON.stringify(mergedHotelData));
+        
+        console.log('💾 Enhanced hotel data stored in localStorage');
+        
+      } else {
+        console.log('⚠️ No enhanced details available:', data.error);
+        setDetailsError(data.error || 'Unable to load detailed room information');
+        setHasDetailedRoomData(false);
+      }
+    } catch (err: any) {
+      console.error('💥 Error fetching enhanced hotel details:', err);
+      setDetailsError(`Failed to load room details: ${err.message}`);
+      setHasDetailedRoomData(false);
+    } finally {
+      setDetailsLoading(false);
+    }
+  };
+
   // Navigation handlers
-  const handleBackToResults = () => {
+  const handleBackToResults = (): void => {
     console.log('🔙 Navigating back to search results...');
     
     const searchResults = localStorage.getItem('hotelSearchResults');
@@ -241,7 +252,7 @@ export const HotelDetails = (): JSX.Element => {
   };
 
   // Favorite management
-  const toggleFavorite = () => {
+  const toggleFavorite = (): void => {
     if (!hotelId) return;
     
     const favorites = JSON.parse(localStorage.getItem('favoriteHotels') || '[]');
@@ -260,7 +271,7 @@ export const HotelDetails = (): JSX.Element => {
   };
 
   // Share functionality
-  const shareHotel = async () => {
+  const shareHotel = async (): Promise<void> => {
     if (!hotelData) return;
     
     const shareData = {
@@ -284,7 +295,7 @@ export const HotelDetails = (): JSX.Element => {
   };
 
   // Room selection handler
-  const handleRoomSelect = (room: ProcessedRoom, quantity: number) => {
+  const handleRoomSelect = (room: ProcessedRoom, quantity: number): void => {
     console.log('🏨 Room selected:', {
       name: room.name,
       price: room.price,
@@ -297,7 +308,7 @@ export const HotelDetails = (): JSX.Element => {
   };
 
   // Booking handler
-  const handleBookNow = () => {
+  const handleBookNow = (): void => {
     const bookingPrice = selectedRoom ? (selectedRoom.price * selectedQuantity) : hotelData?.hotel.price.amount;
     const bookingCurrency = selectedRoom ? selectedRoom.currency : hotelData?.hotel.price.currency;
     
@@ -326,25 +337,16 @@ export const HotelDetails = (): JSX.Element => {
     window.open('https://www.ratehawk.com', '_blank');
   };
 
-  // Loading state - updated to show detailed fetching
-  if (loading || fetchingDetails) {
+  // Loading state
+  if (loading) {
     return (
       <div className="min-h-screen bg-[#f3ecdc] flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-app-primary mx-auto mb-4"></div>
           <h2 className="text-xl font-heading-standar text-app-accent mb-2">
-            {loading ? 'Loading Hotel Details' : 'Fetching Room Information'}
+            Loading Hotel Details
           </h2>
-          <p className="text-gray-600">
-            {loading ? 'Please wait while we load the information...' : 'Getting latest rates and availability...'}
-          </p>
-          {fetchingDetails && (
-            <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg max-w-md mx-auto">
-              <p className="text-blue-700 text-sm">
-                🔍 Fetching detailed room types and rates from RateHawk...
-              </p>
-            </div>
-          )}
+          <p className="text-gray-600">Please wait while we load the information...</p>
         </div>
       </div>
     );
@@ -383,7 +385,7 @@ export const HotelDetails = (): JSX.Element => {
     );
   }
 
-  const { hotel, searchContext } = hotelData;
+  const { hotel, searchContext } = enhancedHotelData || hotelData;
 
   // Prepare images for hero section
   const heroImages = [
@@ -409,6 +411,46 @@ export const HotelDetails = (): JSX.Element => {
         isFavorite={isFavorite}
       />
 
+      {/* Enhanced Room Details Loading State */}
+      {detailsLoading && (
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <Card className="bg-blue-50 border-blue-200">
+            <CardContent className="p-4">
+              <div className="flex items-center">
+                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600 mr-3"></div>
+                <div className="text-blue-800 text-sm">
+                  Loading detailed room information from RateHawk...
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* Enhanced Room Details Error State */}
+      {!detailsLoading && detailsError && (
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <Card className="bg-orange-50 border-orange-200">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="text-orange-800 font-medium text-sm mb-1">Room Details Unavailable</div>
+                  <div className="text-orange-700 text-sm">
+                    Could not load detailed room information. You can still view hotel information and proceed with booking through RateHawk directly.
+                  </div>
+                </div>
+                <button
+                  onClick={() => fetchEnhancedHotelDetails(hotelData)}
+                  className="bg-orange-600 text-white px-3 py-1 rounded text-sm hover:bg-orange-700"
+                >
+                  Retry
+                </button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
       {/* Main Content - Two Column Layout */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -422,8 +464,8 @@ export const HotelDetails = (): JSX.Element => {
               searchContext={searchContext}
             />
 
-            {/* Room Selection Section - Enhanced with detail fetching logic */}
-            {hasDetailedData ? (
+            {/* Room Selection Section - Only show if we have detailed data */}
+            {hasDetailedRoomData && !detailsLoading ? (
               <RoomSelectionSection 
                 hotel={hotel}
                 searchContext={searchContext}
@@ -431,36 +473,22 @@ export const HotelDetails = (): JSX.Element => {
                 selectedRoomId={selectedRoom?.id}
                 selectedQuantity={selectedQuantity}
               />
-            ) : (
+            ) : !detailsLoading && (
               <Card className="rounded-[20px] shadow-shadow-shape">
-                <CardContent className="p-8 text-center">
-                  {detailsError ? (
-                    <>
-                      <div className="text-yellow-600 text-4xl mb-4">⚠️</div>
-                      <h3 className="text-xl font-heading-standar text-app-accent mb-4">
-                        Room Details Unavailable
-                      </h3>
-                      <p className="text-gray-600 mb-6">
-                        {detailsError}. You can still view hotel information and proceed with booking through RateHawk directly.
-                      </p>
-                      <Button
-                        onClick={() => window.open('https://www.ratehawk.com', '_blank')}
-                        className="bg-app-primary text-white hover:bg-app-primary/90"
-                      >
-                        Book on RateHawk
-                      </Button>
-                    </>
-                  ) : (
-                    <>
-                      <div className="text-blue-600 text-4xl mb-4">🏨</div>
-                      <h3 className="text-xl font-heading-standar text-app-accent mb-4">
-                        Loading Room Options
-                      </h3>
-                      <p className="text-gray-600">
-                        Fetching the latest room types and rates...
-                      </p>
-                    </>
-                  )}
+                <CardContent className="p-6 lg:p-8 text-center">
+                  <div className="text-gray-400 text-4xl mb-4">🏨</div>
+                  <h3 className="text-xl font-heading-standar text-gray-600 mb-2">
+                    Room Selection Unavailable
+                  </h3>
+                  <p className="text-gray-500 mb-4">
+                    Detailed room information is not available at the moment.
+                  </p>
+                  <button
+                    onClick={() => window.open('https://www.ratehawk.com', '_blank')}
+                    className="bg-app-primary text-white px-6 py-3 rounded-lg hover:bg-app-primary/90"
+                  >
+                    Book Directly on RateHawk
+                  </button>
                 </CardContent>
               </Card>
             )}
@@ -500,21 +528,20 @@ export const HotelDetails = (): JSX.Element => {
           <CardContent className="p-4">
             <details>
               <summary className="text-sm font-medium text-gray-600 cursor-pointer mb-2">
-                Hotel Debug Data (Development Only)
+                Enhanced Hotel Debug Data (Development Only)
               </summary>
               <div className="text-xs text-gray-600 space-y-2">
                 <div><strong>Hotel ID:</strong> {hotel.id}</div>
                 <div><strong>Is Favorite:</strong> {isFavorite ? 'Yes' : 'No'}</div>
-                <div><strong>Has Detailed Data:</strong> {hasDetailedData ? 'Yes' : 'No'}</div>
-                <div><strong>Details Error:</strong> {detailsError || 'None'}</div>
                 <div><strong>Selected Room:</strong> {selectedRoom?.name || 'None'}</div>
                 <div><strong>Room Quantity:</strong> {selectedQuantity}</div>
                 <div><strong>Room Price:</strong> {selectedRoom ? `${selectedRoom.price} × ${selectedQuantity} = ${selectedRoom.price * selectedQuantity}` : 'N/A'}</div>
                 <div><strong>Total Amenities:</strong> {hotel.amenities?.length || 0}</div>
+                <div><strong>Has Enhanced Data:</strong> {hasDetailedRoomData ? 'Yes' : 'No'}</div>
+                <div><strong>Details Loading:</strong> {detailsLoading ? 'Yes' : 'No'}</div>
+                <div><strong>Details Error:</strong> {detailsError || 'None'}</div>
                 <div><strong>RateHawk Rates:</strong> {hotel.ratehawk_data?.rates?.length || 0}</div>
                 <div><strong>RateHawk Room Groups:</strong> {hotel.ratehawk_data?.room_groups?.length || 0}</div>
-                <div><strong>Details Fetched:</strong> {hotel.ratehawk_data?.details_fetched ? 'Yes' : 'No'}</div>
-                <div><strong>Details Timestamp:</strong> {hotel.ratehawk_data?.details_timestamp || 'N/A'}</div>
                 <details className="mt-2">
                   <summary className="cursor-pointer">Raw RateHawk Data</summary>
                   <pre className="mt-2 text-xs overflow-auto bg-white p-2 rounded border max-h-40">

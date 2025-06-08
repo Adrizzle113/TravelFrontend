@@ -10,7 +10,7 @@ export const API_CONFIG = {
     RATEHAWK_LOGIN: '/api/ratehawk/login',
     RATEHAWK_SESSION: '/api/ratehawk/session',
     RATEHAWK_SEARCH: '/api/ratehawk/search',
-    RATEHAWK_HOTEL_DETAILS: '/api/ratehawk/hotel-details',
+    RATEHAWK_HOTEL_DETAILS: '/api/ratehawk/hotel-details', // NEW
     RATEHAWK_STATS: '/api/ratehawk/stats',
     RATEHAWK_TEST: '/api/ratehawk/test-auth',
     RATEHAWK_LOGOUT: '/api/ratehawk/logout',
@@ -90,7 +90,8 @@ export const ratehawkApi = {
     });
   },
 
-  fetchHotelDetails: async (params: {
+  // NEW: Fetch detailed hotel information
+  fetchHotelDetails: async (detailsParams: {
     userId: string;
     hotelId: string;
     searchSessionId?: string;
@@ -104,7 +105,7 @@ export const ratehawkApi = {
   }) => {
     return apiCall(API_CONFIG.ENDPOINTS.RATEHAWK_HOTEL_DETAILS, {
       method: 'POST',
-      body: JSON.stringify(params),
+      body: JSON.stringify(detailsParams),
     });
   },
 
@@ -206,6 +207,35 @@ export interface SearchParams {
     priceRange?: [number, number];
     meals?: string[];
   };
+}
+
+// NEW: Hotel Details Types
+export interface HotelDetailsParams {
+  userId: string;
+  hotelId: string;
+  searchSessionId?: string;
+  searchParams?: {
+    checkin: string;
+    checkout: string;
+    guests: number;
+    residency?: string;
+    currency?: string;
+  };
+}
+
+export interface HotelDetailsResponse {
+  success: boolean;
+  hotelDetails?: {
+    hotelId: string;
+    rates: any[];
+    roomTypes: any[];
+    bookingOptions: any[];
+    room_groups: any[];
+    detailedData: any;
+  };
+  error?: string;
+  fetchDuration?: string;
+  timestamp?: string;
 }
 
 export interface Hotel {

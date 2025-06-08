@@ -12,8 +12,10 @@ import {
   ZoomOutIcon
 } from "lucide-react";
 
-// Google Maps API configuration
-const GOOGLE_MAPS_API_KEY = 'AIzaSyCVsHWhcuV8_s8vTQPmT6YjAm9zipVUsb4';
+// Google Maps API configuration - FIXED: Make API key optional for localhost
+const GOOGLE_MAPS_API_KEY = process.env.NODE_ENV === 'production' 
+  ? 'AIzaSyCVsHWhcuV8_s8vTQPmT6YjAm9zipVUsb4' 
+  : ''; // Empty in development to avoid referer errors
 
 // Extend Window interface for Google Maps
 declare global {
@@ -35,9 +37,16 @@ interface NearbyPlace {
   icon: string;
 }
 
-// Google Maps API loader
+// Google Maps API loader - FIXED: Handle localhost gracefully
 const loadGoogleMaps = (): Promise<any> => {
   return new Promise((resolve, reject) => {
+    // If no API key, skip Google Maps loading
+    if (!GOOGLE_MAPS_API_KEY) {
+      console.log('🗺️ Google Maps API key not configured for localhost - using fallback');
+      reject(new Error('Google Maps API key not configured for localhost'));
+      return;
+    }
+
     // Check if Google Maps is already loaded
     if (window.google && window.google.maps) {
       resolve(window.google);
@@ -130,7 +139,7 @@ export const MapSection = ({ hotel, searchContext }: MapSectionProps): JSX.Eleme
     }));
   };
 
-  // Initialize map
+  // Initialize map - FIXED: Better error handling
   const initializeMap = async () => {
     if (!mapRef.current) return;
 
@@ -138,11 +147,24 @@ export const MapSection = ({ hotel, searchContext }: MapSectionProps): JSX.Eleme
       setLoading(true);
       setError(null);
 
+      // If no API key, skip Google Maps
+      if (!GOOGLE_MAPS_API_KEY) {
+        setError('Google Maps not available in development mode');
+        setNearbyPlaces(generateNearbyPlaces());
+        setLoading(false);
+        return;
+      }
+
       const google = await loadGoogleMaps();
       const coordinates = getHotelCoordinates();
 
       if (coordinates.lat === 0 && coordinates.lng === 0) {
         throw new Error('Location coordinates not available');
+      }
+
+      // Create map only if mapRef.current exists and is properly mounted
+      if (!mapRef.current) {
+        throw new Error('Map container not ready');
       }
 
       // Create map
@@ -208,6 +230,8 @@ export const MapSection = ({ hotel, searchContext }: MapSectionProps): JSX.Eleme
     } catch (err: any) {
       console.error('Map initialization error:', err);
       setError(err.message || 'Failed to load map');
+      // Still set nearby places even if map fails
+      setNearbyPlaces(generateNearbyPlaces());
     } finally {
       setLoading(false);
     }
@@ -218,7 +242,7 @@ export const MapSection = ({ hotel, searchContext }: MapSectionProps): JSX.Eleme
     initializeMap();
   }, []);
 
-  // Map controls
+  // Map controls - only work if map is loaded
   const zoomIn = () => {
     if (map) {
       map.setZoom(map.getZoom() + 1);
@@ -290,24 +314,43 @@ export const MapSection = ({ hotel, searchContext }: MapSectionProps): JSX.Eleme
                   <div className="text-center">
                     <MapIcon className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                     <h3 className="text-lg font-medium text-gray-600 mb-2">Map Unavailable</h3>
-                    <p className="text-gray-500 text-sm mb-4">{error}</p>
-                    <Button onClick={initializeMap} variant="outline" size="sm">
-                      <RefreshCwIcon className="w-4 h-4 mr-2" />
-                      Retry
-                    </Button>
+                    <p className="text-gray-500 text-sm mb-4">
+                      {error.includes('localhost') 
+                        ? 'Google Maps not configured for localhost development' 
+                        : error}
+                    </p>
+                    <div className="space-y-2">
+                      <Button onClick={initializeMap} variant="outline" size="sm">
+                        <RefreshCwIcon className="w-4 h-4 mr-2" />
+                        Retry
+                      </Button>
+                      <div>
+                        <Button
+                          onClick={openInGoogleMaps}
+                          variant="default"
+                          size="sm"
+                          className="bg-app-primary hover:bg-app-primary/90"
+                        >
+                          <ExternalLinkIcon className="w-4 h-4 mr-2" />
+                          View in Google Maps
+                        </Button>
+                      </div>
+                    </div>
                   </div>
                 </div>
               )}
 
-              {/* Google Map */}
-              <div
-                ref={mapRef}
-                className="w-full h-96"
-                style={{ minHeight: '400px' }}
-              />
+              {/* Google Map - Only show if loaded successfully */}
+              {!error && (
+                <div
+                  ref={mapRef}
+                  className="w-full h-96"
+                  style={{ minHeight: '400px' }}
+                />
+              )}
 
-              {/* Map Controls */}
-              {mapLoaded && (
+              {/* Map Controls - Only show if map is loaded */}
+              {mapLoaded && !error && (
                 <div className="absolute top-4 right-4 space-y-2">
                   <div className="flex flex-col bg-white rounded-lg shadow-lg overflow-hidden">
                     <Button
@@ -341,7 +384,7 @@ export const MapSection = ({ hotel, searchContext }: MapSectionProps): JSX.Eleme
                 </div>
               )}
 
-              {/* Open in Google Maps */}
+              {/* Open in Google Maps - Always show */}
               <div className="absolute bottom-4 left-4">
                 <Button
                   onClick={openInGoogleMaps}
@@ -434,6 +477,24 @@ export const MapSection = ({ hotel, searchContext }: MapSectionProps): JSX.Eleme
           </div>
         </CardContent>
       </Card>
+
+      {/* Development Notice */}
+      {process.env.NODE_ENV === 'development' && error?.includes('localhost') && (
+        <Card className="mt-4 bg-yellow-50 border-yellow-200">
+          <CardContent className="p-4">
+            <div className="flex items-start">
+              <div className="text-yellow-600 mr-2">⚠️</div>
+              <div className="text-sm">
+                <div className="font-medium text-yellow-800 mb-1">Development Mode</div>
+                <div className="text-yellow-700">
+                  Google Maps is not configured for localhost. In production, add your domain to the Google Maps API restrictions.
+                  You can still use "Open in Google Maps" to view the location.
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </section>
   );
 };
