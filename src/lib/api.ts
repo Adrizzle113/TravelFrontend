@@ -1,7 +1,7 @@
 // API Configuration
 export const API_CONFIG = {
   // Backend server URL - matches your backend port
-  BASE_URL: process.env.NODE_ENV === 'production' 
+  BASE_URL: process.env.NODE_ENV === 'production'
     ? 'https://your-backend-domain.com'  // Replace with your production URL
     : 'http://localhost:3001',            // Local development URL
 
@@ -17,7 +17,8 @@ export const API_CONFIG = {
     AUTH_REGISTER: '/api/auth/register',
     AUTH_VERIFY: '/api/auth/verify',
     AUTH_PROFILE: '/api/auth/profile',
-    HEALTH: '/api/health'
+    HEALTH: '/api/health',
+    RATEHAWK_HOTEL_DETAILS: '/api/ratehawk/hotel-details'
   }
 };
 
@@ -36,7 +37,7 @@ export const apiCall = async (endpoint: string, options: RequestInit = {}) => {
   try {
     console.log(`🌐 API Call: ${options.method || 'GET'} ${url}`);
     const response = await fetch(url, defaultOptions);
-    
+
     let data;
     try {
       data = await response.json();
@@ -44,9 +45,9 @@ export const apiCall = async (endpoint: string, options: RequestInit = {}) => {
       console.error('💥 Failed to parse JSON response:', parseError);
       throw new Error(`Invalid JSON response from server (${response.status})`);
     }
-    
+
     console.log(`📡 API Response: ${response.status}`, data);
-    
+
     return { response, data };
   } catch (error) {
     console.error('💥 API call failed:', error);
@@ -77,7 +78,7 @@ export const ratehawkApi = {
     destination: string;
     checkin: string;
     checkout: string;
-    guests: Array<{adults: number}>;
+    guests: Array<{ adults: number }>;
     residency?: string;
     currency?: string;
     page?: number;
@@ -86,6 +87,18 @@ export const ratehawkApi = {
     return apiCall(API_CONFIG.ENDPOINTS.RATEHAWK_SEARCH, {
       method: 'POST',
       body: JSON.stringify(searchParams),
+    });
+  },
+
+  getHotelDetails: async (hotelDetailsParams: {
+    userId: string;
+    hotelId: string;
+    searchSessionId?: string;
+    searchParams?: any;
+  }) => {
+    return apiCall(API_CONFIG.ENDPOINTS.RATEHAWK_HOTEL_DETAILS, {
+      method: 'POST',
+      body: JSON.stringify(hotelDetailsParams),
     });
   },
 
@@ -111,7 +124,7 @@ export const ratehawkApi = {
   healthCheck: async () => {
     try {
       const { response, data } = await apiCall('/api/health');
-      
+
       return {
         response,
         data: {
@@ -178,7 +191,7 @@ export interface SearchParams {
   destination: string;
   checkin: string;
   checkout: string;
-  guests: Array<{adults: number}>;
+  guests: Array<{ adults: number }>;
   residency?: string;
   currency?: string;
   page?: number;
