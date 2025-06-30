@@ -1,16 +1,17 @@
-import { useState } from "react";
-import { Card, CardContent } from "../../../../components/ui/card";
-import { Button } from "../../../../components/ui/button";
-import { Badge } from "../../../../components/ui/badge";
-import { 
-  BedIcon, 
-  UsersIcon, 
-  CheckCircleIcon, 
-  WifiIcon, 
-  BathIcon,
+import {
   AirVentIcon,
-  TvIcon
+  ArrowDownIcon,
+  BathIcon,
+  BedIcon,
+  CheckCircleIcon,
+  TvIcon,
+  UsersIcon,
+  WifiIcon
 } from "lucide-react";
+import { useState } from "react";
+import { Badge } from "../../../../components/ui/badge";
+import { Button } from "../../../../components/ui/button";
+import { Card, CardContent } from "../../../../components/ui/card";
 
 // Types
 interface Hotel {
@@ -133,6 +134,7 @@ export const RoomSelectionSection = ({
   selectedQuantity 
 }: RoomSelectionSectionProps): JSX.Element => {
   const [quantities, setQuantities] = useState<{ [key: string]: number }>({});
+  const [displayedRooms, setDisplayedRooms] = useState(6); // Show only 6 rooms initially
 
   // FIXED: Enhanced room processing using room_groups structure
   const processRooms = (hotel: Hotel): ProcessedRoom[] => {
@@ -140,6 +142,9 @@ export const RoomSelectionSection = ({
     const rates = hotel.ratehawk_data?.rates || [];
     
     console.log(`🔍 Processing ${roomGroups.length} room groups with ${rates.length} rate entries from RateHawk data...`);
+    console.log('🔍 Full hotel ratehawk_data structure:', JSON.stringify(hotel.ratehawk_data, null, 2));
+    console.log('🔍 Room groups data:', JSON.stringify(roomGroups, null, 2));
+    console.log('🔍 Rates data:', JSON.stringify(rates, null, 2));
     
     if (roomGroups.length === 0) {
       console.log('⚠️ No room_groups found in hotel data, falling back to rates processing');
@@ -283,7 +288,8 @@ export const RoomSelectionSection = ({
       console.log('⚠️ No rooms processed from room_groups, falling back to rates');
       return processRoomsFromRates(hotel, rates);
     }
-    
+
+
     return processedRooms;
   };
 
@@ -318,6 +324,7 @@ export const RoomSelectionSection = ({
       price = parseFloat(paymentType.show_amount || paymentType.amount || '0');
       currency = paymentType.show_currency_code || paymentType.currency_code || 'USD';
     }
+        
 
     return [{
       id: 'fallback',
@@ -340,6 +347,10 @@ export const RoomSelectionSection = ({
   // Process rooms
   const rooms = processRooms(hotel);
   const duration = getStayDuration(searchContext.checkin, searchContext.checkout);
+  
+  // Get rooms to display (limited by displayedRooms state)
+  const roomsToDisplay = rooms.slice(0, displayedRooms);
+  const hasMoreRooms = rooms.length > displayedRooms;
 
   // Handle quantity change
   const handleQuantityChange = (roomId: string, quantity: number) => {
@@ -366,6 +377,11 @@ export const RoomSelectionSection = ({
     return <CheckCircleIcon className="w-4 h-4" />;
   };
 
+  // Handle load more rooms
+  const handleLoadMore = () => {
+    setDisplayedRooms(prev => Math.min(prev + 6, rooms.length));
+  };
+
   return (
     <Card className="rounded-[20px] shadow-shadow-shape">
       <CardContent className="p-6 lg:p-8">
@@ -375,11 +391,16 @@ export const RoomSelectionSection = ({
           </h2>
           <p className="text-gray-600">
             Select from {rooms.length} available room type{rooms.length !== 1 ? 's' : ''} for your {duration}-night stay
+            {hasMoreRooms && (
+              <span className="text-app-primary font-medium">
+                {' '}(Showing {displayedRooms} of {rooms.length})
+              </span>
+            )}
           </p>
         </div>
 
         <div className="space-y-6">
-          {rooms.map((room) => {
+          {roomsToDisplay.map((room) => {
             const currentQuantity = quantities[room.id] || selectedQuantity || 1;
             const isSelected = selectedRoomId === room.id;
             const totalPrice = room.price * currentQuantity * duration;
@@ -525,6 +546,20 @@ export const RoomSelectionSection = ({
           })}
         </div>
 
+        {/* Load More Button */}
+        {hasMoreRooms && (
+          <div className="mt-8 text-center">
+            <Button
+              onClick={handleLoadMore}
+              variant="outline"
+              className="px-8 py-3 text-app-primary border-app-primary hover:bg-app-primary hover:text-white transition-colors"
+            >
+              <ArrowDownIcon className="w-4 h-4 mr-2" />
+              Load More Rooms ({rooms.length - displayedRooms} remaining)
+            </Button>
+          </div>
+        )}
+
         {/* Summary */}
         <div className="mt-6 p-4 bg-blue-50 rounded-lg">
           <div className="flex items-center justify-between">
@@ -532,6 +567,11 @@ export const RoomSelectionSection = ({
               <h3 className="font-medium text-app-accent">Room Selection Summary</h3>
               <p className="text-sm text-gray-600">
                 {rooms.length} room type{rooms.length !== 1 ? 's' : ''} available for {duration} night{duration !== 1 ? 's' : ''}
+                {hasMoreRooms && (
+                  <span className="text-app-primary">
+                    {' '}• Currently showing {displayedRooms} rooms
+                  </span>
+                )}
               </p>
             </div>
             {selectedRoomId && (
