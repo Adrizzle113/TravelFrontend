@@ -8,7 +8,7 @@ import { ContactUs } from "./screens/ContactUs";
 import { Search } from "./screens/Search";
 import { HotelDetails } from "./screens/HotelDetails";
 import { About } from "./screens/About";
-import { Login, Register } from "./screens/Auth";
+import { Login, Signup } from "./screens/Auth";
 import { Dashboard } from "./screens/Dashboard";
 import { SimpleAuth } from "./components/SimpleAuth";
 
@@ -17,7 +17,9 @@ createRoot(document.getElementById("app") as HTMLElement).render(
     <BrowserRouter>
       <Routes>
         <Route path="/auth/login" element={<Login />} />
-        <Route path="/auth/register" element={<Register />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/auth/signup" element={<Signup />} />
+        <Route path="/signup" element={<Signup />} />
         <Route path="/dashboard" element={<SimpleAuth><DashboardLayout /></SimpleAuth>}>
           <Route index element={<Dashboard />} />
           <Route path="search" element={<Search />} />
