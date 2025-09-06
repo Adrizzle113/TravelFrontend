@@ -141,10 +141,10 @@ export const RoomSelectionSection = ({
     const roomGroups = hotel.ratehawk_data?.room_groups || [];
     const rates = hotel.ratehawk_data?.rates || [];
     
-    console.log(`🔍 Processing ${roomGroups.length} room groups with ${rates.length} rate entries from RateHawk data...`);
-    console.log('🔍 Full hotel ratehawk_data structure:', JSON.stringify(hotel.ratehawk_data, null, 2));
-    console.log('🔍 Room groups data:', JSON.stringify(roomGroups, null, 2));
-    console.log('🔍 Rates data:', JSON.stringify(rates, null, 2));
+    // console.log(`🔍 Processing ${roomGroups.length} room groups with ${rates.length} rate entries from RateHawk data...`);
+    // console.log('🔍 Full hotel ratehawk_data structure:', JSON.stringify(hotel.ratehawk_data, null, 2));
+    // console.log('🔍 Room groups data:', JSON.stringify(roomGroups, null, 2));
+    // console.log('🔍 Rates data:', JSON.stringify(rates, null, 2));
     
     if (roomGroups.length === 0) {
       console.log('⚠️ No room_groups found in hotel data, falling back to rates processing');

@@ -43,7 +43,7 @@ interface ProcessedRoom {
   occupancy: string;
   size: string;
   amenities: string[];
-  cancellation: string;
+  cancellation: string | any; // Can be string or object from RateHawk
   paymentType: string;
   originalRate?: any;
 }
@@ -91,7 +91,12 @@ export const BookingSection = ({ hotel, searchContext, onBookNow, selectedRoom }
             <div className="space-y-1">
               <div className="font-medium text-blue-900">{selectedRoom.name}</div>
               <div className="text-sm text-blue-700">{selectedRoom.bedding} • {selectedRoom.occupancy}</div>
-              <div className="text-sm text-blue-600">{selectedRoom.cancellation}</div>
+              <div className="text-sm text-blue-600">
+                {typeof selectedRoom.cancellation === 'string' 
+                  ? selectedRoom.cancellation 
+                  : 'Cancellation policy available'
+                }
+              </div>
             </div>
           </div>
         )}
