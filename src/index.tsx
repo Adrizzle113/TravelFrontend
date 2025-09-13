@@ -8,8 +8,9 @@ import { ContactUs } from "./screens/ContactUs";
 import { Search } from "./screens/Search";
 import { HotelDetails } from "./screens/HotelDetails";
 import { About } from "./screens/About";
-import { Login, Register } from "./screens/Auth";
+import { Login, Register, EmailVerification, PendingApproval } from "./screens/Auth";
 import { Dashboard } from "./screens/Dashboard";
+import { UserManagement } from "./screens/Admin/UserManagement";
 import { SimpleAuth } from "./components/SimpleAuth";
 
 createRoot(document.getElementById("app") as HTMLElement).render(
@@ -18,6 +19,9 @@ createRoot(document.getElementById("app") as HTMLElement).render(
       <Routes>
         <Route path="/auth/login" element={<Login />} />
         <Route path="/auth/register" element={<Register />} />
+        <Route path="/auth/email-verification" element={<EmailVerification />} />
+        <Route path="/auth/pending-approval" element={<PendingApproval />} />
+        <Route path="/admin/users" element={<UserManagement />} />
         <Route path="/dashboard" element={<SimpleAuth><DashboardLayout /></SimpleAuth>}>
           <Route index element={<Dashboard />} />
           <Route path="search" element={<Search />} />
