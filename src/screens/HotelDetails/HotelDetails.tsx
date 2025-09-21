@@ -10,6 +10,7 @@ import { HeroSection } from "./sections/HeroSection";
 import { HotelInfoSection } from "./sections/HotelInfoSection";
 import { MapSection } from "./sections/MapSection";
 import { RoomSelectionSection } from "./sections/RoomSelectionSection";
+import { RateHawkDataSection } from "./sections/RateHawkDataSection";
 
 // Types
 interface Hotel {
@@ -59,7 +60,7 @@ interface ProcessedRoom {
   occupancy: string;
   size: string;
   amenities: string[];
-  cancellation: string;
+  cancellation: string | any; // Can be string or object from RateHawk
   paymentType: string;
   availability: number;
   originalRate?: any;
@@ -87,104 +88,131 @@ export const HotelDetails = (): JSX.Element => {
     setLoading(true);
     setError(null);
     
+    if (!hotelId) {
+      setError('Hotel ID is required');
+      setLoading(false);
+      return;
+    }
+    
     try {
+      // First try to get data from localStorage
       const savedData = localStorage.getItem('selectedHotel');
+      let hotelData: HotelData | null = null;
       
       if (savedData) {
         const parsedData: HotelData = JSON.parse(savedData);
-        
         if (parsedData.hotel.id === hotelId) {
-          console.log('✅ Hotel data loaded successfully:', {
+          console.log('✅ Found saved hotel data:', {
             hotelId: parsedData.hotel.id,
             hotelName: parsedData.hotel.name,
-            destination: parsedData.searchContext.destination,
-            hasRatehawkData: !!parsedData.hotel.ratehawk_data
+            destination: parsedData.searchContext.destination
           });
-          
-          // Check if we need to fetch detailed room data
-          const hasDetailedRoomData = parsedData.hotel.ratehawk_data?.room_groups?.length > 0 || 
-                                    parsedData.hotel.ratehawk_data?.rates?.length > 0;
-          
-          if (!hasDetailedRoomData) {
-            console.log('🔍 No detailed room data found, fetching from API...');
-            
-            try {
-              const userId = localStorage.getItem('userId') || '';
-              const searchResults = localStorage.getItem('hotelSearchResults');
-              
-              if (searchResults && userId) {
-                const searchData = JSON.parse(searchResults);
-                
-                const hotelDetailsData = {
-                  userId: userId,
-                  hotelId: hotelId,
-                  searchSessionId: searchData.searchSessionId,
-                  searchParams: {
-                    checkin: parsedData.searchContext.checkin,
-                    checkout: parsedData.searchContext.checkout,
-                    guests: parsedData.searchContext.guests,
-                    residency: 'en-us',
-                    currency: 'USD'
-                  }
-                };
-                
-                console.log('📡 Fetching detailed hotel data:', hotelDetailsData);
-                
-                const { data } = await ratehawkApi.getHotelDetails(hotelDetailsData);
-                
-                if (data.success && data.hotelDetails) {
-                  console.log('✅ Detailed hotel data fetched successfully:', {
-                    roomGroups: data.hotelDetails.room_groups?.length || 0,
-                    rates: data.hotelDetails.rates?.length || 0,
-                    roomTypes: data.hotelDetails.roomTypes?.length || 0
-                  });
-                  
-                  // Update the hotel data with detailed information
-                  const updatedHotelData = {
-                    ...parsedData,
-                    hotel: {
-                      ...parsedData.hotel,
-                      ratehawk_data: {
-                        ...parsedData.hotel.ratehawk_data,
-                        room_groups: data.hotelDetails.room_groups || [],
-                        rates: data.hotelDetails.rates || [],
-                        roomTypes: data.hotelDetails.roomTypes || [],
-                        bookingOptions: data.hotelDetails.bookingOptions || [],
-                        detailedData: data.hotelDetails.detailedData
-                      }
-                    }
-                  };
-                  
-                  // Update localStorage with enhanced data
-                  localStorage.setItem('selectedHotel', JSON.stringify(updatedHotelData));
-                  setHotelData(updatedHotelData);
-                } else {
-                  console.log('⚠️ Failed to fetch detailed hotel data, using basic data');
-                  setHotelData(parsedData);
-                }
-              } else {
-                console.log('⚠️ No search session found, using basic hotel data');
-                setHotelData(parsedData);
-              }
-            } catch (fetchError) {
-              console.error('💥 Error fetching detailed hotel data:', fetchError);
-              console.log('⚠️ Using basic hotel data due to fetch error');
-              setHotelData(parsedData);
-            }
-          } else {
-            console.log('✅ Detailed room data already available');
-            setHotelData(parsedData);
-          }
-          
-          // Check if this hotel is in favorites
-          const favorites = JSON.parse(localStorage.getItem('favoriteHotels') || '[]');
-          setIsFavorite(favorites.includes(hotelId));
-        } else {
-          setError("Hotel information mismatch. Please search again.");
+          hotelData = parsedData;
         }
-      } else {
-        setError("Hotel information not found. Please search for hotels first.");
       }
+      
+      // Always fetch fresh data from the new API
+      console.log('🔍 Fetching fresh hotel details from API...');
+      
+      try {
+        const { data } = await ratehawkApi.getHotelDetails(hotelId);
+        
+        if (data.error) {
+          throw new Error(data.error);
+        }
+        
+        // console.log('✅ Fresh hotel data fetched successfully:', {
+        //   hasData: !!data.data,
+        //   avRespLength: data.data?.av_resp?.length || 0,
+        //   duration: data.duration,
+        //   sessionId: data.sessionId,
+        //   searchUuid: data.searchUuid,
+        //   timestamp: data.timestamp
+        // });
+        
+        // Process the RateHawk response
+        if (data.data && data.data.av_resp && data.data.av_resp.length > 0) {
+          const ratehawkData = data.data.av_resp[0];
+          console.log("🚀 ~ loadHotelData ~ ratehawkData ============= :", ratehawkData)
+          
+          // Create enhanced hotel data
+          const enhancedHotelData: HotelData = {
+            hotel: {
+              id: hotelId,
+              name: hotelData?.hotel.name || `Hotel ${hotelId}`,
+              location: hotelData?.hotel.location || 'Location not available',
+              rating: hotelData?.hotel.rating || 4.0,
+              reviewScore: hotelData?.hotel.reviewScore || 8.5,
+              reviewCount: hotelData?.hotel.reviewCount || 100,
+              price: hotelData?.hotel.price || { amount: 0, currency: 'USD', period: 'night' },
+              image: hotelData?.hotel.image || '/images/bedroom_interior.png',
+              amenities: hotelData?.hotel.amenities || [],
+              description: hotelData?.hotel.description || '',
+              ratehawk_data: {
+                ...hotelData?.hotel.ratehawk_data,
+                rates: ratehawkData.rates || [],
+                hotel_lookup_info: ratehawkData.hotel_lookup_info,
+                requested_hotel_id: ratehawkData.requested_hotel_id,
+                ota_hotel_id: ratehawkData.ota_hotel_id,
+                master_id: ratehawkData.master_id,
+                // Add the new response metadata
+                response_metadata: {
+                  timestamp: data.timestamp,
+                  duration: data.duration,
+                  sessionId: data.sessionId,
+                  searchUuid: data.searchUuid
+                }
+              }
+            },
+            searchContext: hotelData?.searchContext || {
+              destination: 'Unknown',
+              destinationId: '',
+              checkin: '2025-08-31',
+              checkout: '2025-09-02',
+              guests: 2, // Fixed: guests should be a number, not an array
+              totalHotels: 1,
+              availableHotels: 1,
+              searchTimestamp: new Date().toISOString()
+            },
+            allAvailableHotels: hotelData?.allAvailableHotels || 1,
+            selectedFromPage: hotelData?.selectedFromPage || 1
+          };
+          
+          // Update localStorage with fresh data
+          localStorage.setItem('selectedHotel', JSON.stringify(enhancedHotelData));
+          setHotelData(enhancedHotelData);
+          
+                      console.log('✅ Hotel data updated with fresh RateHawk data:', {
+              ratesCount: ratehawkData.rates?.length || 0,
+              hotelId: ratehawkData.requested_hotel_id,
+              sessionId: data.sessionId,
+              searchUuid: data.searchUuid,
+              duration: data.duration
+            });
+        } else {
+          console.log('⚠️ No RateHawk data in response, using saved data');
+          if (hotelData) {
+            setHotelData(hotelData);
+          } else {
+            throw new Error('No hotel data available');
+          }
+        }
+        
+      } catch (apiError) {
+        console.error('💥 Error fetching hotel details from API:', apiError);
+        
+        // Fallback to saved data if available
+        if (hotelData) {
+          console.log('⚠️ Using saved hotel data due to API error');
+          setHotelData(hotelData);
+        } else {
+          throw new Error(`Failed to load hotel details: ${apiError instanceof Error ? apiError.message : 'Unknown error'}`);
+        }
+      }
+      
+      // Check if this hotel is in favorites
+      const favorites = JSON.parse(localStorage.getItem('favoriteHotels') || '[]');
+      setIsFavorite(favorites.includes(hotelId));
     } catch (err) {
       console.error('💥 Error loading hotel data:', err);
       setError("Failed to load hotel information. Please try again.");
@@ -379,35 +407,41 @@ export const HotelDetails = (): JSX.Element => {
         isFavorite={isFavorite}
       />
 
-      {/* Main Content - Two Column Layout */}
+      {/* Main Content - Traditional Layout with RateHawk Room Data */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           
-          {/* Left Column - Main Content */}
           <div className="lg:col-span-2 space-y-8">
             
-            {/* Hotel Info Section */}
+            {/* Hotel Details Section */}
             <HotelInfoSection 
               hotel={hotel}
               searchContext={searchContext}
             />
 
-            {/* Room Selection Section */}
-            <RoomSelectionSection 
-              hotel={hotel}
-              searchContext={searchContext}
-              onRoomSelect={handleRoomSelect}
-              selectedRoomId={selectedRoom?.id}
-              selectedQuantity={selectedQuantity}
-            />
+            {/* RateHawk Room Selection Section - Replaces the old RoomSelectionSection */}
+            {hotel.ratehawk_data && (
+              <Card>
+                <CardContent className="p-6">
+                  <h2 className="text-2xl font-bold text-gray-900 mb-6">Choose Your Rooms</h2>
+                  <RateHawkDataSection 
+                    ratehawkData={hotel.ratehawk_data}
+                    onRoomSelect={handleRoomSelect}
+                    selectedRoomId={selectedRoom?.id}
+                    selectedQuantity={selectedQuantity}
+                  />
+                </CardContent>
+              </Card>
+            )}
 
-            {/* Facilities Grid Section */}
+            {/* Hotel Facilities Section */}
             <FacilitiesGridSection 
               hotel={hotel}
               amenities={hotel.amenities}
             />
 
-            {/* Map Section */}
+            {/* Location & Map Section */}
             <MapSection 
               hotel={hotel}
               searchContext={searchContext}
@@ -415,7 +449,6 @@ export const HotelDetails = (): JSX.Element => {
 
           </div>
           
-          {/* Right Column - Booking Section */}
           <div className="lg:col-span-1">
             <div className="sticky top-8">
               <BookingSection 

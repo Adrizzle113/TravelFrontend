@@ -13,12 +13,12 @@ export const API_CONFIG = {
     RATEHAWK_STATS: '/api/ratehawk/stats',
     RATEHAWK_TEST: '/api/ratehawk/test-auth',
     RATEHAWK_LOGOUT: '/api/ratehawk/logout',
+    RATEHAWK_HOTEL_DETAILS: '/api/ratehawk/hotel/details', // Updated to new GET endpoint
     AUTH_LOGIN: '/api/auth/login',
     AUTH_REGISTER: '/api/auth/register',
     AUTH_VERIFY: '/api/auth/verify',
     AUTH_PROFILE: '/api/auth/profile',
-    HEALTH: '/api/health',
-    RATEHAWK_HOTEL_DETAILS: '/api/ratehawk/hotel-details'
+    HEALTH: '/api/health'
   }
 };
 
@@ -90,15 +90,9 @@ export const ratehawkApi = {
     });
   },
 
-  getHotelDetails: async (hotelDetailsParams: {
-    userId: string;
-    hotelId: string;
-    searchSessionId?: string;
-    searchParams?: any;
-  }) => {
-    return apiCall(API_CONFIG.ENDPOINTS.RATEHAWK_HOTEL_DETAILS, {
-      method: 'POST',
-      body: JSON.stringify(hotelDetailsParams),
+  getHotelDetails: async (hotelId: string) => {
+    return apiCall(`${API_CONFIG.ENDPOINTS.RATEHAWK_HOTEL_DETAILS}?hotel_id=${encodeURIComponent(hotelId)}`, {
+      method: 'GET',
     });
   },
 
