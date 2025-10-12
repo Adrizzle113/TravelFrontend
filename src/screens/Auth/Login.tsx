@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "../../components/ui/button";
 import { Card, CardContent } from "../../components/ui/card";
 import { Input } from "../../components/ui/input";
@@ -38,6 +38,22 @@ export const Login = (): JSX.Element => {
   const [statusLoading, setStatusLoading] = useState(false);
   
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Check for messages from navigation state
+  useEffect(() => {
+    if (location.state?.message) {
+      setSuccess(location.state.message);
+      // Clear the message after 5 seconds
+      setTimeout(() => setSuccess(""), 5000);
+    }
+    if (location.state?.verifiedEmail) {
+      setEmail(location.state.verifiedEmail);
+    }
+    if (location.state?.approvedEmail) {
+      setEmail(location.state.approvedEmail);
+    }
+  }, [location.state]);
 
   // Check backend health
   const checkBackendHealth = async () => {

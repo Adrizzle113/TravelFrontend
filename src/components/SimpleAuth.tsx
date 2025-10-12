@@ -28,6 +28,58 @@ export const SimpleAuth = ({ children }: SimpleAuthProps) => {
     const userEmail = localStorage.getItem('userEmail');
     const authTimestamp = localStorage.getItem('ratehawkAuthTimestamp');
 
+    // First check if user needs email verification or pending approval
+    if (userEmail) {
+      try {
+        const API_BASE_URL = process.env.NODE_ENV === 'production' 
+          ? 'https://your-production-domain.com'  
+          : 'http://localhost:3001';
+
+        const statusResponse = await fetch(`${API_BASE_URL}/api/user/status/${userEmail}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (statusResponse.ok) {
+          const statusData = await statusResponse.json();
+          if (statusData.success && statusData.data) {
+            const user = statusData.data;
+            
+            // Check if email is not verified
+            if (user.email_Verification === 'unverified') {
+              console.log('📧 Email not verified - redirecting to verification');
+              localStorage.setItem('pendingVerificationEmail', userEmail);
+              navigate('/auth/email-verification');
+              return;
+            }
+            
+            // Check if account is pending approval
+            if (user.status === 'pending') {
+              console.log('⏳ Account pending approval - redirecting to pending page');
+              localStorage.setItem('pendingVerificationEmail', userEmail);
+              navigate('/auth/pending-approval');
+              return;
+            }
+            
+            // Check if account is rejected
+            if (user.status === 'rejected') {
+              console.log('❌ Account rejected - redirecting to login');
+              clearAuthData();
+              navigate('/auth/login', { 
+                state: { message: "Your account has been rejected. Please contact support for assistance." }
+              });
+              return;
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Error checking user status:', error);
+        // Continue with normal authentication flow if status check fails
+      }
+    }
+
     console.log('🔍 Checking authentication data...', {
       isLoggedIn,
       hasSessionId: !!ratehawkSessionId,
