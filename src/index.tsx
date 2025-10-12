@@ -11,6 +11,7 @@ import { About } from "./screens/About";
 import { Login, Register } from "./screens/Auth";
 import { Dashboard } from "./screens/Dashboard";
 import { SimpleAuth } from "./components/SimpleAuth";
+import BookingForm from "./screens/BookingForm";
 
 createRoot(document.getElementById("app") as HTMLElement).render(
   <StrictMode>
@@ -32,6 +33,7 @@ createRoot(document.getElementById("app") as HTMLElement).render(
           <Route path="/search" element={<Search />} />
           
           <Route path="/hoteldetails" element={<HotelDetails />} />
+          <Route path="/hotel_booking_form" element={<BookingForm />} />
           <Route path="/hoteldetails/:hotelId" element={<HotelDetails />} />
         </Route>
       </Routes>

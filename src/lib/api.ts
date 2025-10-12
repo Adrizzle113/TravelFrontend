@@ -18,7 +18,8 @@ export const API_CONFIG = {
     AUTH_REGISTER: '/api/auth/register',
     AUTH_VERIFY: '/api/auth/verify',
     AUTH_PROFILE: '/api/auth/profile',
-    HEALTH: '/api/health'
+    HEALTH: '/api/health',
+    COUNTRIES: '/api/countries'
   }
 };
 
@@ -179,6 +180,15 @@ export const authApi = {
   }
 };
 
+// Countries API calls
+export const countriesApi = {
+  getCountries: async () => {
+    return apiCall(API_CONFIG.ENDPOINTS.COUNTRIES, {
+      method: 'GET',
+    });
+  }
+};
+
 // Type definitions for better TypeScript support
 export interface SearchParams {
   userId: string;
@@ -229,4 +239,13 @@ export interface SearchResponse {
     strategy?: string;
     sessionCreated?: boolean;
   };
+}
+
+export interface Country {
+  code: string;
+  name: string;
+}
+
+export interface CountriesResponse {
+  body: Country[];
 }
