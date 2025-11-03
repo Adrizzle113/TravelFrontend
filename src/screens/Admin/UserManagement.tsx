@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/ca
 import { CheckCircleIcon, XCircleIcon, ClockIcon } from "lucide-react";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { API_BASE_URL } from "../../config/api";
 
 interface User {
   id: number;
@@ -26,7 +27,7 @@ export const UserManagement = (): JSX.Element => {
 
   const fetchUsers = async () => {
     try {
-      const response = await axios.get("http://localhost:3001/api/user/users");
+      const response = await axios.get(`${API_BASE_URL}/api/user/users`);
       if (response.data.success) {
         setUsers(response.data.data);
       }
@@ -41,7 +42,7 @@ export const UserManagement = (): JSX.Element => {
   const updateUserStatus = async (email: string, status: 'approved' | 'rejected') => {
     setActionLoading(email);
     try {
-      const response = await axios.put(`http://localhost:3001/api/user/approve/${email}`, {
+      const response = await axios.put(`${API_BASE_URL}/api/user/approve/${email}`, {
         status: status
       });
 

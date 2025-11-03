@@ -6,6 +6,7 @@ import { Input } from "../../components/ui/input";
 import {  MailIcon,  UserIcon, BriefcaseIcon } from "lucide-react";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { API_BASE_URL } from "../../config/api";
 
 export const Register = (): JSX.Element => {
   const navigate = useNavigate();
@@ -38,7 +39,7 @@ export const Register = (): JSX.Element => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const res = await axios.post("http://localhost:3001/api/user/users", formData);
+      const res = await axios.post(`${API_BASE_URL}/api/user/users`, formData);
       console.log("Success:", res.data);
       console.log("Success:", res.data.success);
 

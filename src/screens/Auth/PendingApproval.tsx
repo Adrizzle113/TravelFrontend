@@ -4,6 +4,7 @@ import { Button } from "../../components/ui/button";
 import { Card, CardContent } from "../../components/ui/card";
 import { ClockIcon, MailIcon, CheckCircleIcon, XCircleIcon } from "lucide-react";
 import axios from "axios";
+import { API_BASE_URL } from "../../config/api";
 
 interface UserStatus {
   email: string;
@@ -57,7 +58,7 @@ export const PendingApproval = (): JSX.Element => {
   const checkUserStatus = async (email: string) => {
     console.log('🔍 Checking user status for email:', email);
     try {
-      const response = await axios.get(`http://localhost:3001/api/user/status/${email}`);
+      const response = await axios.get(`${API_BASE_URL}/api/user/status/${email}`);
       console.log('📡 User status response:', response.data);
       
       if (response.data.success && response.data.data) {

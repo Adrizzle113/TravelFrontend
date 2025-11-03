@@ -378,8 +378,8 @@ export const HotelDetails = (): JSX.Element => {
 
     localStorage.setItem("pendingBooking", JSON.stringify(bookingData));
 
-    // For now, open RateHawk in new tab
-    window.open("https://www.ratehawk.com", "_blank");
+    // Navigate to booking form page
+    navigate("/hotel_booking_form");
   };
 
   // Loading state

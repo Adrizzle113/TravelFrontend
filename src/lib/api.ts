@@ -1,9 +1,9 @@
+import { API_BASE_URL } from '../config/api';
+
 // API Configuration
 export const API_CONFIG = {
-  // Backend server URL - matches your backend port
-  BASE_URL: process.env.NODE_ENV === 'production'
-    ? 'https://your-backend-domain.com'  // Replace with your production URL
-    : 'http://localhost:3001',            // Local development URL
+  // Backend server URL - imported from config
+  BASE_URL: API_BASE_URL,
 
   // API endpoints
   ENDPOINTS: {
