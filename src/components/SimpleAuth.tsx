@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { API_BASE_URL } from '../config/api';
 
 interface SimpleAuthProps {
   children: React.ReactNode;
@@ -31,10 +32,6 @@ export const SimpleAuth = ({ children }: SimpleAuthProps) => {
     // First check if user needs email verification or pending approval
     if (userEmail) {
       try {
-        const API_BASE_URL = process.env.NODE_ENV === 'production' 
-          ? 'https://your-production-domain.com'  
-          : 'http://localhost:3001';
-
         const statusResponse = await fetch(`${API_BASE_URL}/api/user/status/${userEmail}`, {
           method: 'GET',
           headers: {
@@ -133,10 +130,6 @@ export const SimpleAuth = ({ children }: SimpleAuthProps) => {
       console.log('🔍 Verifying RateHawk session with backend...');
       console.log(`👤 Using User ID: ${correctUserId}`);
       
-      const API_BASE_URL = process.env.NODE_ENV === 'production' 
-        ? 'https://your-production-domain.com'  
-        : 'http://localhost:3001';
-
       const response = await fetch(`${API_BASE_URL}/api/ratehawk/session/${correctUserId}`, {
         method: 'GET',
         headers: {

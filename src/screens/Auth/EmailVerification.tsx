@@ -6,6 +6,7 @@ import { Input } from "../../components/ui/input";
 import { MailIcon, CheckCircleIcon, XCircleIcon } from "lucide-react";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { API_BASE_URL } from "../../config/api";
 
 export const EmailVerification = (): JSX.Element => {
   const navigate = useNavigate();
@@ -48,7 +49,7 @@ export const EmailVerification = (): JSX.Element => {
 
     setIsVerifying(true);
     try {
-      const response = await axios.post("http://localhost:3001/api/user/email-verification", {
+      const response = await axios.post(`${API_BASE_URL}/api/user/email-verification`, {
         email: userEmail,
         otp: otp
       });

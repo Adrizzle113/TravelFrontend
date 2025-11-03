@@ -8,6 +8,7 @@ import { SearchIcon, CalendarIcon, UsersIcon, FilterIcon, XIcon } from "lucide-r
 import { format } from "date-fns";
 import { cn } from "../../../lib/utils";
 import { ratehawkApi } from "../../../lib/api";
+import { API_BASE_URL } from "../../../config/api";
 
 interface SearchBarProps {
   onSearchStart?: () => void;
@@ -503,7 +504,7 @@ export const SearchBar = ({
           {process.env.NODE_ENV === 'development' && (
             <div className="mt-4 p-3 bg-gray-50 border border-gray-200 rounded-lg text-xs text-gray-600">
               <strong>Debug Info:</strong>
-              <br />• Backend URL: http://localhost:3001
+              <br />• Backend URL: {API_BASE_URL}
               <br />• Selected destination: {location} → {destinationMapping[location] || 'Not mapped'}
               <br />• Guests format: {guests} guests, {rooms} room(s) → {JSON.stringify(Array.from({ length: parseInt(rooms) || 1 }, () => ({ adults: Math.max(1, Math.floor((parseInt(guests) || 2) / (parseInt(rooms) || 1))) })))}
               <br />• Uses callbacks: {onSearchComplete ? 'Yes' : 'No'} (No navigation)
