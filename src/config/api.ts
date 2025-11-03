@@ -1,7 +1,7 @@
 // API Configuration
 const API_CONFIG = {
     // Live production URL
-    live: 'https://al-malik-b.onrender.com',
+    live: 'https://travelapi-bg6t.onrender.com',
 
     // Local development URL
     local: 'http://localhost:3001',
