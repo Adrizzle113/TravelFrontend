@@ -15,7 +15,7 @@ import { ratehawkApi } from "../../lib/api";
 const stats = [
   {
     label: "Total Bookings",
-    value: "1,234",
+    value: "1,888",
     change: "+12.5%",
     icon: Building2Icon,
   },
