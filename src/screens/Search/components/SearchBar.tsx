@@ -1,10 +1,26 @@
 import { useState } from "react";
 import { Button } from "../../../components/ui/button";
 import { Card, CardContent } from "../../../components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../../components/ui/select";
-import { Popover, PopoverContent, PopoverTrigger } from "../../../components/ui/popover";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../../../components/ui/select";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "../../../components/ui/popover";
 import { Calendar } from "../../../components/ui/calendar";
-import { SearchIcon, CalendarIcon, UsersIcon, FilterIcon, XIcon } from "lucide-react";
+import {
+  SearchIcon,
+  CalendarIcon,
+  UsersIcon,
+  FilterIcon,
+  XIcon,
+} from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "../../../lib/utils";
 import { ratehawkApi } from "../../../lib/api";
@@ -17,11 +33,11 @@ interface SearchBarProps {
   isSearching?: boolean;
 }
 
-export const SearchBar = ({ 
-  onSearchStart, 
-  onSearchComplete, 
+export const SearchBar = ({
+  onSearchStart,
+  onSearchComplete,
   onSearchError,
-  isSearching: externalSearching = false 
+  isSearching: externalSearching = false,
 }: SearchBarProps): JSX.Element => {
   // Form state
   const [location, setLocation] = useState("");
@@ -35,36 +51,37 @@ export const SearchBar = ({
   const [lateCheckOut, setLateCheckOut] = useState("");
   const [freeCancellation, setFreeCancellation] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
-  
+
   // Internal state
   const [searching, setSearching] = useState(false);
   const [searchError, setSearchError] = useState<string | null>(null);
-  
+
   // Use external searching state if provided
   const isCurrentlySearching = externalSearching || searching;
 
-  // Destination mapping with correct RateHawk IDs
   const destinationMapping: { [key: string]: string } = {
     "Rio de Janeiro, Brazil": "965847972",
-    "New York, USA": "70308", 
-    "London, UK": "76876",
-    "Tokyo, Japan": "82139",
-    "Paris, France": "69474",
-    "Bangkok, Thailand": "74107",
-    "Singapore": "74108",
-    "Las Vegas, USA": "2998",
-    "Dubai, UAE": "74109",
-    "Rome, Italy": "74110",
-    "Los Angeles, USA": "2011"
+    "New York, USA": "965842003",
+    "London, UK": "965831259",
+    "Tokyo, Japan": "965914346",
+    "Paris, France": "2734",
+    "Bangkok, Thailand": "604",
+    Singapore: "3168",
+    "Las Vegas, USA": "2008",
+    "Dubai, UAE": "6053839",
+    "Rome, Italy": "3023",
+    "Los Angeles, USA": "2011",
   };
 
   const destinationOptions = Object.keys(destinationMapping);
 
   // Get user ID from auth system
   const getUserId = () => {
-    return localStorage.getItem('userId') || 
-           localStorage.getItem('userEmail')?.replace('@', '_').replace('.', '_') ||
-           `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    return (
+      localStorage.getItem("userId") ||
+      localStorage.getItem("userEmail")?.replace("@", "_").replace(".", "_") ||
+      `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+    );
   };
 
   const handleSearch = async () => {
@@ -82,9 +99,9 @@ export const SearchBar = ({
 
     try {
       console.log("🔍 Starting RateHawk hotel search...");
-      
+
       const userId = getUserId();
-      
+
       // Check if user has RateHawk session
       try {
         const { data: sessionCheck } = await ratehawkApi.checkSession(userId);
@@ -112,10 +129,10 @@ export const SearchBar = ({
       // Format guests for RateHawk API
       const guestsNumber = parseInt(guests) || 2;
       const roomsNumber = parseInt(rooms) || 1;
-      
+
       // Create array of rooms with adults - RateHawk expects [{"adults": 2}]
       const formattedGuests = Array.from({ length: roomsNumber }, () => ({
-        adults: Math.max(1, Math.floor(guestsNumber / roomsNumber))
+        adults: Math.max(1, Math.floor(guestsNumber / roomsNumber)),
       }));
 
       console.log("🏨 Guest formatting:", {
@@ -123,17 +140,17 @@ export const SearchBar = ({
         originalRooms: rooms,
         guestsNumber,
         roomsNumber,
-        formattedGuests
+        formattedGuests,
       });
 
       const searchData = {
         userId: userId,
         destination: destinationId,
-        checkin: format(checkIn, 'yyyy-MM-dd'),
-        checkout: format(checkOut, 'yyyy-MM-dd'),
+        checkin: format(checkIn, "yyyy-MM-dd"),
+        checkout: format(checkOut, "yyyy-MM-dd"),
         guests: formattedGuests,
-        residency: citizenship || 'en-us',
-        currency: 'USD'
+        residency: citizenship || "en-us",
+        currency: "USD",
       };
 
       console.log("📡 Sending search request:", searchData);
@@ -144,8 +161,10 @@ export const SearchBar = ({
       console.log("📨 Search API response:", data);
 
       if (data.success) {
-        console.log(`✅ Search successful: ${data.hotels?.length || 0} hotels found`);
-        
+        console.log(
+          `✅ Search successful: ${data.hotels?.length || 0} hotels found`
+        );
+
         const searchResults = {
           hotels: data.hotels || [],
           totalHotels: data.totalHotels || 0,
@@ -153,31 +172,36 @@ export const SearchBar = ({
           searchParams: {
             destination: location,
             destinationId: destinationId,
-            checkin: format(checkIn, 'yyyy-MM-dd'),
-            checkout: format(checkOut, 'yyyy-MM-dd'),
+            checkin: format(checkIn, "yyyy-MM-dd"),
+            checkout: format(checkOut, "yyyy-MM-dd"),
             guests: guestsNumber,
             rooms: roomsNumber,
-            formattedGuests: formattedGuests
+            formattedGuests: formattedGuests,
           },
           filters: {
             starRating,
             citizenship,
             earlyCheckIn,
             lateCheckOut,
-            freeCancellation
+            freeCancellation,
           },
           searchSessionId: data.searchSessionId,
           hasMorePages: data.hasMorePages || false,
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
         };
 
-        console.log("💾 Storing search results in localStorage:", searchResults);
-        localStorage.setItem('hotelSearchResults', JSON.stringify(searchResults));
-        
+        console.log(
+          "💾 Storing search results in localStorage:",
+          searchResults
+        );
+        localStorage.setItem(
+          "hotelSearchResults",
+          JSON.stringify(searchResults)
+        );
+
         // ✅ FIXED: Use callback instead of navigation
         console.log("📢 Notifying parent component of search completion");
         onSearchComplete?.(searchResults);
-        
       } else {
         console.error("❌ Search failed:", data.error);
         const error = data.error || "Search failed. Please try again.";
@@ -186,16 +210,17 @@ export const SearchBar = ({
       }
     } catch (err: any) {
       console.error("💥 Search error:", err);
-      
+
       let error = `Search failed: ${err.message}. Please try again.`;
-      if (err.message.includes('No RateHawk session')) {
+      if (err.message.includes("No RateHawk session")) {
         error = "Please login to RateHawk first from the dashboard";
-      } else if (err.message.includes('Failed to connect')) {
-        error = "Unable to connect to search service. Please check your connection and try again.";
-      } else if (err.message.includes('rate limit')) {
+      } else if (err.message.includes("Failed to connect")) {
+        error =
+          "Unable to connect to search service. Please check your connection and try again.";
+      } else if (err.message.includes("rate limit")) {
         error = "Too many requests. Please wait a moment and try again.";
       }
-      
+
       setSearchError(error);
       onSearchError?.(error);
     } finally {
@@ -211,14 +236,13 @@ export const SearchBar = ({
     { value: "2", label: "2 stars" },
     { value: "3", label: "3 stars" },
     { value: "4", label: "4 stars" },
-    { value: "5", label: "5 stars" }
+    { value: "5", label: "5 stars" },
   ];
 
   return (
     <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <Card className="bg-white/95 backdrop-blur-sm rounded-2xl lg:rounded-[30px] shadow-xl border-0 relative overflow-hidden">
         <CardContent className="p-4 sm:p-6 lg:p-8">
-          
           {/* Error Display */}
           {searchError && (
             <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center justify-between">
@@ -238,10 +262,11 @@ export const SearchBar = ({
 
           {/* Main Search Form */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4 lg:gap-3">
-            
             {/* Destination */}
             <div className="relative lg:col-span-1">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Destination</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Destination
+              </label>
               <Select value={location} onValueChange={setLocation}>
                 <SelectTrigger className="h-11 sm:h-12 lg:h-14 bg-gray-50/80 border-gray-200 rounded-xl sm:rounded-[15px] text-sm sm:text-base hover:bg-white hover:border-app-primary transition-all duration-200">
                   <SearchIcon className="mr-2 h-4 w-4 sm:h-5 sm:w-5 text-gray-400 flex-shrink-0" />
@@ -259,7 +284,9 @@ export const SearchBar = ({
 
             {/* Check-in Date */}
             <div className="lg:col-span-1">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Check-in</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Check-in
+              </label>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
@@ -271,7 +298,9 @@ export const SearchBar = ({
                   >
                     <CalendarIcon className="mr-2 h-4 w-4 sm:h-5 sm:w-5 text-gray-400 flex-shrink-0" />
                     <span className="truncate">
-                      {checkIn ? format(checkIn, "MMM dd, yyyy") : "Select date"}
+                      {checkIn
+                        ? format(checkIn, "MMM dd, yyyy")
+                        : "Select date"}
                     </span>
                   </Button>
                 </PopoverTrigger>
@@ -290,7 +319,9 @@ export const SearchBar = ({
 
             {/* Check-out Date */}
             <div className="lg:col-span-1">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Check-out</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Check-out
+              </label>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
@@ -302,7 +333,9 @@ export const SearchBar = ({
                   >
                     <CalendarIcon className="mr-2 h-4 w-4 sm:h-5 sm:w-5 text-gray-400 flex-shrink-0" />
                     <span className="truncate">
-                      {checkOut ? format(checkOut, "MMM dd, yyyy") : "Select date"}
+                      {checkOut
+                        ? format(checkOut, "MMM dd, yyyy")
+                        : "Select date"}
                     </span>
                   </Button>
                 </PopoverTrigger>
@@ -311,7 +344,9 @@ export const SearchBar = ({
                     mode="single"
                     selected={checkOut}
                     onSelect={setCheckOut}
-                    disabled={(date) => date < new Date() || (checkIn ? date <= checkIn : false)}
+                    disabled={(date) =>
+                      date < new Date() || (checkIn ? date <= checkIn : false)
+                    }
                     initialFocus
                     className="pointer-events-auto"
                   />
@@ -321,12 +356,17 @@ export const SearchBar = ({
 
             {/* Guests and Rooms */}
             <div className="lg:col-span-1">
-              <label className="block text-sm font-medium text-gray-700 mb-1">1 room for</label>
-              <Select value={`${guests}-${rooms}`} onValueChange={(value: string) => {
-                const [g, r] = value.split('-');
-                setGuests(g);
-                setRooms(r);
-              }}>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                1 room for
+              </label>
+              <Select
+                value={`${guests}-${rooms}`}
+                onValueChange={(value: string) => {
+                  const [g, r] = value.split("-");
+                  setGuests(g);
+                  setRooms(r);
+                }}
+              >
                 <SelectTrigger className="h-11 sm:h-12 lg:h-14 bg-gray-50/80 border-gray-200 rounded-xl sm:rounded-[15px] text-sm sm:text-base hover:bg-white hover:border-app-primary transition-all duration-200">
                   <UsersIcon className="mr-2 h-4 w-4 sm:h-5 sm:w-5 text-gray-400 flex-shrink-0" />
                   <SelectValue placeholder="2 guests" />
@@ -343,8 +383,10 @@ export const SearchBar = ({
 
             {/* Search Button */}
             <div className="sm:col-span-2 lg:col-span-1">
-              <label className="block text-sm font-medium text-transparent mb-1">Search</label>
-              <Button 
+              <label className="block text-sm font-medium text-transparent mb-1">
+                Search
+              </label>
+              <Button
                 onClick={handleSearch}
                 disabled={isCurrentlySearching}
                 className="w-full h-11 sm:h-12 lg:h-14 bg-app-primary text-white rounded-xl sm:rounded-[15px] hover:bg-app-primary/90 active:bg-app-primary/95 text-sm sm:text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
@@ -379,13 +421,13 @@ export const SearchBar = ({
           {/* Additional Filters */}
           {showFilters && (
             <div className="mt-6 space-y-6 border-t pt-6">
-              
               {/* First Row */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                
                 {/* Guests' Citizenship */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Guests' citizenship</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Guests' citizenship
+                  </label>
                   <div className="relative">
                     <Select value={citizenship} onValueChange={setCitizenship}>
                       <SelectTrigger className="h-10 bg-gray-50/80 border-gray-200 rounded-lg text-sm hover:bg-white hover:border-app-primary transition-all duration-200">
@@ -413,17 +455,25 @@ export const SearchBar = ({
 
                 {/* Star Rating */}
                 <div className="lg:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Rating</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Rating
+                  </label>
                   <div className="flex flex-wrap gap-2">
                     {starOptions.map((option) => (
                       <Button
                         key={option.value}
-                        variant={starRating === option.value ? "default" : "outline"}
-                        onClick={() => setStarRating(starRating === option.value ? "" : option.value)}
+                        variant={
+                          starRating === option.value ? "default" : "outline"
+                        }
+                        onClick={() =>
+                          setStarRating(
+                            starRating === option.value ? "" : option.value
+                          )
+                        }
                         className={cn(
                           "h-10 px-3 text-xs rounded-lg transition-all duration-200 flex-shrink-0",
-                          starRating === option.value 
-                            ? "bg-app-primary text-white border-app-primary" 
+                          starRating === option.value
+                            ? "bg-app-primary text-white border-app-primary"
                             : "bg-gray-50/80 border-gray-200 hover:bg-white hover:border-app-primary"
                         )}
                       >
@@ -436,10 +486,11 @@ export const SearchBar = ({
 
               {/* Second Row */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                
                 {/* Early Check-in */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Early check-in</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Early check-in
+                  </label>
                   <Select value={earlyCheckIn} onValueChange={setEarlyCheckIn}>
                     <SelectTrigger className="h-10 bg-gray-50/80 border-gray-200 rounded-lg text-sm text-gray-500 hover:bg-white hover:border-app-primary transition-all duration-200">
                       <SelectValue placeholder="Select the time" />
@@ -455,7 +506,9 @@ export const SearchBar = ({
 
                 {/* Late Check-out */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Late check-out</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Late check-out
+                  </label>
                   <Select value={lateCheckOut} onValueChange={setLateCheckOut}>
                     <SelectTrigger className="h-10 bg-gray-50/80 border-gray-200 rounded-lg text-sm text-gray-500 hover:bg-white hover:border-app-primary transition-all duration-200">
                       <SelectValue placeholder="Select the time" />
@@ -476,8 +529,8 @@ export const SearchBar = ({
                     onClick={() => setFreeCancellation(!freeCancellation)}
                     className={cn(
                       "h-10 px-4 text-sm rounded-lg transition-all duration-200",
-                      freeCancellation 
-                        ? "bg-app-primary text-white border-app-primary" 
+                      freeCancellation
+                        ? "bg-app-primary text-white border-app-primary"
                         : "bg-gray-50/80 border-gray-200 hover:bg-white hover:border-app-primary"
                     )}
                   >
@@ -501,13 +554,23 @@ export const SearchBar = ({
           )}
 
           {/* Debug Information (only in development) */}
-          {process.env.NODE_ENV === 'development' && (
+          {process.env.NODE_ENV === "development" && (
             <div className="mt-4 p-3 bg-gray-50 border border-gray-200 rounded-lg text-xs text-gray-600">
               <strong>Debug Info:</strong>
               <br />• Backend URL: {API_BASE_URL}
-              <br />• Selected destination: {location} → {destinationMapping[location] || 'Not mapped'}
-              <br />• Guests format: {guests} guests, {rooms} room(s) → {JSON.stringify(Array.from({ length: parseInt(rooms) || 1 }, () => ({ adults: Math.max(1, Math.floor((parseInt(guests) || 2) / (parseInt(rooms) || 1))) })))}
-              <br />• Uses callbacks: {onSearchComplete ? 'Yes' : 'No'} (No navigation)
+              <br />• Selected destination: {location} →{" "}
+              {destinationMapping[location] || "Not mapped"}
+              <br />• Guests format: {guests} guests, {rooms} room(s) →{" "}
+              {JSON.stringify(
+                Array.from({ length: parseInt(rooms) || 1 }, () => ({
+                  adults: Math.max(
+                    1,
+                    Math.floor((parseInt(guests) || 2) / (parseInt(rooms) || 1))
+                  ),
+                }))
+              )}
+              <br />• Uses callbacks: {onSearchComplete ? "Yes" : "No"} (No
+              navigation)
             </div>
           )}
         </CardContent>
