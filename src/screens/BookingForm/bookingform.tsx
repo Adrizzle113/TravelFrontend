@@ -1,11 +1,29 @@
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent } from '../../components/ui/card';
-import { Input } from '../../components/ui/input';
-import { Button } from '../../components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
-import { Plus, ChevronDown, User, Loader2, Info, Check, Star, Utensils, RotateCcw, AlertCircle, Users } from 'lucide-react';
-import { countriesApi, Country } from '../../lib/api';
-import bookingFormData from './create-booking-form.json';
+import React, { useState, useEffect } from "react";
+import { Card, CardContent } from "../../components/ui/card";
+import { Input } from "../../components/ui/input";
+import { Button } from "../../components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../../components/ui/select";
+import {
+  Plus,
+  ChevronDown,
+  User,
+  Loader2,
+  Info,
+  Check,
+  Star,
+  Utensils,
+  RotateCcw,
+  AlertCircle,
+  Users,
+} from "lucide-react";
+import { countriesApi, Country } from "../../lib/api";
+import bookingFormData from "./create-booking-form.json";
 
 interface Guest {
   id: string;
@@ -23,7 +41,7 @@ interface BookingFormData {
   paymentMethod: string;
   clientPrice: string;
   commission: string;
-  commissionType: 'percentage' | 'dollar';
+  commissionType: "percentage" | "dollar";
   promoCode: string;
   payWithPoints: boolean;
 }
@@ -153,41 +171,38 @@ interface BookingSummary {
 }
 
 const BookingForm: React.FC = () => {
-
   const [formData, setFormData] = useState<BookingFormData>({
-    citizenship: 'Togo',
-    guests: [
-      { id: '1', firstName: '', lastName: '' }
-    ],
-    specialRequests: '',
-    phoneNumber: '',
-    countryCode: '+1',
-    groupOfClients: '',
-    paymentMethod: 'payment-deposit',
-    clientPrice: '3.00',
-    commission: '0',
-    commissionType: 'percentage',
-    promoCode: '',
-    payWithPoints: false
+    citizenship: "Togo",
+    guests: [{ id: "1", firstName: "", lastName: "" }],
+    specialRequests: "",
+    phoneNumber: "",
+    countryCode: "+1",
+    groupOfClients: "",
+    paymentMethod: "payment-deposit",
+    clientPrice: "3.00",
+    commission: "0",
+    commissionType: "percentage",
+    promoCode: "",
+    payWithPoints: false,
   });
 
-  const [selectedCurrency, setSelectedCurrency] = useState<string>('USD');
+  const [selectedCurrency, setSelectedCurrency] = useState<string>("USD");
 
   // Update currency when payment method changes
   useEffect(() => {
-    const paymentType = formData.paymentMethod.replace('payment-', '');
+    const paymentType = formData.paymentMethod.replace("payment-", "");
     let currencies: { currency: string; amount: string }[] = [];
-    
-    if (paymentType === 'deposit' || paymentType === 'gross') {
+
+    if (paymentType === "deposit" || paymentType === "gross") {
       currencies = bookingFormData.data.bookingForm.data.payment_types
-        .filter(pt => pt.type === 'deposit')
-        .map(pt => ({ currency: pt.currency_code, amount: pt.amount }));
-    } else if (paymentType === 'now') {
+        .filter((pt) => pt.type === "deposit")
+        .map((pt) => ({ currency: pt.currency_code, amount: pt.amount }));
+    } else if (paymentType === "now") {
       currencies = bookingFormData.data.bookingForm.data.payment_types
-        .filter(pt => pt.type === 'now')
-        .map(pt => ({ currency: pt.currency_code, amount: pt.amount }));
+        .filter((pt) => pt.type === "now")
+        .map((pt) => ({ currency: pt.currency_code, amount: pt.amount }));
     }
-    
+
     // Set first available currency when payment method changes
     if (currencies.length > 0) {
       setSelectedCurrency(currencies[0].currency);
@@ -198,15 +213,15 @@ const BookingForm: React.FC = () => {
   const getBookingSummary = () => {
     const hotelData = bookingFormData.data.hotelDetails;
     const mainPaymentType = hotelData.payment_options.payment_types[0];
-    
+
     return {
-      hotelName: 'Hotel Riu Plaza New York Times Square', // From search/hotel API
-      hotelAddress: '305 West, 46th Street, New York', // From search/hotel API
+      hotelName: "Hotel Riu Plaza New York Times Square", // From search/hotel API
+      hotelAddress: "305 West, 46th Street, New York", // From search/hotel API
       rating: 4, // From search/hotel API
-      checkIn: 'October 4, 2025', // From search params
-      checkOut: 'October 5, 2025', // From search params
-      checkInTime: 'from 16:00', // From hotel API
-      checkOutTime: 'until 11:00', // From hotel API
+      checkIn: "October 4, 2025", // From search params
+      checkOut: "October 5, 2025", // From search params
+      checkInTime: "from 16:00", // From hotel API
+      checkOutTime: "until 11:00", // From hotel API
       roomType: hotelData.room_name,
       roomName: hotelData.room_data_trans.main_name,
       beddingType: hotelData.room_data_trans.bedding_type,
@@ -214,9 +229,10 @@ const BookingForm: React.FC = () => {
       mealInfo: hotelData.meal_data.value,
       hasBreakfast: hotelData.meal_data.has_breakfast,
       amenities: hotelData.amenities_data,
-      freeCancellationDate: mainPaymentType.cancellation_penalties.free_cancellation_before,
+      freeCancellationDate:
+        mainPaymentType.cancellation_penalties.free_cancellation_before,
       loyaltyPoints: 2,
-      taxes: mainPaymentType.tax_data.taxes
+      taxes: mainPaymentType.tax_data.taxes,
     };
   };
 
@@ -227,35 +243,35 @@ const BookingForm: React.FC = () => {
 
   // Common country codes for phone numbers
   const countryCodes = [
-    { code: '+1', flag: '🇺🇸', name: 'United States' },
-    { code: '+1', flag: '🇨🇦', name: 'Canada' },
-    { code: '+44', flag: '🇬🇧', name: 'United Kingdom' },
-    { code: '+33', flag: '🇫🇷', name: 'France' },
-    { code: '+49', flag: '🇩🇪', name: 'Germany' },
-    { code: '+39', flag: '🇮🇹', name: 'Italy' },
-    { code: '+34', flag: '🇪🇸', name: 'Spain' },
-    { code: '+31', flag: '🇳🇱', name: 'Netherlands' },
-    { code: '+32', flag: '🇧🇪', name: 'Belgium' },
-    { code: '+41', flag: '🇨🇭', name: 'Switzerland' },
-    { code: '+43', flag: '🇦🇹', name: 'Austria' },
-    { code: '+45', flag: '🇩🇰', name: 'Denmark' },
-    { code: '+46', flag: '🇸🇪', name: 'Sweden' },
-    { code: '+47', flag: '🇳🇴', name: 'Norway' },
-    { code: '+358', flag: '🇫🇮', name: 'Finland' },
-    { code: '+7', flag: '🇷🇺', name: 'Russia' },
-    { code: '+86', flag: '🇨🇳', name: 'China' },
-    { code: '+81', flag: '🇯🇵', name: 'Japan' },
-    { code: '+82', flag: '🇰🇷', name: 'South Korea' },
-    { code: '+91', flag: '🇮🇳', name: 'India' },
-    { code: '+61', flag: '🇦🇺', name: 'Australia' },
-    { code: '+64', flag: '🇳🇿', name: 'New Zealand' },
-    { code: '+55', flag: '🇧🇷', name: 'Brazil' },
-    { code: '+54', flag: '🇦🇷', name: 'Argentina' },
-    { code: '+52', flag: '🇲🇽', name: 'Mexico' },
-    { code: '+27', flag: '🇿🇦', name: 'South Africa' },
-    { code: '+20', flag: '🇪🇬', name: 'Egypt' },
-    { code: '+234', flag: '🇳🇬', name: 'Nigeria' },
-    { code: '+228', flag: '🇹🇬', name: 'Togo' }
+    { code: "+1", flag: "🇺🇸", name: "United States" },
+    { code: "+1", flag: "🇨🇦", name: "Canada" },
+    { code: "+44", flag: "🇬🇧", name: "United Kingdom" },
+    { code: "+33", flag: "🇫🇷", name: "France" },
+    { code: "+49", flag: "🇩🇪", name: "Germany" },
+    { code: "+39", flag: "🇮🇹", name: "Italy" },
+    { code: "+34", flag: "🇪🇸", name: "Spain" },
+    { code: "+31", flag: "🇳🇱", name: "Netherlands" },
+    { code: "+32", flag: "🇧🇪", name: "Belgium" },
+    { code: "+41", flag: "🇨🇭", name: "Switzerland" },
+    { code: "+43", flag: "🇦🇹", name: "Austria" },
+    { code: "+45", flag: "🇩🇰", name: "Denmark" },
+    { code: "+46", flag: "🇸🇪", name: "Sweden" },
+    { code: "+47", flag: "🇳🇴", name: "Norway" },
+    { code: "+358", flag: "🇫🇮", name: "Finland" },
+    { code: "+7", flag: "🇷🇺", name: "Russia" },
+    { code: "+86", flag: "🇨🇳", name: "China" },
+    { code: "+81", flag: "🇯🇵", name: "Japan" },
+    { code: "+82", flag: "🇰🇷", name: "South Korea" },
+    { code: "+91", flag: "🇮🇳", name: "India" },
+    { code: "+61", flag: "🇦🇺", name: "Australia" },
+    { code: "+64", flag: "🇳🇿", name: "New Zealand" },
+    { code: "+55", flag: "🇧🇷", name: "Brazil" },
+    { code: "+54", flag: "🇦🇷", name: "Argentina" },
+    { code: "+52", flag: "🇲🇽", name: "Mexico" },
+    { code: "+27", flag: "🇿🇦", name: "South Africa" },
+    { code: "+20", flag: "🇪🇬", name: "Egypt" },
+    { code: "+234", flag: "🇳🇬", name: "Nigeria" },
+    { code: "+228", flag: "🇹🇬", name: "Togo" },
   ];
 
   // Fetch countries on component mount
@@ -267,8 +283,8 @@ const BookingForm: React.FC = () => {
         const { data } = await countriesApi.getCountries();
         setCountries(data.body || []);
       } catch (error) {
-        console.error('Failed to fetch countries:', error);
-        setCountriesError('Failed to load countries. Please try again.');
+        console.error("Failed to fetch countries:", error);
+        setCountriesError("Failed to load countries. Please try again.");
       } finally {
         setLoadingCountries(false);
       }
@@ -278,54 +294,54 @@ const BookingForm: React.FC = () => {
   }, []);
 
   const handleCitizenshipChange = (value: string) => {
-    setFormData(prev => ({ ...prev, citizenship: value }));
+    setFormData((prev) => ({ ...prev, citizenship: value }));
   };
 
   const handlePhoneNumberChange = (value: string) => {
-    setFormData(prev => ({ ...prev, phoneNumber: value }));
+    setFormData((prev) => ({ ...prev, phoneNumber: value }));
   };
 
   const handleCountryCodeChange = (value: string) => {
-    setFormData(prev => ({ ...prev, countryCode: value }));
+    setFormData((prev) => ({ ...prev, countryCode: value }));
   };
 
   const handleGroupOfClientsChange = (value: string) => {
-    setFormData(prev => ({ ...prev, groupOfClients: value }));
+    setFormData((prev) => ({ ...prev, groupOfClients: value }));
   };
 
   const handlePaymentMethodChange = (value: string) => {
-    setFormData(prev => ({ ...prev, paymentMethod: value }));
+    setFormData((prev) => ({ ...prev, paymentMethod: value }));
   };
 
   const handleClientPriceChange = (value: string) => {
-    setFormData(prev => ({ ...prev, clientPrice: value }));
+    setFormData((prev) => ({ ...prev, clientPrice: value }));
   };
 
   const handleCommissionChange = (value: string) => {
-    setFormData(prev => ({ ...prev, commission: value }));
+    setFormData((prev) => ({ ...prev, commission: value }));
   };
 
-  const handleCommissionTypeChange = (type: 'percentage' | 'dollar') => {
-    setFormData(prev => ({ ...prev, commissionType: type }));
+  const handleCommissionTypeChange = (type: "percentage" | "dollar") => {
+    setFormData((prev) => ({ ...prev, commissionType: type }));
   };
 
   const calculateCommissionAmount = () => {
     const price = parseFloat(formData.clientPrice) || 0;
     const commission = parseFloat(formData.commission) || 0;
-    
-    if (formData.commissionType === 'percentage') {
-      return (price * commission / 100).toFixed(2);
+
+    if (formData.commissionType === "percentage") {
+      return ((price * commission) / 100).toFixed(2);
     } else {
       return commission.toFixed(2);
     }
   };
 
   const handlePromoCodeChange = (value: string) => {
-    setFormData(prev => ({ ...prev, promoCode: value }));
+    setFormData((prev) => ({ ...prev, promoCode: value }));
   };
 
   const handlePayWithPointsChange = (checked: boolean) => {
-    setFormData(prev => ({ ...prev, payWithPoints: checked }));
+    setFormData((prev) => ({ ...prev, payWithPoints: checked }));
   };
 
   const handleCurrencyChange = (value: string) => {
@@ -334,59 +350,63 @@ const BookingForm: React.FC = () => {
 
   // Get available currencies for selected payment method
   const getAvailableCurrencies = () => {
-    const paymentType = formData.paymentMethod.replace('payment-', '');
-    
-    if (paymentType === 'deposit' || paymentType === 'gross') {
+    const paymentType = formData.paymentMethod.replace("payment-", "");
+
+    if (paymentType === "deposit" || paymentType === "gross") {
       // Both use deposit type
       return bookingFormData.data.bookingForm.data.payment_types
-        .filter(pt => pt.type === 'deposit')
-        .map(pt => ({ currency: pt.currency_code, amount: pt.amount }));
-    } else if (paymentType === 'now') {
+        .filter((pt) => pt.type === "deposit")
+        .map((pt) => ({ currency: pt.currency_code, amount: pt.amount }));
+    } else if (paymentType === "now") {
       return bookingFormData.data.bookingForm.data.payment_types
-        .filter(pt => pt.type === 'now')
-        .map(pt => ({ currency: pt.currency_code, amount: pt.amount }));
+        .filter((pt) => pt.type === "now")
+        .map((pt) => ({ currency: pt.currency_code, amount: pt.amount }));
     }
-    
+
     return [];
   };
 
   // Get amount for selected currency
   const getAmountForCurrency = () => {
     const currencies = getAvailableCurrencies();
-    const selected = currencies.find(c => c.currency === selectedCurrency);
-    return selected ? selected.amount : '0.00';
+    const selected = currencies.find((c) => c.currency === selectedCurrency);
+    return selected ? selected.amount : "0.00";
   };
 
   const calculateTotalPrice = () => {
     return getAmountForCurrency();
   };
 
-  const handleGuestChange = (guestId: string, field: 'firstName' | 'lastName', value: string) => {
-    setFormData(prev => ({
+  const handleGuestChange = (
+    guestId: string,
+    field: "firstName" | "lastName",
+    value: string
+  ) => {
+    setFormData((prev) => ({
       ...prev,
-      guests: prev.guests.map(guest =>
+      guests: prev.guests.map((guest) =>
         guest.id === guestId ? { ...guest, [field]: value } : guest
-      )
+      ),
     }));
   };
 
   const addOtherGuest = () => {
     const newGuest: Guest = {
       id: Date.now().toString(),
-      firstName: '',
-      lastName: ''
+      firstName: "",
+      lastName: "",
     };
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      guests: [...prev.guests, newGuest]
+      guests: [...prev.guests, newGuest],
     }));
   };
 
   const removeGuest = (guestId: string) => {
     if (formData.guests.length > 1) {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
-        guests: prev.guests.filter(guest => guest.id !== guestId)
+        guests: prev.guests.filter((guest) => guest.id !== guestId),
       }));
     }
   };
@@ -412,12 +432,19 @@ const BookingForm: React.FC = () => {
                   {loadingCountries ? (
                     <div className="flex items-center gap-2 h-9 px-3 py-2 border border-gray-300 rounded-md bg-gray-50">
                       <Loader2 className="h-4 w-4 animate-spin" />
-                      <span className="text-sm text-gray-500">Loading countries...</span>
+                      <span className="text-sm text-gray-500">
+                        Loading countries...
+                      </span>
                     </div>
                   ) : countriesError ? (
-                    <div className="text-sm text-red-500 mb-2">{countriesError}</div>
+                    <div className="text-sm text-red-500 mb-2">
+                      {countriesError}
+                    </div>
                   ) : (
-                    <Select value={formData.citizenship} onValueChange={handleCitizenshipChange}>
+                    <Select
+                      value={formData.citizenship}
+                      onValueChange={handleCitizenshipChange}
+                    >
                       <SelectTrigger className="w-full">
                         <SelectValue placeholder="Select citizenship" />
                       </SelectTrigger>
@@ -445,14 +472,23 @@ const BookingForm: React.FC = () => {
                 {/* Guest Name Fields */}
                 <div className="space-y-6">
                   {formData.guests.map((guest) => (
-                    <div key={guest.id} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div
+                      key={guest.id}
+                      className="grid grid-cols-1 md:grid-cols-2 gap-4"
+                    >
                       <div>
                         <label className="block text-sm font-medium text-gray-600 mb-2">
                           Guest's name*
                         </label>
                         <Input
                           value={guest.firstName}
-                          onChange={(e) => handleGuestChange(guest.id, 'firstName', e.target.value)}
+                          onChange={(e) =>
+                            handleGuestChange(
+                              guest.id,
+                              "firstName",
+                              e.target.value
+                            )
+                          }
                           placeholder="Enter first name"
                           required
                         />
@@ -463,7 +499,13 @@ const BookingForm: React.FC = () => {
                         </label>
                         <Input
                           value={guest.lastName}
-                          onChange={(e) => handleGuestChange(guest.id, 'lastName', e.target.value)}
+                          onChange={(e) =>
+                            handleGuestChange(
+                              guest.id,
+                              "lastName",
+                              e.target.value
+                            )
+                          }
                           placeholder="Enter last name"
                           required
                         />
@@ -500,17 +542,24 @@ const BookingForm: React.FC = () => {
                     onClick={() => setShowSpecialRequests(!showSpecialRequests)}
                     className="flex items-center gap-2 text-gray-800 hover:text-blue-600 transition-colors"
                   >
-                    <ChevronDown 
-                      className={`h-4 w-4 transition-transform ${showSpecialRequests ? 'rotate-180' : ''}`} 
+                    <ChevronDown
+                      className={`h-4 w-4 transition-transform ${
+                        showSpecialRequests ? "rotate-180" : ""
+                      }`}
                     />
                     <span>Special requests</span>
                   </button>
-                  
+
                   {showSpecialRequests && (
                     <div className="mt-4">
                       <textarea
                         value={formData.specialRequests}
-                        onChange={(e) => setFormData(prev => ({ ...prev, specialRequests: e.target.value }))}
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            specialRequests: e.target.value,
+                          }))
+                        }
                         placeholder="Enter any special requests..."
                         className="w-full p-3 border border-gray-300 rounded-md resize-none h-24 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       />
@@ -535,20 +584,26 @@ const BookingForm: React.FC = () => {
                     </label>
                     <Info className="h-4 w-4 text-gray-400" />
                   </div>
-                  
+
                   <div className="flex gap-3">
                     {/* Country Code Dropdown */}
                     <div className="w-32">
                       <label className="block text-xs font-medium text-gray-600 mb-1">
                         Country code*
                       </label>
-                      <Select value={formData.countryCode} onValueChange={handleCountryCodeChange}>
+                      <Select
+                        value={formData.countryCode}
+                        onValueChange={handleCountryCodeChange}
+                      >
                         <SelectTrigger className="w-full">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
                           {countryCodes.map((country) => (
-                            <SelectItem key={`${country.code}-${country.name}`} value={country.code}>
+                            <SelectItem
+                              key={`${country.code}-${country.name}`}
+                              value={country.code}
+                            >
                               <div className="flex items-center gap-2">
                                 <span>{country.flag}</span>
                                 <span>{country.code}</span>
@@ -566,7 +621,9 @@ const BookingForm: React.FC = () => {
                       </label>
                       <Input
                         value={formData.phoneNumber}
-                        onChange={(e) => handlePhoneNumberChange(e.target.value)}
+                        onChange={(e) =>
+                          handlePhoneNumberChange(e.target.value)
+                        }
                         placeholder="Enter phone number"
                         required
                       />
@@ -582,8 +639,11 @@ const BookingForm: React.FC = () => {
                     </label>
                     <Info className="h-4 w-4 text-gray-400" />
                   </div>
-                  
-                  <Select value={formData.groupOfClients} onValueChange={handleGroupOfClientsChange}>
+
+                  <Select
+                    value={formData.groupOfClients}
+                    onValueChange={handleGroupOfClientsChange}
+                  >
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="Not chosen" />
                     </SelectTrigger>
@@ -612,56 +672,66 @@ const BookingForm: React.FC = () => {
                   {/* Payment Options */}
                   {(() => {
                     // Get currencies from JSON
-                    const depositCurrencies = bookingFormData.data.bookingForm.data.payment_types
-                      .filter(pt => pt.type === 'deposit')
-                      .map(pt => pt.currency_code);
-                    
-                    const nowCurrencies = bookingFormData.data.bookingForm.data.payment_types
-                      .filter(pt => pt.type === 'now')
-                      .map(pt => pt.currency_code);
+                    const depositCurrencies =
+                      bookingFormData.data.bookingForm.data.payment_types
+                        .filter((pt) => pt.type === "deposit")
+                        .map((pt) => pt.currency_code);
+
+                    const nowCurrencies =
+                      bookingFormData.data.bookingForm.data.payment_types
+                        .filter((pt) => pt.type === "now")
+                        .map((pt) => pt.currency_code);
 
                     const paymentOptions = [
                       {
-                        id: 'deposit',
-                        title: 'Book now, pay later',
-                        description: 'After booking, you can create an invoice and pay via bank transfer, or bank card, or payment link directly in your account. Please remember that bookings and invoices paid by bank card are not going to be indicated in closing documents.',
-                        currencies: depositCurrencies
+                        id: "deposit",
+                        title: "Book now, pay later",
+                        description:
+                          "After booking, you can create an invoice and pay via bank transfer, or bank card, or payment link directly in your account. Please remember that bookings and invoices paid by bank card are not going to be indicated in closing documents.",
+                        currencies: depositCurrencies,
                       },
                       {
-                        id: 'now',
-                        title: 'Pay now by bank card (NET)',
-                        description: 'The cost of the booking will be charged to the bank card you provided during the reservation.',
-                        currencies: nowCurrencies
+                        id: "now",
+                        title: "Pay now by bank card (NET)",
+                        description:
+                          "The cost of the booking will be charged to the bank card you provided during the reservation.",
+                        currencies: nowCurrencies,
                       },
                       {
-                        id: 'gross',
-                        title: 'Pay now by client\'s card (GROSS)',
-                        description: 'Used for payment by the client\'s bank card. The amount that you enter below, in the Client price and the commission section, will be withdrawn from the specified card, then, according to the contract terms and conditions, you\'ll get the commission.',
-                        currencies: depositCurrencies
-                      }
+                        id: "gross",
+                        title: "Pay now by client's card (GROSS)",
+                        description:
+                          "Used for payment by the client's bank card. The amount that you enter below, in the Client price and the commission section, will be withdrawn from the specified card, then, according to the contract terms and conditions, you'll get the commission.",
+                        currencies: depositCurrencies,
+                      },
                     ];
 
                     return paymentOptions.map((option) => {
-                      const isSelected = formData.paymentMethod === `payment-${option.id}`;
+                      const isSelected =
+                        formData.paymentMethod === `payment-${option.id}`;
                       const displayCurrencies = option.currencies.slice(0, 3);
                       const remainingCount = option.currencies.length - 3;
 
                       return (
-                        <div 
+                        <div
                           key={option.id}
                           className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
-                            isSelected 
-                              ? 'border-yellow-400 bg-yellow-50' 
-                              : 'border-gray-200 hover:border-gray-300'
+                            isSelected
+                              ? "border-yellow-400 bg-yellow-50"
+                              : "border-gray-200 hover:border-gray-300"
                           }`}
-                          onClick={() => handlePaymentMethodChange(`payment-${option.id}`)}
+                          onClick={() =>
+                            handlePaymentMethodChange(`payment-${option.id}`)
+                          }
                         >
                           <div className="flex items-start gap-3">
-                            <div className={`w-5 h-5 rounded-full border-2 mt-1 flex items-center justify-center ${
-                              isSelected
-                                ? 'border-yellow-500 bg-yellow-500'
-                                : 'border-gray-300'
-                            }`}>
+                            <div
+                              className={`w-5 h-5 rounded-full border-2 mt-1 flex items-center justify-center ${
+                                isSelected
+                                  ? "border-yellow-500 bg-yellow-500"
+                                  : "border-gray-300"
+                              }`}
+                            >
                               {isSelected && (
                                 <div className="w-2 h-2 bg-white rounded-full"></div>
                               )}
@@ -672,7 +742,10 @@ const BookingForm: React.FC = () => {
                               </h3>
                               <div className="flex gap-2 mb-2 flex-wrap items-center">
                                 {displayCurrencies.map((currency, idx) => (
-                                  <span key={idx} className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded">
+                                  <span
+                                    key={idx}
+                                    className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded"
+                                  >
                                     {currency}
                                   </span>
                                 ))}
@@ -684,11 +757,16 @@ const BookingForm: React.FC = () => {
                                     {/* Hover tooltip */}
                                     <div className="absolute left-0 top-full mt-1 hidden group-hover:block z-10 bg-gray-800 text-white p-3 rounded-lg shadow-lg min-w-[200px]">
                                       <div className="flex flex-wrap gap-2">
-                                        {option.currencies.slice(3).map((currency, idx) => (
-                                          <span key={idx} className="px-2 py-1 bg-gray-700 text-white text-xs rounded">
-                                            {currency}
-                                          </span>
-                                        ))}
+                                        {option.currencies
+                                          .slice(3)
+                                          .map((currency, idx) => (
+                                            <span
+                                              key={idx}
+                                              className="px-2 py-1 bg-gray-700 text-white text-xs rounded"
+                                            >
+                                              {currency}
+                                            </span>
+                                          ))}
                                       </div>
                                     </div>
                                   </div>
@@ -713,7 +791,8 @@ const BookingForm: React.FC = () => {
                           Pay to the accommodation facility
                         </h3>
                         <p className="text-sm text-gray-400">
-                          This payment method is only available for the rates with the corresponding payment conditions
+                          This payment method is only available for the rates
+                          with the corresponding payment conditions
                         </p>
                       </div>
                     </div>
@@ -729,7 +808,8 @@ const BookingForm: React.FC = () => {
                   Client price and the commission
                 </h2>
                 <p className="text-sm text-gray-600 mb-6">
-                  Enter the client price. This price will be saved in your back office in the booking data for informational purposes.
+                  Enter the client price. This price will be saved in your back
+                  office in the booking data for informational purposes.
                 </p>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -741,7 +821,9 @@ const BookingForm: React.FC = () => {
                     <div className="relative">
                       <Input
                         value={formData.clientPrice}
-                        onChange={(e) => handleClientPriceChange(e.target.value)}
+                        onChange={(e) =>
+                          handleClientPriceChange(e.target.value)
+                        }
                         className="pr-8 text-lg font-semibold"
                         placeholder="0.00"
                       />
@@ -760,40 +842,46 @@ const BookingForm: React.FC = () => {
                       <div className="relative flex-1">
                         <Input
                           value={formData.commission}
-                          onChange={(e) => handleCommissionChange(e.target.value)}
+                          onChange={(e) =>
+                            handleCommissionChange(e.target.value)
+                          }
                           className="pr-12 text-lg"
                           placeholder="0"
                         />
                         <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex items-center gap-1">
                           <span className="text-sm text-gray-600">
-                            {formData.commissionType === 'percentage' ? '%' : '$'}
+                            {formData.commissionType === "percentage"
+                              ? "%"
+                              : "$"}
                           </span>
-                          {formData.commissionType === 'percentage' && (
+                          {formData.commissionType === "percentage" && (
                             <span className="text-xs text-gray-500">
                               ≈ {calculateCommissionAmount()} $
                             </span>
                           )}
                         </div>
                       </div>
-                      
+
                       {/* Commission Type Toggle */}
                       <div className="flex border border-gray-300 rounded-md overflow-hidden">
                         <button
-                          onClick={() => handleCommissionTypeChange('percentage')}
+                          onClick={() =>
+                            handleCommissionTypeChange("percentage")
+                          }
                           className={`px-3 py-2 text-sm font-medium transition-colors ${
-                            formData.commissionType === 'percentage'
-                              ? 'bg-gray-200 text-gray-800'
-                              : 'bg-white text-gray-600 hover:bg-gray-50'
+                            formData.commissionType === "percentage"
+                              ? "bg-gray-200 text-gray-800"
+                              : "bg-white text-gray-600 hover:bg-gray-50"
                           }`}
                         >
                           %
                         </button>
                         <button
-                          onClick={() => handleCommissionTypeChange('dollar')}
+                          onClick={() => handleCommissionTypeChange("dollar")}
                           className={`px-3 py-2 text-sm font-medium transition-colors ${
-                            formData.commissionType === 'dollar'
-                              ? 'bg-gray-200 text-gray-800'
-                              : 'bg-white text-gray-600 hover:bg-gray-50'
+                            formData.commissionType === "dollar"
+                              ? "bg-gray-200 text-gray-800"
+                              : "bg-white text-gray-600 hover:bg-gray-50"
                           }`}
                         >
                           $
@@ -809,12 +897,12 @@ const BookingForm: React.FC = () => {
                     <Check className="h-5 w-5" />
                     <span className="font-medium">This is the last step!</span>
                   </div>
-                  
-                  <Button 
+
+                  <Button
                     className="bg-yellow-400 hover:bg-yellow-500 text-gray-800 font-bold px-8 py-3 text-lg"
                     onClick={() => {
                       // Handle booking completion
-                      console.log('Booking completed:', formData);
+                      console.log("Booking completed:", formData);
                     }}
                   >
                     Book now
@@ -845,29 +933,47 @@ const BookingForm: React.FC = () => {
                           <Star
                             key={i}
                             className={`h-4 w-4 ${
-                              i < summary.rating ? 'text-yellow-400 fill-current' : 'text-gray-400'
+                              i < summary.rating
+                                ? "text-yellow-400 fill-current"
+                                : "text-gray-400"
                             }`}
                           />
                         ))}
                       </div>
                     </div>
-                    <h3 className="font-bold text-lg mb-1">{summary.hotelName}</h3>
-                    <p className="text-sm text-gray-300">{summary.hotelAddress}</p>
+                    <h3 className="font-bold text-lg mb-1">
+                      {summary.hotelName}
+                    </h3>
+                    <p className="text-sm text-gray-300">
+                      {summary.hotelAddress}
+                    </p>
                   </div>
 
                   <CardContent className="p-4">
                     {/* Check-in/Check-out */}
                     <div className="flex justify-between items-center mb-4">
                       <div>
-                        <p className="text-sm font-medium text-gray-700">Check-in</p>
-                        <p className="text-lg font-bold text-gray-800">{summary.checkIn}</p>
-                        <p className="text-xs text-gray-500">{summary.checkInTime}</p>
+                        <p className="text-sm font-medium text-gray-700">
+                          Check-in
+                        </p>
+                        <p className="text-lg font-bold text-gray-800">
+                          {summary.checkIn}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          {summary.checkInTime}
+                        </p>
                       </div>
                       <div className="w-px h-12 bg-gray-300"></div>
                       <div className="text-right">
-                        <p className="text-sm font-medium text-gray-700">Check-out</p>
-                        <p className="text-lg font-bold text-gray-800">{summary.checkOut}</p>
-                        <p className="text-xs text-gray-500">{summary.checkOutTime}</p>
+                        <p className="text-sm font-medium text-gray-700">
+                          Check-out
+                        </p>
+                        <p className="text-lg font-bold text-gray-800">
+                          {summary.checkOut}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          {summary.checkOutTime}
+                        </p>
                       </div>
                     </div>
 
@@ -882,10 +988,14 @@ const BookingForm: React.FC = () => {
                       <div className="flex items-center gap-2 text-green-600">
                         <RotateCcw className="h-4 w-4" />
                         <span className="text-sm">
-                          Free cancellation before {new Date(summary.freeCancellationDate).toLocaleDateString('en-US', { 
-                            month: 'long', 
-                            day: 'numeric' 
-                          })}!
+                          Free cancellation before{" "}
+                          {new Date(
+                            summary.freeCancellationDate
+                          ).toLocaleDateString("en-US", {
+                            month: "long",
+                            day: "numeric",
+                          })}
+                          !
                         </span>
                       </div>
                       <div className="flex items-center gap-2 text-blue-600">
@@ -894,26 +1004,41 @@ const BookingForm: React.FC = () => {
                       </div>
                       {/* Display amenities from JSON */}
                       {summary.amenities.map((amenity, index) => (
-                        <div key={index} className="flex items-center gap-2 text-gray-600">
+                        <div
+                          key={index}
+                          className="flex items-center gap-2 text-gray-600"
+                        >
                           <span className="w-2 h-2 bg-gray-400 rounded-full"></span>
-                          <span className="text-sm capitalize">{amenity.replace('_', ' ')}</span>
+                          <span className="text-sm capitalize">
+                            {amenity.replace("_", " ")}
+                          </span>
                         </div>
                       ))}
                     </div>
 
                     {/* Room Details */}
                     <div className="mb-4">
-                      <p className="text-sm font-medium text-gray-800">{summary.roomType}</p>
-                      <p className="text-sm text-gray-600">({summary.beddingType})</p>
-                      <p className="text-sm text-gray-500 mt-1">{summary.roomName}</p>
+                      <p className="text-sm font-medium text-gray-800">
+                        {summary.roomType}
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        ({summary.beddingType})
+                      </p>
+                      <p className="text-sm text-gray-500 mt-1">
+                        {summary.roomName}
+                      </p>
                       <div className="flex items-center gap-2 mt-2">
                         <Users className="h-4 w-4 text-gray-600" />
-                        <span className="text-sm text-gray-600">{summary.adults} adults</span>
+                        <span className="text-sm text-gray-600">
+                          {summary.adults} adults
+                        </span>
                       </div>
                       {/* Meal Information */}
                       <div className="mt-2">
                         <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
-                          {summary.mealInfo === 'nomeal' ? 'No meal included' : summary.mealInfo}
+                          {summary.mealInfo === "nomeal"
+                            ? "No meal included"
+                            : summary.mealInfo}
                         </span>
                       </div>
                     </div>
@@ -934,10 +1059,14 @@ const BookingForm: React.FC = () => {
                         <input
                           type="checkbox"
                           checked={formData.payWithPoints}
-                          onChange={(e) => handlePayWithPointsChange(e.target.checked)}
+                          onChange={(e) =>
+                            handlePayWithPointsChange(e.target.checked)
+                          }
                           className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                         />
-                        <span className="text-sm text-gray-700">Pay with points</span>
+                        <span className="text-sm text-gray-700">
+                          Pay with points
+                        </span>
                       </div>
                       <Select defaultValue="choose">
                         <SelectTrigger className="w-20 h-8">
@@ -954,7 +1083,10 @@ const BookingForm: React.FC = () => {
                       <div className="flex justify-between items-center mb-4">
                         <div className="flex-1">
                           <p className="text-sm text-gray-600 mb-2">Currency</p>
-                          <Select value={selectedCurrency} onValueChange={handleCurrencyChange}>
+                          <Select
+                            value={selectedCurrency}
+                            onValueChange={handleCurrencyChange}
+                          >
                             <SelectTrigger className="w-32">
                               <SelectValue />
                             </SelectTrigger>
@@ -977,14 +1109,23 @@ const BookingForm: React.FC = () => {
 
                       {/* Included in the price */}
                       <div className="mb-4">
-                        <p className="text-sm font-medium text-gray-700 mb-2">Included in the price:</p>
+                        <p className="text-sm font-medium text-gray-700 mb-2">
+                          Included in the price:
+                        </p>
                         <div className="space-y-1">
                           {summary.taxes
-                            .filter(tax => tax.included_by_supplier)
+                            .filter((tax) => tax.included_by_supplier)
                             .map((tax, index) => (
-                              <div key={index} className="flex justify-between text-sm">
-                                <span className="text-gray-600 capitalize">{tax.name.replace('_', ' ')}</span>
-                                <span className="text-gray-800">{tax.currency_code} {tax.amount}</span>
+                              <div
+                                key={index}
+                                className="flex justify-between text-sm"
+                              >
+                                <span className="text-gray-600 capitalize">
+                                  {tax.name.replace("_", " ")}
+                                </span>
+                                <span className="text-gray-800">
+                                  {tax.currency_code} {tax.amount}
+                                </span>
                               </div>
                             ))}
                         </div>
@@ -992,14 +1133,23 @@ const BookingForm: React.FC = () => {
 
                       {/* To pay upon arrival */}
                       <div className="mb-4">
-                        <p className="text-sm font-medium text-red-600 mb-2">To pay upon arrival (not included in the price):</p>
+                        <p className="text-sm font-medium text-red-600 mb-2">
+                          To pay upon arrival (not included in the price):
+                        </p>
                         <div className="space-y-1">
                           {summary.taxes
-                            .filter(tax => !tax.included_by_supplier)
+                            .filter((tax) => !tax.included_by_supplier)
                             .map((tax, index) => (
-                              <div key={index} className="flex justify-between text-sm">
-                                <span className="text-red-600 capitalize">{tax.name.replace('_', ' ')}</span>
-                                <span className="text-red-600">{tax.currency_code} {tax.amount}</span>
+                              <div
+                                key={index}
+                                className="flex justify-between text-sm"
+                              >
+                                <span className="text-red-600 capitalize">
+                                  {tax.name.replace("_", " ")}
+                                </span>
+                                <span className="text-red-600">
+                                  {tax.currency_code} {tax.amount}
+                                </span>
                               </div>
                             ))}
                         </div>
@@ -1008,9 +1158,13 @@ const BookingForm: React.FC = () => {
                       {/* Loyalty Points */}
                       <div className="flex items-center gap-2 text-blue-600">
                         <div className="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center">
-                          <span className="text-white text-xs font-bold">P</span>
+                          <span className="text-white text-xs font-bold">
+                            P
+                          </span>
                         </div>
-                        <span className="text-sm">You will get {summary.loyaltyPoints} points</span>
+                        <span className="text-sm">
+                          You will get {summary.loyaltyPoints} points
+                        </span>
                       </div>
                     </div>
                   </CardContent>
