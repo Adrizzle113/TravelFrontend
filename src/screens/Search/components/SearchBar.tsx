@@ -198,6 +198,7 @@ export const SearchBar = ({
           "hotelSearchResults",
           JSON.stringify(searchResults)
         );
+        localStorage.setItem("searchData", JSON.stringify(searchData));
 
         // ✅ FIXED: Use callback instead of navigation
         console.log("📢 Notifying parent component of search completion");

@@ -97,6 +97,13 @@ export const HotelDetails = (): JSX.Element => {
     try {
       // First try to get data from localStorage
       const savedData = localStorage.getItem("selectedHotel");
+      const searchedDataString = localStorage.getItem("searchedData");
+
+      const { currency, residency } = searchedDataString
+        ? JSON.parse(searchedDataString)
+        : null;
+
+      console.log("searchedData:", residency, currency);
       let hotelData: HotelData | null = null;
 
       if (savedData) {
@@ -115,26 +122,17 @@ export const HotelDetails = (): JSX.Element => {
       console.log("🔍 Fetching fresh hotel details from API...");
 
       try {
-        const { data } = await ratehawkApi.getHotelDetails(hotelId);
-        console.log(
-          "🚀 ~ loadHotelData ~ data ====================================== ==== ======== ======:",
-          data.data.data.hotels.length > 0
+        const { data } = await ratehawkApi.getHotelDetails(
+          hotelId,
+          hotelData?.searchContext || {},
+          residency,
+          currency
         );
 
         if (data.error) {
           throw new Error(data.error);
         }
 
-        // console.log('✅ Fresh hotel data fetched successfully:', {
-        //   hasData: !!data.data,
-        //   avRespLength: data.data?.av_resp?.length || 0,
-        //   duration: data.duration,
-        //   sessionId: data.sessionId,
-        //   searchUuid: data.searchUuid,
-        //   timestamp: data.timestamp
-        // });
-
-        // Process the RateHawk response - Handle both old and new API formats
         let ratehawkData = null;
 
         // Check for new API format first (data.data.hotels[0])
