@@ -91,9 +91,11 @@ export const ratehawkApi = {
     });
   },
 
-  getHotelDetails: async (hotelId: string) => {
+
+  getHotelDetails: async (hotelId: string, searchContext: any, residency: string, currency: string) => {
     return apiCall(`${API_CONFIG.ENDPOINTS.RATEHAWK_HOTEL_DETAILS}?hotel_id=${encodeURIComponent(hotelId)}`, {
-      method: 'GET',
+      method: 'POST',
+      body: JSON.stringify({ hotelId, searchContext , residency, currency }),
     });
   },
 
