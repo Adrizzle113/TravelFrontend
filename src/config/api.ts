@@ -7,7 +7,7 @@ const API_CONFIG = {
     local: 'http://localhost:3001',
 
     // Current environment - change to 'local' for development  // live
-    current: 'local'
+    current: 'live'
 };
 
 // Export the base URL based on current environment
