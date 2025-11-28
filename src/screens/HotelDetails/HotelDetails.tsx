@@ -119,7 +119,7 @@ export const HotelDetails = (): JSX.Element => {
       }
 
       // Always fetch fresh data from the new API
-      console.log("🔍 Fetching fresh hotel details from API...");
+      console.log("🔍 Fetching fresh hotel details from API...", currency);
 
       try {
         const { data } = await ratehawkApi.getHotelDetails(
