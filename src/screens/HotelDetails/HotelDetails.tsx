@@ -12,6 +12,7 @@ import { MapSection } from "./sections/MapSection";
 import { RoomSelectionSection } from "./sections/RoomSelectionSection";
 import { RateHawkDataSection } from "./sections/RateHawkDataSection";
 import { useBookingStore } from "../../store/bookingStore";
+import { jsonToQueryString } from "../../lib/utils";
 
 // Types
 interface Hotel {
@@ -70,7 +71,6 @@ interface ProcessedRoom {
 export const HotelDetails = (): JSX.Element => {
   const { hotelId } = useParams<{ hotelId: string }>();
   const navigate = useNavigate();
-  const { setHotel } = useBookingStore();
   // State Management
   const [hotelData, setHotelData] = useState<HotelData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -78,7 +78,7 @@ export const HotelDetails = (): JSX.Element => {
   const [isFavorite, setIsFavorite] = useState(false);
   const [selectedRoom, setSelectedRoom] = useState<ProcessedRoom | null>(null);
   const [selectedQuantity, setSelectedQuantity] = useState(1);
-  const { setSelectedHotelRoom } = useBookingStore();
+  const { setSelectedHotelRoom, setHotel } = useBookingStore();
   // Load hotel data on mount
   useEffect(() => {
     loadHotelData();
@@ -382,7 +382,11 @@ export const HotelDetails = (): JSX.Element => {
     const response = await ratehawkApi.bookingForm(selectedRoom?.id);
     console.log("📥 Booking form response:", response);
     // Navigate to booking form page
-    navigate("/hotel_booking_form");
+    navigate(
+      `/hotel_booking_form/${hotelId}/${selectedRoom?.id}${jsonToQueryString(
+        searchContext
+      )}`
+    );
   };
 
   // Loading state
