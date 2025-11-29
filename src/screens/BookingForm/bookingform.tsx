@@ -388,6 +388,9 @@ const BookingForm: React.FC = () => {
   useEffect(() => {
     loadHotelData();
   }, []);
+
+  console.log(hotelData, "hotelDataaaaaaaaaaaa");
+
   useEffect(() => {
     const paymentType = formData.paymentMethod.replace("payment-", "");
     let currencies: { currency: string; amount: string }[] = [];
@@ -407,6 +410,24 @@ const BookingForm: React.FC = () => {
       setSelectedCurrency(currencies[0].currency);
     }
   }, [formData.paymentMethod]);
+
+  const getRoomData = () => {
+    const rates = hotelData?.hotel.ratehawk_data.data.data.hotels[0].rates;
+    console.log(roomId, "rates:", rates);
+    if (!rates) return null;
+
+    const selectedRoom = rates.find((item: any) => {
+      return item?.book_hash === roomId;
+    });
+
+    return selectedRoom || null;
+  };
+  useEffect(() => {
+    const selectedRoom = getRoomData();
+    console.log("roomId:", roomId);
+
+    console.log("Selected Room:", selectedRoom);
+  }, []);
 
   // Process the JSON data into booking summary
   const getBookingSummary = () => {

@@ -62,7 +62,7 @@ interface ProcessedRoom {
   occupancy: string;
   size: string;
   amenities: string[];
-  cancellation: string | any; // Can be string or object from RateHawk
+  cancellation: string | any;
   paymentType: string;
   availability: number;
   originalRate?: any;
