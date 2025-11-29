@@ -11,6 +11,8 @@ import { HotelInfoSection } from "./sections/HotelInfoSection";
 import { MapSection } from "./sections/MapSection";
 import { RoomSelectionSection } from "./sections/RoomSelectionSection";
 import { RateHawkDataSection } from "./sections/RateHawkDataSection";
+import { useBookingStore } from "../../store/bookingStore";
+import { jsonToQueryString } from "../../lib/utils";
 
 // Types
 interface Hotel {
@@ -60,7 +62,7 @@ interface ProcessedRoom {
   occupancy: string;
   size: string;
   amenities: string[];
-  cancellation: string | any; // Can be string or object from RateHawk
+  cancellation: string | any;
   paymentType: string;
   availability: number;
   originalRate?: any;
@@ -69,7 +71,6 @@ interface ProcessedRoom {
 export const HotelDetails = (): JSX.Element => {
   const { hotelId } = useParams<{ hotelId: string }>();
   const navigate = useNavigate();
-
   // State Management
   const [hotelData, setHotelData] = useState<HotelData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -77,7 +78,7 @@ export const HotelDetails = (): JSX.Element => {
   const [isFavorite, setIsFavorite] = useState(false);
   const [selectedRoom, setSelectedRoom] = useState<ProcessedRoom | null>(null);
   const [selectedQuantity, setSelectedQuantity] = useState(1);
-
+  const { setSelectedHotelRoom, setHotel } = useBookingStore();
   // Load hotel data on mount
   useEffect(() => {
     loadHotelData();
@@ -128,7 +129,8 @@ export const HotelDetails = (): JSX.Element => {
           residency,
           currency
         );
-
+        setHotel(data.data.data);
+        console.log(data.data.data, "dataaaaaaaaaaaaaaaaa");
         if (data.error) {
           throw new Error(data.error);
         }
@@ -343,11 +345,12 @@ export const HotelDetails = (): JSX.Element => {
     });
 
     setSelectedRoom(room);
+    setSelectedHotelRoom(room);
     setSelectedQuantity(quantity);
   };
 
   // Booking handler
-  const handleBookNow = () => {
+  const handleBookNow = async () => {
     const bookingPrice = selectedRoom
       ? selectedRoom.price * selectedQuantity
       : hotelData?.hotel.price.amount;
@@ -376,8 +379,14 @@ export const HotelDetails = (): JSX.Element => {
 
     localStorage.setItem("pendingBooking", JSON.stringify(bookingData));
 
+    const response = await ratehawkApi.bookingForm(selectedRoom?.id);
+    console.log("📥 Booking form response:", response);
     // Navigate to booking form page
-    navigate("/hotel_booking_form");
+    navigate(
+      `/hotel_booking_form/${hotelId}/${selectedRoom?.id}${jsonToQueryString(
+        searchContext
+      )}`
+    );
   };
 
   // Loading state
