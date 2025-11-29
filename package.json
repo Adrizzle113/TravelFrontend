@@ -34,7 +34,8 @@
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.16.0",
     "react-toastify": "^11.0.5",
-    "tailwind-merge": "^1.14.0"
+    "tailwind-merge": "^1.14.0",
+    "zustand": "^5.0.8"
   },
   "devDependencies": {
     "@types/babel__core": "^7.20.5",

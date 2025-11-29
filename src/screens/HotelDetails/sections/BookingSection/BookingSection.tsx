@@ -184,7 +184,7 @@ export const BookingSection = ({
               : "bg-app-primary hover:bg-app-primary/90 text-white"
           }`}
         >
-          {selectedRoom ? `Book ${selectedRoom.name}` : "Book Now"}
+          Book Now
         </Button>
 
         {/* Booking Benefits */}

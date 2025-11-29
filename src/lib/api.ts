@@ -19,7 +19,8 @@ export const API_CONFIG = {
     AUTH_VERIFY: '/api/auth/verify',
     AUTH_PROFILE: '/api/auth/profile',
     HEALTH: '/api/health',
-    COUNTRIES: '/api/countries'
+    COUNTRIES: '/api/countries',
+    RATEHAWK_BOOKING_FORM: '/api/create-booking-form'
   }
 };
 
@@ -144,7 +145,14 @@ export const ratehawkApi = {
         }
       };
     }
-  }
+  },
+
+   bookingForm: async (book_hash: any) => {
+    return apiCall(API_CONFIG.ENDPOINTS.RATEHAWK_BOOKING_FORM, {
+      method: "POST",
+      body: JSON.stringify({book_hash}),
+    });
+  },
 };
 
 // Auth API calls
