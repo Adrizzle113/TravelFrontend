@@ -102,7 +102,7 @@ export const HotelDetails = (): JSX.Element => {
 
       const { currency, residency } = searchedDataString
         ? JSON.parse(searchedDataString)
-        : null;
+        : {};
 
       console.log("searchedData:", residency, currency);
       let hotelData: HotelData | null = null;
