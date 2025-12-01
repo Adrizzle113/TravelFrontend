@@ -1,4 +1,4 @@
-import { API_BASE_URL } from '../config/api';
+import { API_BASE_URL } from "../config/api";
 
 // API Configuration
 export const API_CONFIG = {
@@ -7,21 +7,21 @@ export const API_CONFIG = {
 
   // API endpoints
   ENDPOINTS: {
-    RATEHAWK_LOGIN: '/api/ratehawk/login',
-    RATEHAWK_SESSION: '/api/ratehawk/session',
-    RATEHAWK_SEARCH: '/api/ratehawk/search',
-    RATEHAWK_STATS: '/api/ratehawk/stats',
-    RATEHAWK_TEST: '/api/ratehawk/test-auth',
-    RATEHAWK_LOGOUT: '/api/ratehawk/logout',
-    RATEHAWK_HOTEL_DETAILS: '/api/ratehawk/hotel/details', // Updated to new GET endpoint
-    AUTH_LOGIN: '/api/auth/login',
-    AUTH_REGISTER: '/api/auth/register',
-    AUTH_VERIFY: '/api/auth/verify',
-    AUTH_PROFILE: '/api/auth/profile',
-    HEALTH: '/api/health',
-    COUNTRIES: '/api/countries',
-    RATEHAWK_BOOKING_FORM: '/api/create-booking-form'
-  }
+    RATEHAWK_LOGIN: "/api/ratehawk/login",
+    RATEHAWK_SESSION: "/api/ratehawk/session",
+    RATEHAWK_SEARCH: "/api/ratehawk/search",
+    RATEHAWK_STATS: "/api/ratehawk/stats",
+    RATEHAWK_TEST: "/api/ratehawk/test-auth",
+    RATEHAWK_LOGOUT: "/api/ratehawk/logout",
+    RATEHAWK_HOTEL_DETAILS: "/api/ratehawk/hotel/details", // Updated to new GET endpoint
+    AUTH_LOGIN: "/api/auth/login",
+    AUTH_REGISTER: "/api/auth/register",
+    AUTH_VERIFY: "/api/auth/verify",
+    AUTH_PROFILE: "/api/auth/profile",
+    HEALTH: "/api/health",
+    COUNTRIES: "/api/countries",
+    RATEHAWK_BOOKING_FORM: "/api/create-booking-form",
+  },
 };
 
 // Helper function to make API calls with better error handling
@@ -30,21 +30,21 @@ export const apiCall = async (endpoint: string, options: RequestInit = {}) => {
 
   const defaultOptions: RequestInit = {
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       ...options.headers,
     },
     ...options,
   };
 
   try {
-    console.log(`🌐 API Call: ${options.method || 'GET'} ${url}`);
+    console.log(`🌐 API Call: ${options.method || "GET"} ${url}`);
     const response = await fetch(url, defaultOptions);
 
     let data;
     try {
       data = await response.json();
     } catch (parseError) {
-      console.error('💥 Failed to parse JSON response:', parseError);
+      console.error("💥 Failed to parse JSON response:", parseError);
       throw new Error(`Invalid JSON response from server (${response.status})`);
     }
 
@@ -52,9 +52,11 @@ export const apiCall = async (endpoint: string, options: RequestInit = {}) => {
 
     return { response, data };
   } catch (error) {
-    console.error('💥 API call failed:', error);
-    if (error instanceof TypeError && error.message.includes('fetch')) {
-      throw new Error(`Failed to connect to server at ${API_CONFIG.BASE_URL}. Please check if the backend is running.`);
+    console.error("💥 API call failed:", error);
+    if (error instanceof TypeError && error.message.includes("fetch")) {
+      throw new Error(
+        `Failed to connect to server at ${API_CONFIG.BASE_URL}. Please check if the backend is running.`
+      );
     }
     throw error;
   }
@@ -64,14 +66,14 @@ export const apiCall = async (endpoint: string, options: RequestInit = {}) => {
 export const ratehawkApi = {
   login: async (userId: string, email: string, password: string) => {
     return apiCall(API_CONFIG.ENDPOINTS.RATEHAWK_LOGIN, {
-      method: 'POST',
+      method: "POST",
       body: JSON.stringify({ userId, email, password }),
     });
   },
 
   checkSession: async (userId: string) => {
     return apiCall(`${API_CONFIG.ENDPOINTS.RATEHAWK_SESSION}/${userId}`, {
-      method: 'GET',
+      method: "GET",
     });
   },
 
@@ -87,70 +89,75 @@ export const ratehawkApi = {
     filters?: any;
   }) => {
     return apiCall(API_CONFIG.ENDPOINTS.RATEHAWK_SEARCH, {
-      method: 'POST',
+      method: "POST",
       body: JSON.stringify(searchParams),
     });
   },
 
-
-  getHotelDetails: async (hotelId: string, searchContext: any, residency: string, currency: string) => {
-    return apiCall(`${API_CONFIG.ENDPOINTS.RATEHAWK_HOTEL_DETAILS}?hotel_id=${encodeURIComponent(hotelId)}`, {
-      method: 'POST',
-      body: JSON.stringify({ hotelId, searchContext , residency, currency }),
+  getHotelDetails: async (
+    hotelId: string,
+    searchContext: any,
+    residency: string,
+    currency: string
+  ) => {
+    return apiCall(`${API_CONFIG.ENDPOINTS.RATEHAWK_HOTEL_DETAILS}`, {
+      method: "POST",
+      body: JSON.stringify({ hotelId, searchContext, residency, currency }),
     });
   },
 
   getStats: async () => {
     return apiCall(API_CONFIG.ENDPOINTS.RATEHAWK_STATS, {
-      method: 'GET',
+      method: "GET",
     });
   },
 
   testAuth: async (email: string, password: string) => {
     return apiCall(API_CONFIG.ENDPOINTS.RATEHAWK_TEST, {
-      method: 'POST',
+      method: "POST",
       body: JSON.stringify({ email, password }),
     });
   },
 
   logout: async (userId: string) => {
     return apiCall(`${API_CONFIG.ENDPOINTS.RATEHAWK_LOGOUT}/${userId}`, {
-      method: 'POST',
+      method: "POST",
     });
   },
 
   healthCheck: async () => {
     try {
-      const { response, data } = await apiCall('/api/health');
+      const { response, data } = await apiCall("/api/health");
 
       return {
         response,
         data: {
           status: data.status,
-          browserless: data.services?.browserless || 'unknown',
+          browserless: data.services?.browserless || "unknown",
           activeSessions: data.activeSessions || 0,
           timestamp: data.timestamp,
           services: data.services,
-          uptime: data.uptime
-        }
+          uptime: data.uptime,
+        },
       };
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error occurred";
       return {
         response: { ok: false },
         data: {
-          status: 'error',
+          status: "error",
           error: errorMessage,
-          timestamp: new Date().toISOString()
-        }
+          timestamp: new Date().toISOString(),
+        },
       };
     }
   },
 
-   bookingForm: async (book_hash: any) => {
+  bookingForm: async (book_hash: any) => {
     return apiCall(API_CONFIG.ENDPOINTS.RATEHAWK_BOOKING_FORM, {
       method: "POST",
-      body: JSON.stringify({book_hash}),
+      body: JSON.stringify({ book_hash }),
     });
   },
 };
@@ -159,44 +166,44 @@ export const ratehawkApi = {
 export const authApi = {
   login: async (email: string, password: string) => {
     return apiCall(API_CONFIG.ENDPOINTS.AUTH_LOGIN, {
-      method: 'POST',
+      method: "POST",
       body: JSON.stringify({ email, password }),
     });
   },
 
   register: async (email: string, password: string, ratehawkEmail?: string) => {
     return apiCall(API_CONFIG.ENDPOINTS.AUTH_REGISTER, {
-      method: 'POST',
+      method: "POST",
       body: JSON.stringify({ email, password, ratehawkEmail }),
     });
   },
 
   verify: async (token: string) => {
     return apiCall(API_CONFIG.ENDPOINTS.AUTH_VERIFY, {
-      method: 'GET',
+      method: "GET",
       headers: {
-        'Authorization': `Bearer ${token}`,
+        Authorization: `Bearer ${token}`,
       },
     });
   },
 
   getProfile: async (token: string) => {
     return apiCall(API_CONFIG.ENDPOINTS.AUTH_PROFILE, {
-      method: 'GET',
+      method: "GET",
       headers: {
-        'Authorization': `Bearer ${token}`,
+        Authorization: `Bearer ${token}`,
       },
     });
-  }
+  },
 };
 
 // Countries API calls
 export const countriesApi = {
   getCountries: async () => {
     return apiCall(API_CONFIG.ENDPOINTS.COUNTRIES, {
-      method: 'GET',
+      method: "GET",
     });
-  }
+  },
 };
 
 // Type definitions for better TypeScript support
