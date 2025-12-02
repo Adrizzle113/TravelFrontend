@@ -19,6 +19,13 @@ export default {
 		},
 		extend: {
 			colors: {
+				brand: {
+					olive: '#4D5949',
+					'off-white': '#FCFBFC',
+					'deep-olive': '#323B2D',
+					'pastel-green': '#F6FDED',
+					'ultra-dark': '#192216',
+				},
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
 				ring: 'hsl(var(--ring))',
