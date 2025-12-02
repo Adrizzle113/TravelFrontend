@@ -19,7 +19,7 @@ export default {
 		},
 		extend: {
 			fontFamily: {
-				'heading': ['"New York"', 'serif'],
+				'heading': ['"Gallery Modern"', 'serif'],
 				'body': ['"EB Garamond"', 'serif'],
 			},
 			colors: {
