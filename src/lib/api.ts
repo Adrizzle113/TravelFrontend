@@ -154,10 +154,13 @@ export const ratehawkApi = {
     }
   },
 
-  bookingForm: async (book_hash: any) => {
+  bookingForm: async (payload: any) => {
     return apiCall(API_CONFIG.ENDPOINTS.RATEHAWK_BOOKING_FORM, {
       method: "POST",
-      body: JSON.stringify({ book_hash }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
     });
   },
 };

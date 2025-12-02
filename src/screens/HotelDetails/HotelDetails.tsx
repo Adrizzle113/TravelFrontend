@@ -314,7 +314,7 @@ export const HotelDetails = (): JSX.Element => {
   // Share functionality
   const shareHotel = async () => {
     if (!hotelData) return;
-
+    console.log(hotelData, "hotelData");
     const shareData = {
       title: hotelData.hotel.name,
       text: `Check out this hotel: ${hotelData.hotel.name} in ${hotelData.hotel.location}`,
@@ -379,14 +379,24 @@ export const HotelDetails = (): JSX.Element => {
 
     localStorage.setItem("pendingBooking", JSON.stringify(bookingData));
 
-    const response = await ratehawkApi.bookingForm(selectedRoom?.id);
+    const hotelName = hotelData?.hotel?.name;
+    const hotelLocation = hotelData?.hotel?.location;
+    const searchContext = hotelData?.searchContext;
+    const selectedRoomData = selectedRoom;
+
+    const payload = {
+      book_hashs: selectedRoom?.id,
+      hotelData: {
+        hotelName,
+        hotelLocation,
+        searchContext,
+        selectedRoomData,
+      },
+    };
+    const response = await ratehawkApi.bookingForm(payload);
     console.log("📥 Booking form response:", response);
     // Navigate to booking form page
-    navigate(
-      `/hotel_booking_form/${hotelId}/${selectedRoom?.id}${jsonToQueryString(
-        searchContext
-      )}`
-    );
+    navigate(`/hotel_booking_form/${hotelId}/${selectedRoom?.id}`);
   };
 
   // Loading state

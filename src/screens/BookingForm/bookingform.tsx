@@ -196,20 +196,7 @@ const BookingForm: React.FC = () => {
 
   const [selectedCurrency, setSelectedCurrency] = useState<string>("USD");
   const { hotelId, roomId } = useParams<{ hotelId: string; roomId: string }>();
-  const searchContext = useMemo(() => {
-    return {
-      availableHotels: searchParams.get("availableHotels"),
-      checkin: searchParams.get("checkin"),
-      checkout: searchParams.get("checkout"),
-      destination: searchParams.get("destination"),
-      destinationId: searchParams.get("destinationId"),
-      guests: Number(searchParams.get("guests")),
-      searchTimestamp: searchParams.get("searchTimestamp"),
-      totalHotels: Number(searchParams.get("totalHotels")),
-    };
-  }, [searchParams]);
-  const hotel = useBookingStore((state) => state.hotel);
-  console.log(hotel, "storeddddddddhotel");
+
   const loadHotelData = async () => {
     console.log("🏨 Loading hotel details for ID:", hotelId);
     setLoading(true);
@@ -248,131 +235,132 @@ const BookingForm: React.FC = () => {
       // Always fetch fresh data from the new API
       console.log("🔍 Fetching fresh hotel details from API...", currency);
 
-      try {
-        const { data } = await ratehawkApi.getHotelDetails(
-          hotelId,
-          searchContext || {},
-          residency,
-          currency
-        );
-        setHotelData(data.data.data);
-        console.log(data.data.data, "dataaaaaaaaaaaaaaaaa");
-        if (data.error) {
-          throw new Error(data.error);
-        }
+      // try {
+      //   const { data } = await ratehawkApi.getHotelDetails(
+      //     hotelId,
+      //     // searchContext || {},
+      //     residency,
+      //     currency
+      //   );
+      //   setHotelData(data.data.data);
+      //   console.log(data.data.data, "dataaaaaaaaaaaaaaaaa");
+      //   if (data.error) {
+      //     throw new Error(data.error);
+      //   }
 
-        let ratehawkData = null;
+      //   let ratehawkData = null;
 
-        // Check for new API format first (data.data.hotels[0])
-        if (data.data.data.hotels.length > 0) {
-          ratehawkData = data.data.data.hotels[0];
-          console.log(
-            "🚀 ~ loadHotelData ~ NEW FORMAT ratehawkData ============= :",
-            ratehawkData
-          );
-        }
-        // Fallback to old API format (data.data.av_resp[0])
-        else if (
-          data.data &&
-          data.data.av_resp &&
-          data.data.av_resp.length > 0
-        ) {
-          ratehawkData = data.data.av_resp[0];
-          console.log(
-            "🚀 ~ loadHotelData ~ OLD FORMAT ratehawkData ============= :",
-            ratehawkData
-          );
-        }
+      //   // Check for new API format first (data.data.hotels[0])
+      //   if (data.data.data.hotels.length > 0) {
+      //     ratehawkData = data.data.data.hotels[0];
+      //     console.log(
+      //       "🚀 ~ loadHotelData ~ NEW FORMAT ratehawkData ============= :",
+      //       ratehawkData
+      //     );
+      //   }
+      //   // Fallback to old API format (data.data.av_resp[0])
+      //   else if (
+      //     data.data &&
+      //     data.data.av_resp &&
+      //     data.data.av_resp.length > 0
+      //   ) {
+      //     ratehawkData = data.data.av_resp[0];
+      //     console.log(
+      //       "🚀 ~ loadHotelData ~ OLD FORMAT ratehawkData ============= :",
+      //       ratehawkData
+      //     );
+      //   }
 
-        if (ratehawkData) {
-          // Create enhanced hotel data
-          const enhancedHotelData: HotelData = {
-            hotel: {
-              id: hotelId,
-              name: hotelData?.hotel.name || `Hotel ${hotelId}`,
-              location: hotelData?.hotel.location || "Location not available",
-              rating: hotelData?.hotel.rating || 4.0,
-              reviewScore: hotelData?.hotel.reviewScore || 8.5,
-              reviewCount: hotelData?.hotel.reviewCount || 100,
-              price: hotelData?.hotel.price || {
-                amount: 0,
-                currency: "USD",
-                period: "night",
-              },
-              image: hotelData?.hotel.image || "/images/bedroom_interior.png",
-              amenities: hotelData?.hotel.amenities || [],
-              description: hotelData?.hotel.description || "",
-              ratehawk_data: {
-                ...hotelData?.hotel.ratehawk_data,
-                // For new format, pass the entire response structure
-                data: data.data,
-                rates: ratehawkData.rates || [],
-                hotel_lookup_info: ratehawkData.hotel_lookup_info,
-                requested_hotel_id: ratehawkData.requested_hotel_id,
-                ota_hotel_id: ratehawkData.ota_hotel_id,
-                master_id: ratehawkData.master_id,
-                // Add the new response metadata
-                response_metadata: {
-                  timestamp: data.timestamp,
-                  duration: data.duration,
-                  sessionId: data.sessionId,
-                  searchUuid: data.searchUuid,
-                },
-              },
-            },
-            searchContext: hotelData?.searchContext || {
-              destination: "Unknown",
-              destinationId: "",
-              checkin: "2025-08-31",
-              checkout: "2025-09-02",
-              guests: 2, // Fixed: guests should be a number, not an array
-              totalHotels: 1,
-              availableHotels: 1,
-              searchTimestamp: new Date().toISOString(),
-            },
-            allAvailableHotels: hotelData?.allAvailableHotels || 1,
-            selectedFromPage: hotelData?.selectedFromPage || 1,
-          };
+      //   if (ratehawkData) {
+      //     // Create enhanced hotel data
+      //     const enhancedHotelData: HotelData = {
+      //       hotel: {
+      //         id: hotelId,
+      //         name: hotelData?.hotel.name || `Hotel ${hotelId}`,
+      //         location: hotelData?.hotel.location || "Location not available",
+      //         rating: hotelData?.hotel.rating || 4.0,
+      //         reviewScore: hotelData?.hotel.reviewScore || 8.5,
+      //         reviewCount: hotelData?.hotel.reviewCount || 100,
+      //         price: hotelData?.hotel.price || {
+      //           amount: 0,
+      //           currency: "USD",
+      //           period: "night",
+      //         },
+      //         image: hotelData?.hotel.image || "/images/bedroom_interior.png",
+      //         amenities: hotelData?.hotel.amenities || [],
+      //         description: hotelData?.hotel.description || "",
+      //         ratehawk_data: {
+      //           ...hotelData?.hotel.ratehawk_data,
+      //           // For new format, pass the entire response structure
+      //           data: data.data,
+      //           rates: ratehawkData.rates || [],
+      //           hotel_lookup_info: ratehawkData.hotel_lookup_info,
+      //           requested_hotel_id: ratehawkData.requested_hotel_id,
+      //           ota_hotel_id: ratehawkData.ota_hotel_id,
+      //           master_id: ratehawkData.master_id,
+      //           // Add the new response metadata
+      //           response_metadata: {
+      //             timestamp: data.timestamp,
+      //             duration: data.duration,
+      //             sessionId: data.sessionId,
+      //             searchUuid: data.searchUuid,
+      //           },
+      //         },
+      //       },
+      //       searchContext: hotelData?.searchContext || {
+      //         destination: "Unknown",
+      //         destinationId: "",
+      //         checkin: "2025-08-31",
+      //         checkout: "2025-09-02",
+      //         guests: 2, // Fixed: guests should be a number, not an array
+      //         totalHotels: 1,
+      //         availableHotels: 1,
+      //         searchTimestamp: new Date().toISOString(),
+      //       },
+      //       allAvailableHotels: hotelData?.allAvailableHotels || 1,
+      //       selectedFromPage: hotelData?.selectedFromPage || 1,
+      //     };
 
-          // Update localStorage with fresh data
-          localStorage.setItem(
-            "selectedHotel",
-            JSON.stringify(enhancedHotelData)
-          );
-          setHotelData(enhancedHotelData);
+      //     // Update localStorage with fresh data
+      //     localStorage.setItem(
+      //       "selectedHotel",
+      //       JSON.stringify(enhancedHotelData)
+      //     );
+      //     setHotelData(enhancedHotelData);
 
-          console.log("✅ Hotel data updated with fresh RateHawk data:", {
-            ratesCount: ratehawkData.rates?.length || 0,
-            hotelId: ratehawkData.requested_hotel_id,
-            sessionId: data.sessionId,
-            searchUuid: data.searchUuid,
-            duration: data.duration,
-          });
-        } else {
-          console.log("⚠️ No RateHawk data in response, using saved data");
-          if (hotelData) {
-            setHotelData(hotelData);
-          } else {
-            throw new Error("No hotel data available");
-          }
-        }
-      } catch (apiError) {
-        console.error("💥 Error fetching hotel details from API:", apiError);
+      //     console.log("✅ Hotel data updated with fresh RateHawk data:", {
+      //       ratesCount: ratehawkData.rates?.length || 0,
+      //       hotelId: ratehawkData.requested_hotel_id,
+      //       sessionId: data.sessionId,
+      //       searchUuid: data.searchUuid,
+      //       duration: data.duration,
+      //     });
+      //   } else {
+      //     console.log("⚠️ No RateHawk data in response, using saved data");
+      //     if (hotelData) {
+      //       setHotelData(hotelData);
+      //     } else {
+      //       throw new Error("No hotel data available");
+      //     }
+      //   }
+      // } catch (apiError) {
+      //   console.error("💥 Error fetching hotel details from API:", apiError);
 
-        // Fallback to saved data if available
-        if (hotelData) {
-          console.log("⚠️ Using saved hotel data due to API error");
-          setHotelData(hotelData);
-        } else {
-          throw new Error(
-            `Failed to load hotel details: ${
-              apiError instanceof Error ? apiError.message : "Unknown error"
-            }`
-          );
-        }
-      }
+      //   // Fallback to saved data if available
+      //   if (hotelData) {
+      //     console.log("⚠️ Using saved hotel data due to API error");
+      //     setHotelData(hotelData);
+      //   } else {
+      //     throw new Error(
+      //       `Failed to load hotel details: ${
+      //         apiError instanceof Error ? apiError.message : "Unknown error"
+      //       }`
+      //     );
+      //   }
+      // }
 
       // Check if this hotel is in favorites
+
       const favorites = JSON.parse(
         localStorage.getItem("favoriteHotels") || "[]"
       );
@@ -411,25 +399,26 @@ const BookingForm: React.FC = () => {
     }
   }, [formData.paymentMethod]);
 
-  const getRoomData = () => {
-    const rates = hotelData?.hotel.ratehawk_data.data.data.hotels[0].rates;
-    console.log(roomId, "rates:", rates);
-    if (!rates) return null;
+  // const getRoomData = () => {
+  //   const rates = hotelData?.hotel.ratehawk_data.data.data.hotels[0].rates;
+  //   console.log(roomId, "rates:", rates);
+  //   if (!rates) return null;
 
-    const selectedRoom = rates.find((item: any) => {
-      return item?.book_hash === roomId;
-    });
+  //   const selectedRoom = rates.find((item: any) => {
+  //     return item?.book_hash === roomId;
+  //   });
 
-    return selectedRoom || null;
-  };
-  useEffect(() => {
-    const selectedRoom = getRoomData();
-    console.log("roomId:", roomId);
+  //   return selectedRoom || null;
+  // };
+  // useEffect(() => {
+  //   const selectedRoom = getRoomData();
+  //   console.log("roomId:", roomId);
 
-    console.log("Selected Room:", selectedRoom);
-  }, []);
+  //   console.log("Selected Room:", selectedRoom);
+  // }, []);
 
   // Process the JSON data into booking summary
+
   const getBookingSummary = () => {
     const hotelData = bookingFormData.data.hotelDetails;
     const mainPaymentType = hotelData.payment_options.payment_types[0];
