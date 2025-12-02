@@ -1,0 +1,1 @@
+export { MemoriesSection } from "./MemoriesSection";

@@ -1,0 +1,1 @@
+export { NewHeroSection } from "./NewHeroSection";
