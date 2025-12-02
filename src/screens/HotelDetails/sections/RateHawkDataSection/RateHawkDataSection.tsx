@@ -142,6 +142,7 @@ export const RateHawkDataSection: React.FC<RateHawkDataSectionProps> = ({
     <div className="space-y-4">
       {/* Room Cards */}
       {rates.map((rate: any, index: number) => {
+        console.log(rate);
         const bestPrice = getBestPrice(rate);
         const roomId = rate.book_hash || rate.hash || `room-${index}`;
         const isSelected = selectedRoom === roomId;
@@ -186,9 +187,9 @@ export const RateHawkDataSection: React.FC<RateHawkDataSectionProps> = ({
                   <div className="text-right">
                     <p className="text-sm text-gray-600">From</p>
                     <p className="text-lg font-bold text-green-600">
-                      {bestPrice
-                        ? formatPrice(bestPrice.amount, bestPrice.currency)
-                        : "N/A"}
+                      {parseFloat(rate?.daily_prices?.[0]).toFixed(0)}{" "}
+                      {rate?.payment_options?.payment_types?.[0]
+                        ?.currency_code || ""}
                     </p>
                     <p className="text-sm text-gray-500">per night</p>
                   </div>
