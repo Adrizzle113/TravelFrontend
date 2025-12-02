@@ -18,6 +18,10 @@ export default {
 			}
 		},
 		extend: {
+			fontFamily: {
+				'heading': ['"EB Garamond"', 'serif'],
+				'body': ['"EB Garamond"', 'serif'],
+			},
 			colors: {
 				brand: {
 					olive: '#4D5949',
