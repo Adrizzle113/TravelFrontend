@@ -13,7 +13,7 @@ export const Home = (): JSX.Element => {
         <div className="absolute inset-0 bg-brand-ultra-dark/50" />
 
         <div className="relative z-10 container mx-auto px-6 h-full flex items-center">
-          <div className="max-w-2xl">
+          <div className="max-w-2xl ml-8 md:ml-12 lg:ml-16">
             <h1 className="font-heading text-5xl md:text-6xl lg:text-7xl font-bold text-brand-off-white mb-6 leading-tight">
               Tarifas Melhores<br />
               Comissões Maiores<br />
