@@ -38,6 +38,7 @@ interface HotelHeaderSectionProps {
 }
 
 const getRatingText = (score: number): string => {
+  if (!score || score <= 0) return "No Rating";
   if (score >= 9) return "Excellent";
   if (score >= 8) return "Very Good";
   if (score >= 7) return "Good";
@@ -64,6 +65,11 @@ const getStayDuration = (checkin: string, checkout: string): number => {
 export const HotelHeaderSection = ({ hotel, searchContext }: HotelHeaderSectionProps): JSX.Element => {
   const duration = getStayDuration(searchContext.checkin, searchContext.checkout);
 
+  // Ensure rating values are valid and within expected ranges
+  const starRating = Math.max(0, Math.min(5, hotel.rating || 0));
+  const guestReviewScore = Math.max(0, Math.min(10, hotel.reviewScore || 0));
+  const reviewCount = Math.max(0, hotel.reviewCount || 0);
+
   return (
     <section className="mb-8">
       <div className="flex flex-col lg:flex-row gap-8">
@@ -77,38 +83,38 @@ export const HotelHeaderSection = ({ hotel, searchContext }: HotelHeaderSectionP
             
             {/* Rating and Reviews */}
             <div className="flex flex-wrap items-center gap-6 mb-4">
-              {hotel.rating > 0 && (
+              {starRating > 0 && (
                 <div className="flex items-center">
                   <div className="flex">
                     {[...Array(5)].map((_, i) => (
-                      <StarIcon 
+                      <StarIcon
                         key={i}
                         className={`h-5 w-5 ${
-                          i < hotel.rating 
-                            ? 'text-yellow-400 fill-current' 
+                          i < starRating
+                            ? 'text-yellow-400 fill-current'
                             : 'text-gray-300'
-                        }`} 
+                        }`}
                       />
                     ))}
                   </div>
                   <span className="ml-2 text-app-accent font-medium">
-                    {hotel.rating} stars
+                    {starRating.toFixed(1)} stars
                   </span>
                 </div>
               )}
-              
-              {hotel.reviewScore > 0 && (
+
+              {guestReviewScore > 0 && (
                 <div className="flex items-center">
                   <Badge variant="secondary" className="bg-app-primary text-white px-3 py-1">
-                    {hotel.reviewScore}/10
+                    {guestReviewScore.toFixed(1)}/10
                   </Badge>
                   <div className="ml-3">
                     <span className="text-app-accent font-medium">
-                      {getRatingText(hotel.reviewScore)}
+                      {getRatingText(guestReviewScore)}
                     </span>
-                    {hotel.reviewCount > 0 && (
+                    {reviewCount > 0 && (
                       <span className="text-gray-600 text-sm ml-1">
-                        ({hotel.reviewCount.toLocaleString()} reviews)
+                        ({reviewCount.toLocaleString()} reviews)
                       </span>
                     )}
                   </div>

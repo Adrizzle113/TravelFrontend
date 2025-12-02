@@ -14,6 +14,16 @@ import { RateHawkDataSection } from "./sections/RateHawkDataSection";
 import { useBookingStore } from "../../store/bookingStore";
 import { jsonToQueryString } from "../../lib/utils";
 
+// Helper function for consistent rating text
+const getRatingText = (score: number): string => {
+  if (score >= 9) return "Excellent";
+  if (score >= 8) return "Very Good";
+  if (score >= 7) return "Good";
+  if (score >= 6) return "Pleasant";
+  if (score > 0) return "Fair";
+  return "No Rating";
+};
+
 // Types
 interface Hotel {
   id: string;
@@ -159,15 +169,67 @@ export const HotelDetails = (): JSX.Element => {
         }
 
         if (ratehawkData) {
+          // Extract rating data from RateHawk API response
+          const extractRatingData = () => {
+            // Try to get rating from various possible fields in RateHawk response
+            const staticData = data.data?.data?.hotels?.[0] || ratehawkData;
+
+            // Star rating (1-5): look for stars_rating, rating_class, or category
+            let starRating = hotelData?.hotel.rating || 0;
+            if (staticData.stars_rating) {
+              starRating = parseFloat(staticData.stars_rating) || starRating;
+            } else if (staticData.rating_class) {
+              starRating = parseFloat(staticData.rating_class) || starRating;
+            } else if (staticData.category) {
+              starRating = parseFloat(staticData.category) || starRating;
+            }
+
+            // Guest review score (0-10): look for guest_rating, review_score, or rating
+            let guestScore = hotelData?.hotel.reviewScore || 0;
+            let reviewCount = hotelData?.hotel.reviewCount || 0;
+
+            if (staticData.guest_rating) {
+              guestScore = parseFloat(staticData.guest_rating) || guestScore;
+            } else if (staticData.review_score) {
+              guestScore = parseFloat(staticData.review_score) || guestScore;
+            } else if (staticData.rating && typeof staticData.rating === 'number') {
+              // If rating is 0-10 scale, use it for review score
+              const ratingValue = parseFloat(staticData.rating);
+              if (ratingValue > 5 && ratingValue <= 10) {
+                guestScore = ratingValue;
+              }
+            }
+
+            if (staticData.reviews_count || staticData.review_count) {
+              reviewCount = parseInt(staticData.reviews_count || staticData.review_count) || reviewCount;
+            }
+
+            // Ensure values are in valid ranges
+            starRating = Math.max(0, Math.min(5, starRating));
+            guestScore = Math.max(0, Math.min(10, guestScore));
+            reviewCount = Math.max(0, reviewCount);
+
+            console.log('📊 Extracted rating data:', {
+              starRating,
+              guestScore,
+              reviewCount,
+              source: 'RateHawk API'
+            });
+
+            return { starRating, guestScore, reviewCount };
+          };
+
+          const { starRating, guestScore, reviewCount } = extractRatingData();
+
           // Create enhanced hotel data
           const enhancedHotelData: HotelData = {
             hotel: {
               id: hotelId,
               name: hotelData?.hotel.name || `Hotel ${hotelId}`,
               location: hotelData?.hotel.location || "Location not available",
-              rating: hotelData?.hotel.rating || 4.0,
-              reviewScore: hotelData?.hotel.reviewScore || 8.5,
-              reviewCount: hotelData?.hotel.reviewCount || 100,
+              rating: starRating,
+              reviewScore: guestScore,
+              reviewCount: reviewCount,
               price: hotelData?.hotel.price || {
                 amount: 0,
                 currency: "USD",

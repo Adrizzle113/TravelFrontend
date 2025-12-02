@@ -46,6 +46,7 @@ interface HotelInfoSectionProps {
 }
 
 const getRatingText = (score: number): string => {
+  if (!score || score <= 0) return "No Rating";
   if (score >= 9) return "Excellent";
   if (score >= 8) return "Very Good";
   if (score >= 7) return "Good";
@@ -58,9 +59,14 @@ export const HotelInfoSection = ({ hotel, searchContext }: HotelInfoSectionProps
   const ratehawkData = hotel.ratehawk_data?.static_vm;
   const hasExtendedInfo = !!ratehawkData;
 
+  // Ensure rating values are valid and within expected ranges
+  const starRating = Math.max(0, Math.min(5, hotel.rating || 0));
+  const guestReviewScore = Math.max(0, Math.min(10, hotel.reviewScore || 0));
+  const reviewCount = Math.max(0, hotel.reviewCount || 0);
+
   // Generate default description if none provided
-  const displayDescription = hotel.description || 
-    `${hotel.name} is a ${hotel.rating}-star hotel located in ${hotel.location}. ` +
+  const displayDescription = hotel.description ||
+    `${hotel.name} is a ${starRating > 0 ? starRating.toFixed(1) + '-star' : ''} hotel located in ${hotel.location}. ` +
     `With ${hotel.amenities.length > 0 ? hotel.amenities.length + ' amenities' : 'various facilities'} ` +
     `available, this hotel offers comfortable accommodation for your stay in ${searchContext.destination}.`;
 
@@ -102,45 +108,47 @@ export const HotelInfoSection = ({ hotel, searchContext }: HotelInfoSectionProps
             </div>
 
             {/* Rating Info */}
-            <div className="flex items-start p-4 bg-gray-50 rounded-lg">
-              <StarIcon className="w-5 h-5 text-yellow-500 mr-3 mt-0.5 flex-shrink-0" />
-              <div>
-                <div className="font-medium text-gray-900 mb-1">Hotel Rating</div>
-                <div className="flex items-center gap-2">
-                  <div className="flex">
-                    {[...Array(5)].map((_, i) => (
-                      <StarIcon 
-                        key={i}
-                        className={`h-4 w-4 ${
-                          i < hotel.rating 
-                            ? 'text-yellow-400 fill-current' 
-                            : 'text-gray-300'
-                        }`} 
-                      />
-                    ))}
+            {starRating > 0 && (
+              <div className="flex items-start p-4 bg-gray-50 rounded-lg">
+                <StarIcon className="w-5 h-5 text-yellow-500 mr-3 mt-0.5 flex-shrink-0" />
+                <div>
+                  <div className="font-medium text-gray-900 mb-1">Hotel Rating</div>
+                  <div className="flex items-center gap-2">
+                    <div className="flex">
+                      {[...Array(5)].map((_, i) => (
+                        <StarIcon
+                          key={i}
+                          className={`h-4 w-4 ${
+                            i < starRating
+                              ? 'text-yellow-400 fill-current'
+                              : 'text-gray-300'
+                          }`}
+                        />
+                      ))}
+                    </div>
+                    <span className="text-sm text-gray-600">{starRating.toFixed(1)} stars</span>
                   </div>
-                  <span className="text-sm text-gray-600">{hotel.rating} stars</span>
                 </div>
               </div>
-            </div>
+            )}
 
             {/* Guest Reviews */}
-            {hotel.reviewScore > 0 && (
+            {guestReviewScore > 0 && (
               <div className="flex items-start p-4 bg-gray-50 rounded-lg">
                 <CheckCircleIcon className="w-5 h-5 text-green-600 mr-3 mt-0.5 flex-shrink-0" />
                 <div>
                   <div className="font-medium text-gray-900 mb-1">Guest Reviews</div>
                   <div className="flex items-center gap-2 mb-1">
                     <Badge variant="secondary" className="bg-green-100 text-green-800">
-                      {hotel.reviewScore}/10
+                      {guestReviewScore.toFixed(1)}/10
                     </Badge>
                     <span className="text-sm text-gray-600">
-                      {getRatingText(hotel.reviewScore)}
+                      {getRatingText(guestReviewScore)}
                     </span>
                   </div>
-                  {hotel.reviewCount > 0 && (
+                  {reviewCount > 0 && (
                     <div className="text-xs text-gray-500">
-                      Based on {hotel.reviewCount.toLocaleString()} reviews
+                      Based on {reviewCount.toLocaleString()} reviews
                     </div>
                   )}
                 </div>

@@ -59,6 +59,7 @@ const formatCurrency = (amount: number, currency: string = "USD"): string => {
 };
 
 const getRatingText = (score: number): string => {
+  if (!score || score <= 0) return "No Rating";
   if (score >= 9) return "Excellent";
   if (score >= 8) return "Very Good";
   if (score >= 7) return "Good";
@@ -344,6 +345,11 @@ export const SearchResultsSection = ({
             const perNightPrice =
               nights > 0 ? Math.round((hotel.price?.amount || 0) / nights) : 0;
 
+            // Ensure rating values are valid and within expected ranges
+            const starRating = Math.max(0, Math.min(5, hotel.rating || 0));
+            const guestReviewScore = Math.max(0, Math.min(10, hotel.reviewScore || 0));
+            const reviewCount = Math.max(0, hotel.reviewCount || 0);
+
             return (
               <Card
                 key={hotel.id}
@@ -360,34 +366,36 @@ export const SearchResultsSection = ({
 
                         {/* star rating */}
                         <div className="flex flex-wrap items-center gap-2 mb-2">
-                          <div className="flex items-center">
-                            {[...Array(5)].map((_, starIndex) => (
-                              <StarIcon
-                                key={starIndex}
-                                className={`h-[18px] w-[18px] ${
-                                  starIndex < hotel.rating
-                                    ? "text-[#f3a427] fill-current"
-                                    : "text-gray-300"
-                                }`}
-                              />
-                            ))}
-                            <span className="font-bold text-[#073937] text-[16.5px] ml-2">
-                              {hotel.rating} stars
-                            </span>
-                          </div>
+                          {starRating > 0 && (
+                            <div className="flex items-center">
+                              {[...Array(5)].map((_, starIndex) => (
+                                <StarIcon
+                                  key={starIndex}
+                                  className={`h-[18px] w-[18px] ${
+                                    starIndex < starRating
+                                      ? "text-[#f3a427] fill-current"
+                                      : "text-gray-300"
+                                  }`}
+                                />
+                              ))}
+                              <span className="font-bold text-[#073937] text-[16.5px] ml-2">
+                                {starRating.toFixed(1)} stars
+                              </span>
+                            </div>
+                          )}
 
                           {/* review score */}
-                          {hotel.reviewScore > 0 && (
+                          {guestReviewScore > 0 && (
                             <div className="flex items-center ml-2">
                               <span className="font-bold text-[#073937] text-[16.5px]">
-                                {hotel.reviewScore}/10
+                                {guestReviewScore.toFixed(1)}/10
                               </span>
                               <span className="text-[#073937] text-[14px] ml-1">
-                                {getRatingText(hotel.reviewScore)}
+                                {getRatingText(guestReviewScore)}
                               </span>
-                              {!!hotel.reviewCount && (
+                              {reviewCount > 0 && (
                                 <span className="text-[#073937] text-[14px] ml-1">
-                                  ({hotel.reviewCount.toLocaleString()} reviews)
+                                  ({reviewCount.toLocaleString()} reviews)
                                 </span>
                               )}
                             </div>
