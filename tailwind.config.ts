@@ -19,7 +19,7 @@ export default {
 		},
 		extend: {
 			fontFamily: {
-				'heading': ['"EB Garamond"', 'serif'],
+				'heading': ['"Playfair Display"', 'serif'],
 				'body': ['"EB Garamond"', 'serif'],
 			},
 			colors: {
