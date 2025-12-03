@@ -25,7 +25,9 @@ export const RateHawkDataSection: React.FC<RateHawkDataSectionProps> = ({
   const [selectedRoom, setSelectedRoom] = useState<string | null>(
     selectedRoomId || null
   );
-  const [roomQuantity, setRoomQuantity] = useState(selectedQuantity);
+  const [roomQuantities, setRoomQuantities] = useState<Record<string, number>>(
+    {}
+  );
 
   // Handle the new API response format from res.json
   // The data structure is: data.data.hotels[0].rates[]
@@ -104,7 +106,10 @@ export const RateHawkDataSection: React.FC<RateHawkDataSectionProps> = ({
     // Use book_hash as the room ID for the new format
     const roomId = rate.book_hash || rate.hash || `room-${Math.random()}`;
     setSelectedRoom(roomId);
-
+    setRoomQuantities((prev) => ({
+      ...prev,
+      [roomId]: 1,
+    }));
     if (onRoomSelect) {
       const bestPrice = getBestPrice(rate);
       const roomData = {
@@ -125,15 +130,24 @@ export const RateHawkDataSection: React.FC<RateHawkDataSectionProps> = ({
           : "Cancellation policy varies",
         originalRate: rate,
       };
-      onRoomSelect(roomData, roomQuantity);
+      const selectedQuantity = roomQuantities[roomId] || 1;
+      onRoomSelect(roomData, selectedQuantity);
     }
   };
 
-  const handleQuantityChange = (newQuantity: number, rate: any) => {
+  const handleQuantityChange = (
+    roomId: string,
+    newQuantity: number,
+    rate: any
+  ) => {
+    console.log(newQuantity, "arg1", rate, "rateraterate");
     if (newQuantity < 1) return;
-    setRoomQuantity(newQuantity);
+    setRoomQuantities((prev) => ({
+      ...prev,
+      [roomId]: newQuantity,
+    }));
 
-    if (onRoomSelect) {
+    if (onRoomSelect && selectedRoom === roomId) {
       handleRoomSelect(rate);
     }
   };
@@ -233,14 +247,22 @@ export const RateHawkDataSection: React.FC<RateHawkDataSectionProps> = ({
                       Quantity:
                     </span>
                     <select
-                      value={roomQuantity}
+                      value={roomQuantities[roomId] || 1}
                       onChange={(e) =>
-                        handleQuantityChange(parseInt(e.target.value), rate)
+                        handleQuantityChange(
+                          roomId,
+                          parseInt(e.target.value),
+                          rate
+                        )
                       }
                       className="border rounded px-2 py-1 text-sm"
                     >
                       {[1, 2, 3, 4, 5].map((num) => (
-                        <option key={num} value={num}>
+                        <option
+                          key={num}
+                          value={num}
+                          disabled={rate.allotment && num > rate.allotment}
+                        >
                           {num} Room{num > 1 ? "s" : ""}
                         </option>
                       ))}
