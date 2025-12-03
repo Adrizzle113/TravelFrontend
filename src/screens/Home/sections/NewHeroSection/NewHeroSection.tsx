@@ -9,7 +9,7 @@ export const NewHeroSection = (): JSX.Element => {
 
       <div className="container mx-auto px-6 py-20 relative z-10">
         <div className="grid md:grid-cols-2 gap-12 items-center">
-          <div className="text-white">
+          <div className="text-white pl-8 md:pl-12">
             <h1 className="font-heading-very-big text-5xl lg:text-6xl mb-6 leading-tight">
               Your Gateway to Comfort and Convenience.
             </h1>
