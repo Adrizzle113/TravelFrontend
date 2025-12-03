@@ -349,7 +349,8 @@ export const HotelDetails = (): JSX.Element => {
     setSelectedQuantity(quantity);
   };
 
-  // Booking handler
+  // Booking handlerQuantity:
+
   const handleBookNow = async () => {
     const bookingPrice = selectedRoom
       ? selectedRoom.price * selectedQuantity
