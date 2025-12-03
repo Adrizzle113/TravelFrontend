@@ -1,6 +1,3 @@
-import { Button } from "../../../../components/ui/button";
-import { Input } from "../../../../components/ui/input";
-import { Calendar, MapPin, Users, Search } from "lucide-react";
 
 export const NewHeroSection = (): JSX.Element => {
   return (
@@ -16,58 +13,9 @@ export const NewHeroSection = (): JSX.Element => {
             <h1 className="font-heading-very-big text-5xl lg:text-6xl mb-6 leading-tight">
               Your Gateway to Comfort and Convenience.
             </h1>
-            <p className="text-lg opacity-90 mb-8">
+            <p className="text-lg opacity-90">
               Book now and get the best prices
             </p>
-
-            <div className="bg-white rounded-2xl p-4 shadow-2xl">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                <div className="flex items-center gap-2 bg-gray-50 rounded-lg px-4 py-3">
-                  <MapPin className="w-5 h-5 text-gray-600" />
-                  <div className="flex-1">
-                    <Input
-                      placeholder="Bali, Indonesia"
-                      className="border-0 bg-transparent p-0 h-auto focus-visible:ring-0"
-                    />
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-2 bg-gray-50 rounded-lg px-4 py-3">
-                  <Calendar className="w-5 h-5 text-gray-600" />
-                  <div className="flex-1">
-                    <Input
-                      placeholder="24/04/23"
-                      className="border-0 bg-transparent p-0 h-auto focus-visible:ring-0"
-                    />
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-2 bg-gray-50 rounded-lg px-4 py-3">
-                  <Calendar className="w-5 h-5 text-gray-600" />
-                  <div className="flex-1">
-                    <Input
-                      placeholder="25/04/23"
-                      className="border-0 bg-transparent p-0 h-auto focus-visible:ring-0"
-                    />
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-2 bg-gray-50 rounded-lg px-4 py-3">
-                  <Users className="w-5 h-5 text-gray-600" />
-                  <div className="flex-1">
-                    <Input
-                      placeholder="1 | 2"
-                      className="border-0 bg-transparent p-0 h-auto focus-visible:ring-0"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <Button className="w-full mt-4 bg-gray-900 hover:bg-gray-800 text-white py-6 rounded-xl text-base font-medium">
-                <Search className="w-5 h-5 mr-2" />
-                SEARCH
-              </Button>
-            </div>
           </div>
 
           <div className="relative flex justify-center items-center">
