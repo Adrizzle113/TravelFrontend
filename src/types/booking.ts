@@ -15,9 +15,9 @@ export interface RoomOption {
   id: string;
   name: string;
   price: number;
-    quantity?: number;
-    totalPrice? : number
-    
+  quantity?: number;
+  totalPrice?: number
+
 }
 
 export interface HotelDetails {
@@ -32,9 +32,11 @@ export interface BookingState {
   hotel: HotelDetails | null;
   selectedHotelRoom: RoomOption | null;
   search: SearchInfo | null;
+  bookingFormResponse: any | null; // BookingFormResponse from API
 
   setHotel: (hotel: HotelDetails) => void;
   setSelectedHotelRoom: (room: RoomOption) => void;
   setSearchInfo: (search: SearchInfo) => void;
+  setBookingFormResponse: (response: any) => void;
   resetBooking: () => void;
 }

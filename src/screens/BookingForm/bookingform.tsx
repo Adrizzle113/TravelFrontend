@@ -23,9 +23,9 @@ import {
   Users,
 } from "lucide-react";
 import { countriesApi, Country, ratehawkApi } from "../../lib/api";
-import bookingFormData from "./create-booking-form.json";
+
 import { useBookingStore } from "../../store/bookingStore";
-import { HotelData, SearchContext } from "../HotelDetails/types/hotelDetails";
+import { HotelData } from "../HotelDetails/types/hotelDetails";
 import { useParams, useSearchParams } from "react-router-dom";
 
 interface Guest {
@@ -179,7 +179,7 @@ const BookingForm: React.FC = () => {
     guests: [{ id: "1", firstName: "", lastName: "" }],
     specialRequests: "",
     phoneNumber: "",
-    countryCode: "+1",
+    countryCode: "+39",
     groupOfClients: "",
     paymentMethod: "payment-deposit",
     clientPrice: "3.00",
@@ -196,6 +196,18 @@ const BookingForm: React.FC = () => {
 
   const [selectedCurrency, setSelectedCurrency] = useState<string>("USD");
   const { hotelId, roomId } = useParams<{ hotelId: string; roomId: string }>();
+  
+  // Get booking form response from Zustand store
+  const { bookingFormResponse } = useBookingStore();
+  
+  // Log when booking form response is available
+  useEffect(() => {
+    if (bookingFormResponse) {
+      console.log("✅ Booking form response loaded from store:", bookingFormResponse);
+    } else {
+      console.log("⚠️ No booking form response in store, using static JSON data");
+    }
+  }, [bookingFormResponse]);
 
   const loadHotelData = async () => {
     console.log("🏨 Loading hotel details for ID:", hotelId);
@@ -235,132 +247,6 @@ const BookingForm: React.FC = () => {
       // Always fetch fresh data from the new API
       console.log("🔍 Fetching fresh hotel details from API...", currency);
 
-      // try {
-      //   const { data } = await ratehawkApi.getHotelDetails(
-      //     hotelId,
-      //     // searchContext || {},
-      //     residency,
-      //     currency
-      //   );
-      //   setHotelData(data.data.data);
-      //   console.log(data.data.data, "dataaaaaaaaaaaaaaaaa");
-      //   if (data.error) {
-      //     throw new Error(data.error);
-      //   }
-
-      //   let ratehawkData = null;
-
-      //   // Check for new API format first (data.data.hotels[0])
-      //   if (data.data.data.hotels.length > 0) {
-      //     ratehawkData = data.data.data.hotels[0];
-      //     console.log(
-      //       "🚀 ~ loadHotelData ~ NEW FORMAT ratehawkData ============= :",
-      //       ratehawkData
-      //     );
-      //   }
-      //   // Fallback to old API format (data.data.av_resp[0])
-      //   else if (
-      //     data.data &&
-      //     data.data.av_resp &&
-      //     data.data.av_resp.length > 0
-      //   ) {
-      //     ratehawkData = data.data.av_resp[0];
-      //     console.log(
-      //       "🚀 ~ loadHotelData ~ OLD FORMAT ratehawkData ============= :",
-      //       ratehawkData
-      //     );
-      //   }
-
-      //   if (ratehawkData) {
-      //     // Create enhanced hotel data
-      //     const enhancedHotelData: HotelData = {
-      //       hotel: {
-      //         id: hotelId,
-      //         name: hotelData?.hotel.name || `Hotel ${hotelId}`,
-      //         location: hotelData?.hotel.location || "Location not available",
-      //         rating: hotelData?.hotel.rating || 4.0,
-      //         reviewScore: hotelData?.hotel.reviewScore || 8.5,
-      //         reviewCount: hotelData?.hotel.reviewCount || 100,
-      //         price: hotelData?.hotel.price || {
-      //           amount: 0,
-      //           currency: "USD",
-      //           period: "night",
-      //         },
-      //         image: hotelData?.hotel.image || "/images/bedroom_interior.png",
-      //         amenities: hotelData?.hotel.amenities || [],
-      //         description: hotelData?.hotel.description || "",
-      //         ratehawk_data: {
-      //           ...hotelData?.hotel.ratehawk_data,
-      //           // For new format, pass the entire response structure
-      //           data: data.data,
-      //           rates: ratehawkData.rates || [],
-      //           hotel_lookup_info: ratehawkData.hotel_lookup_info,
-      //           requested_hotel_id: ratehawkData.requested_hotel_id,
-      //           ota_hotel_id: ratehawkData.ota_hotel_id,
-      //           master_id: ratehawkData.master_id,
-      //           // Add the new response metadata
-      //           response_metadata: {
-      //             timestamp: data.timestamp,
-      //             duration: data.duration,
-      //             sessionId: data.sessionId,
-      //             searchUuid: data.searchUuid,
-      //           },
-      //         },
-      //       },
-      //       searchContext: hotelData?.searchContext || {
-      //         destination: "Unknown",
-      //         destinationId: "",
-      //         checkin: "2025-08-31",
-      //         checkout: "2025-09-02",
-      //         guests: 2, // Fixed: guests should be a number, not an array
-      //         totalHotels: 1,
-      //         availableHotels: 1,
-      //         searchTimestamp: new Date().toISOString(),
-      //       },
-      //       allAvailableHotels: hotelData?.allAvailableHotels || 1,
-      //       selectedFromPage: hotelData?.selectedFromPage || 1,
-      //     };
-
-      //     // Update localStorage with fresh data
-      //     localStorage.setItem(
-      //       "selectedHotel",
-      //       JSON.stringify(enhancedHotelData)
-      //     );
-      //     setHotelData(enhancedHotelData);
-
-      //     console.log("✅ Hotel data updated with fresh RateHawk data:", {
-      //       ratesCount: ratehawkData.rates?.length || 0,
-      //       hotelId: ratehawkData.requested_hotel_id,
-      //       sessionId: data.sessionId,
-      //       searchUuid: data.searchUuid,
-      //       duration: data.duration,
-      //     });
-      //   } else {
-      //     console.log("⚠️ No RateHawk data in response, using saved data");
-      //     if (hotelData) {
-      //       setHotelData(hotelData);
-      //     } else {
-      //       throw new Error("No hotel data available");
-      //     }
-      //   }
-      // } catch (apiError) {
-      //   console.error("💥 Error fetching hotel details from API:", apiError);
-
-      //   // Fallback to saved data if available
-      //   if (hotelData) {
-      //     console.log("⚠️ Using saved hotel data due to API error");
-      //     setHotelData(hotelData);
-      //   } else {
-      //     throw new Error(
-      //       `Failed to load hotel details: ${
-      //         apiError instanceof Error ? apiError.message : "Unknown error"
-      //       }`
-      //     );
-      //   }
-      // }
-
-      // Check if this hotel is in favorites
-
       const favorites = JSON.parse(
         localStorage.getItem("favoriteHotels") || "[]"
       );
@@ -384,12 +270,12 @@ const BookingForm: React.FC = () => {
     let currencies: { currency: string; amount: string }[] = [];
 
     if (paymentType === "deposit" || paymentType === "gross") {
-      currencies = bookingFormData.data.bookingForm.data.payment_types
-        .filter((pt) => pt.type === "deposit")
+      currencies = bookingFormResponse.data.bookingForm.data.payment_types
+        ?.filter((pt) => pt.type === "deposit")
         .map((pt) => ({ currency: pt.currency_code, amount: pt.amount }));
     } else if (paymentType === "now") {
-      currencies = bookingFormData.data.bookingForm.data.payment_types
-        .filter((pt) => pt.type === "now")
+      currencies = bookingFormResponse.data.bookingForm.data.payment_types
+        ?.filter((pt) => pt.type === "now")
         .map((pt) => ({ currency: pt.currency_code, amount: pt.amount }));
     }
 
@@ -420,28 +306,27 @@ const BookingForm: React.FC = () => {
   // Process the JSON data into booking summary
 
   const getBookingSummary = () => {
-    const hotelData = bookingFormData.data.hotelDetails;
-    const mainPaymentType = hotelData.payment_options.payment_types[0];
+    const hotelData = bookingFormResponse?.data.hotelDetails;
+    console.log("🚀 ~ getBookingSummary ~ hotelData ========================== :", bookingFormResponse?.data.bookingForm.data.payment_types)
 
     return {
-      hotelName: "Hotel Riu Plaza New York Times Square", // From search/hotel API
-      hotelAddress: "305 West, 46th Street, New York", // From search/hotel API
+      hotelName: hotelData.hotelName, // From search/hotel API
+      hotelAddress: hotelData.hotelLocation, // From search/hotel API
       rating: 4, // From search/hotel API
-      checkIn: "October 4, 2025", // From search params
-      checkOut: "October 5, 2025", // From search params
+      checkIn: hotelData.searchContext.checkin, // From search params
+      checkOut: hotelData.searchContext.checkout, // From search params
       checkInTime: "from 16:00", // From hotel API
       checkOutTime: "until 11:00", // From hotel API
-      roomType: hotelData.room_name,
-      roomName: hotelData.room_data_trans.main_name,
-      beddingType: hotelData.room_data_trans.bedding_type,
-      adults: 2, // From search params
-      mealInfo: hotelData.meal_data.value,
-      hasBreakfast: hotelData.meal_data.has_breakfast,
-      amenities: hotelData.amenities_data,
-      freeCancellationDate:
-        mainPaymentType.cancellation_penalties.free_cancellation_before,
+      roomType: hotelData?.selectedRoomData.originalRate.room_name,
+      roomName: hotelData?.selectedRoomData.originalRate.room_data_trans?.main_name,
+      beddingType: hotelData?.selectedRoomData.originalRate.room_data_trans?.bedding_type,
+      adults: hotelData?.selectedRoomData.occupancy, 
+      mealInfo: hotelData?.selectedRoomData.originalRate.meal_data?.value,
+      hasBreakfast: hotelData?.selectedRoomData.originalRate.meal_data?.has_breakfast,
+      amenities: hotelData?.selectedRoomData.originalRate.amenities_data,
+      freeCancellationDate: hotelData?.selectedRoomData.originalRate.payment_options.payment_types[0].cancellation_penalties.free_cancellation_before ,
       loyaltyPoints: 2,
-      taxes: mainPaymentType.tax_data.taxes,
+      taxes: hotelData?.selectedRoomData.originalRate.payment_options.payment_types[0].tax_data?.taxes,
     };
   };
 
@@ -453,11 +338,11 @@ const BookingForm: React.FC = () => {
   // Common country codes for phone numbers
   const countryCodes = [
     { code: "+1", flag: "🇺🇸", name: "United States" },
-    { code: "+1", flag: "🇨🇦", name: "Canada" },
     { code: "+44", flag: "🇬🇧", name: "United Kingdom" },
     { code: "+33", flag: "🇫🇷", name: "France" },
     { code: "+49", flag: "🇩🇪", name: "Germany" },
     { code: "+39", flag: "🇮🇹", name: "Italy" },
+    { code: "+1", flag: "🇨🇦", name: "Canada" },
     { code: "+34", flag: "🇪🇸", name: "Spain" },
     { code: "+31", flag: "🇳🇱", name: "Netherlands" },
     { code: "+32", flag: "🇧🇪", name: "Belgium" },
@@ -563,12 +448,12 @@ const BookingForm: React.FC = () => {
 
     if (paymentType === "deposit" || paymentType === "gross") {
       // Both use deposit type
-      return bookingFormData.data.bookingForm.data.payment_types
-        .filter((pt) => pt.type === "deposit")
+      return bookingFormResponse.data.bookingForm.data.payment_types
+        ?.filter((pt) => pt.type === "deposit")
         .map((pt) => ({ currency: pt.currency_code, amount: pt.amount }));
     } else if (paymentType === "now") {
-      return bookingFormData.data.bookingForm.data.payment_types
-        .filter((pt) => pt.type === "now")
+      return bookingFormResponse.data.bookingForm.data.payment_types
+        ?.filter((pt) => pt.type === "now")
         .map((pt) => ({ currency: pt.currency_code, amount: pt.amount }));
     }
 
@@ -615,7 +500,7 @@ const BookingForm: React.FC = () => {
     if (formData.guests.length > 1) {
       setFormData((prev) => ({
         ...prev,
-        guests: prev.guests.filter((guest) => guest.id !== guestId),
+        guests: prev.guests?.filter((guest) => guest.id !== guestId),
       }));
     }
   };
@@ -672,7 +557,7 @@ const BookingForm: React.FC = () => {
                 <div className="mb-6">
                   <div className="flex justify-between items-center">
                     <p className="text-gray-800 font-medium">
-                      {bookingFormData.data.hotelDetails.room_name} for 2 adults
+                      {bookingFormResponse?.data.hotelDetails.selectedRoomData.originalRate.room_name} for {bookingFormResponse?.data.hotelDetails.selectedRoomData.occupancy} adults
                     </p>
                     <span className="text-gray-500 text-sm">Room 1</span>
                   </div>
@@ -881,14 +766,14 @@ const BookingForm: React.FC = () => {
                   {/* Payment Options */}
                   {(() => {
                     // Get currencies from JSON
-                    const depositCurrencies =
-                      bookingFormData.data.bookingForm.data.payment_types
-                        .filter((pt) => pt.type === "deposit")
+                    const depositCurrencies = 
+                      bookingFormResponse?.data.bookingForm.data.payment_types
+                        ?.filter((pt) => pt.type === "deposit")
                         .map((pt) => pt.currency_code);
 
                     const nowCurrencies =
-                      bookingFormData.data.bookingForm.data.payment_types
-                        .filter((pt) => pt.type === "now")
+                    bookingFormResponse?.data.bookingForm.data.payment_types
+                        ?.filter((pt) => pt.type === "now")
                         .map((pt) => pt.currency_code);
 
                     const paymentOptions = [
@@ -918,8 +803,8 @@ const BookingForm: React.FC = () => {
                     return paymentOptions.map((option) => {
                       const isSelected =
                         formData.paymentMethod === `payment-${option.id}`;
-                      const displayCurrencies = option.currencies.slice(0, 3);
-                      const remainingCount = option.currencies.length - 3;
+                      const displayCurrencies = option?.currencies?.slice(0, 3);
+                      const remainingCount = option?.currencies?.length - 3;
 
                       return (
                         <div
@@ -1198,12 +1083,14 @@ const BookingForm: React.FC = () => {
                         <RotateCcw className="h-4 w-4" />
                         <span className="text-sm">
                           Free cancellation before{" "}
-                          {new Date(
-                            summary.freeCancellationDate
-                          ).toLocaleDateString("en-US", {
-                            month: "long",
-                            day: "numeric",
-                          })}
+                          {summary.freeCancellationDate
+                            ? new Date(
+                                summary.freeCancellationDate
+                              ).toLocaleDateString("en-US", {
+                                month: "long",
+                                day: "numeric",
+                              })
+                            : "N/A"}
                           !
                         </span>
                       </div>
@@ -1212,7 +1099,7 @@ const BookingForm: React.FC = () => {
                         <span className="text-sm">Important information</span>
                       </div>
                       {/* Display amenities from JSON */}
-                      {summary.amenities.map((amenity, index) => (
+                      {summary?.amenities?.map((amenity, index) => (
                         <div
                           key={index}
                           className="flex items-center gap-2 text-gray-600"
@@ -1231,7 +1118,7 @@ const BookingForm: React.FC = () => {
                         {summary.roomType}
                       </p>
                       <p className="text-sm text-gray-600">
-                        ({summary.beddingType})
+                        {summary.beddingType}
                       </p>
                       <p className="text-sm text-gray-500 mt-1">
                         {summary.roomName}
@@ -1322,8 +1209,8 @@ const BookingForm: React.FC = () => {
                           Included in the price:
                         </p>
                         <div className="space-y-1">
-                          {summary.taxes
-                            .filter((tax) => tax.included_by_supplier)
+                          {summary?.taxes
+                            ?.filter((tax) => tax.included_by_supplier)
                             .map((tax, index) => (
                               <div
                                 key={index}
@@ -1346,8 +1233,8 @@ const BookingForm: React.FC = () => {
                           To pay upon arrival (not included in the price):
                         </p>
                         <div className="space-y-1">
-                          {summary.taxes
-                            .filter((tax) => !tax.included_by_supplier)
+                          {summary?.taxes
+                            ?.filter((tax) => !tax.included_by_supplier)
                             .map((tax, index) => (
                               <div
                                 key={index}
