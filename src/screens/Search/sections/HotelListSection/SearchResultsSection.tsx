@@ -377,13 +377,13 @@ export const SearchResultsSection = ({
                           </div>
 
                           {/* review score */}
-                          {hotel.reviewScore > 0 && (
+                          {hotel.ratehawk_data?.static_vm?.rating_total > 0 && (
                             <div className="flex items-center ml-2">
                               <span className="font-bold text-[#073937] text-[16.5px]">
-                                {hotel.reviewScore}/10
+                                {hotel.ratehawk_data?.static_vm?.rating_total}/10
                               </span>
                               <span className="text-[#073937] text-[14px] ml-1">
-                                {getRatingText(hotel.reviewScore)}
+                                {getRatingText(hotel.ratehawk_data?.static_vm?.rating_total || 0)}
                               </span>
                               {!!hotel.reviewCount && (
                                 <span className="text-[#073937] text-[14px] ml-1">

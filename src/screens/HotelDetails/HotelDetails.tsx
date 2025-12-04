@@ -78,12 +78,16 @@ export const HotelDetails = (): JSX.Element => {
   const [isFavorite, setIsFavorite] = useState(false);
   const [selectedRoom, setSelectedRoom] = useState<ProcessedRoom | null>(null);
   const [selectedQuantity, setSelectedQuantity] = useState(1);
-  const { setSelectedHotelRoom, setHotel, setBookingFormResponse } = useBookingStore();
+  const { setSelectedHotelRoom, setHotel, setBookingFormResponse } =
+    useBookingStore();
   // Load hotel data on mount
   useEffect(() => {
     loadHotelData();
   }, [hotelId]);
-
+  console.log(
+    "🚀 ~ HotelDetails ~ hotelData?.hotel.ratehawk_data.rating_total ================================================ :",
+    hotelData
+  );
   const loadHotelData = async () => {
     console.log("🏨 Loading hotel details for ID:", hotelId);
     setLoading(true);
@@ -166,7 +170,8 @@ export const HotelDetails = (): JSX.Element => {
               name: hotelData?.hotel.name || `Hotel ${hotelId}`,
               location: hotelData?.hotel.location || "Location not available",
               rating: hotelData?.hotel.rating || 4.0,
-              reviewScore: hotelData?.hotel.reviewScore || 8.5,
+              reviewScore:
+                hotelData?.hotel.ratehawk_data.static_vm.rating_total || 8.5,
               reviewCount: hotelData?.hotel.reviewCount || 100,
               price: hotelData?.hotel.price || {
                 amount: 0,
@@ -396,7 +401,7 @@ export const HotelDetails = (): JSX.Element => {
     };
     const response = await ratehawkApi.bookingForm(payload);
     console.log("📥 Booking form response:", response);
-    
+
     // Store the booking form response in Zustand store for use on the booking form page
     // response is { response: Response, data: BookingFormResponse }
     // We store the data part which contains the booking form response
@@ -404,7 +409,7 @@ export const HotelDetails = (): JSX.Element => {
       setBookingFormResponse(response.data);
       console.log("✅ Booking form response saved to store:", response.data);
     }
-    
+
     // Navigate to booking form page
     navigate(`/hotel_booking_form/${hotelId}/${selectedRoom?.id}`);
   };
