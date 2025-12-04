@@ -78,7 +78,7 @@ export const HotelDetails = (): JSX.Element => {
   const [isFavorite, setIsFavorite] = useState(false);
   const [selectedRoom, setSelectedRoom] = useState<ProcessedRoom | null>(null);
   const [selectedQuantity, setSelectedQuantity] = useState(1);
-  const { setSelectedHotelRoom, setHotel } = useBookingStore();
+  const { setSelectedHotelRoom, setHotel, setBookingFormResponse } = useBookingStore();
   // Load hotel data on mount
   useEffect(() => {
     loadHotelData();
@@ -396,6 +396,15 @@ export const HotelDetails = (): JSX.Element => {
     };
     const response = await ratehawkApi.bookingForm(payload);
     console.log("📥 Booking form response:", response);
+    
+    // Store the booking form response in Zustand store for use on the booking form page
+    // response is { response: Response, data: BookingFormResponse }
+    // We store the data part which contains the booking form response
+    if (response?.data) {
+      setBookingFormResponse(response.data);
+      console.log("✅ Booking form response saved to store:", response.data);
+    }
+    
     // Navigate to booking form page
     navigate(`/hotel_booking_form/${hotelId}/${selectedRoom?.id}`);
   };
