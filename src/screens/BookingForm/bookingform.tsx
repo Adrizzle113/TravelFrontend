@@ -196,16 +196,21 @@ const BookingForm: React.FC = () => {
 
   const [selectedCurrency, setSelectedCurrency] = useState<string>("USD");
   const { hotelId, roomId } = useParams<{ hotelId: string; roomId: string }>();
-  
+
   // Get booking form response from Zustand store
   const { bookingFormResponse } = useBookingStore();
-  
+
   // Log when booking form response is available
   useEffect(() => {
     if (bookingFormResponse) {
-      console.log("✅ Booking form response loaded from store:", bookingFormResponse);
+      console.log(
+        "✅ Booking form response loaded from store:",
+        bookingFormResponse
+      );
     } else {
-      console.log("⚠️ No booking form response in store, using static JSON data");
+      console.log(
+        "⚠️ No booking form response in store, using static JSON data"
+      );
     }
   }, [bookingFormResponse]);
 
@@ -307,7 +312,10 @@ const BookingForm: React.FC = () => {
 
   const getBookingSummary = () => {
     const hotelData = bookingFormResponse?.data.hotelDetails;
-    console.log("🚀 ~ getBookingSummary ~ hotelData ========================== :", bookingFormResponse?.data.bookingForm.data.payment_types)
+    console.log(
+      "🚀 ~ getBookingSummary ~ hotelData ========================== :",
+      bookingFormResponse?.data.bookingForm.data.payment_types
+    );
 
     return {
       hotelName: hotelData.hotelName, // From search/hotel API
@@ -318,15 +326,22 @@ const BookingForm: React.FC = () => {
       checkInTime: "from 16:00", // From hotel API
       checkOutTime: "until 11:00", // From hotel API
       roomType: hotelData?.selectedRoomData.originalRate.room_name,
-      roomName: hotelData?.selectedRoomData.originalRate.room_data_trans?.main_name,
-      beddingType: hotelData?.selectedRoomData.originalRate.room_data_trans?.bedding_type,
-      adults: hotelData?.selectedRoomData.occupancy, 
+      roomName:
+        hotelData?.selectedRoomData.originalRate.room_data_trans?.main_name,
+      beddingType:
+        hotelData?.selectedRoomData.originalRate.room_data_trans?.bedding_type,
+      adults: hotelData?.selectedRoomData.occupancy,
       mealInfo: hotelData?.selectedRoomData.originalRate.meal_data?.value,
-      hasBreakfast: hotelData?.selectedRoomData.originalRate.meal_data?.has_breakfast,
+      hasBreakfast:
+        hotelData?.selectedRoomData.originalRate.meal_data?.has_breakfast,
       amenities: hotelData?.selectedRoomData.originalRate.amenities_data,
-      freeCancellationDate: hotelData?.selectedRoomData.originalRate.payment_options.payment_types[0].cancellation_penalties.free_cancellation_before ,
+      freeCancellationDate:
+        hotelData?.selectedRoomData.originalRate.payment_options
+          .payment_types[0].cancellation_penalties.free_cancellation_before,
       loyaltyPoints: 2,
-      taxes: hotelData?.selectedRoomData.originalRate.payment_options.payment_types[0].tax_data?.taxes,
+      taxes:
+        hotelData?.selectedRoomData.originalRate.payment_options
+          .payment_types[0].tax_data?.taxes,
     };
   };
 
@@ -557,7 +572,16 @@ const BookingForm: React.FC = () => {
                 <div className="mb-6">
                   <div className="flex justify-between items-center">
                     <p className="text-gray-800 font-medium">
-                      {bookingFormResponse?.data.hotelDetails.selectedRoomData.originalRate.room_name} for {bookingFormResponse?.data.hotelDetails.selectedRoomData.occupancy} adults
+                      {
+                        bookingFormResponse?.data?.hotelDetails
+                          ?.selectedRoomData?.originalRate?.room_name
+                      }{" "}
+                      for{" "}
+                      {
+                        bookingFormResponse?.data.hotelDetails.selectedRoomData
+                          .occupancy
+                      }{" "}
+                      adults
                     </p>
                     <span className="text-gray-500 text-sm">Room 1</span>
                   </div>
@@ -766,13 +790,13 @@ const BookingForm: React.FC = () => {
                   {/* Payment Options */}
                   {(() => {
                     // Get currencies from JSON
-                    const depositCurrencies = 
+                    const depositCurrencies =
                       bookingFormResponse?.data.bookingForm.data.payment_types
                         ?.filter((pt) => pt.type === "deposit")
                         .map((pt) => pt.currency_code);
 
                     const nowCurrencies =
-                    bookingFormResponse?.data.bookingForm.data.payment_types
+                      bookingFormResponse?.data.bookingForm.data.payment_types
                         ?.filter((pt) => pt.type === "now")
                         .map((pt) => pt.currency_code);
 
