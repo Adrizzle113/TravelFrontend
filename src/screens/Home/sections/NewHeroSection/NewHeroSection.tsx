@@ -27,7 +27,7 @@ export const NewHeroSection = (): JSX.Element => {
 
           {/* Main content grid */}
           <div className="grid lg:grid-cols-2 gap-16 items-center mt-12">
-            
+            {/* Left side - Text and images */}
             <div className="relative">
               <h1 className="font-heading-very-big text-6xl lg:text-7xl leading-tight text-gray-900 mb-12">
                 <span className="inline-flex items-center">
@@ -72,7 +72,7 @@ export const NewHeroSection = (): JSX.Element => {
                   <img
                     src="https://images.pexels.com/photos/1020974/pexels-photo-1020974.jpeg?auto=compress&cs=tinysrgb&w=800"
                     alt="European Street"
-                    className="w-full h-[300px] object-cover"
+                    className="w-[800px] h-[300px] object-cover"
                   />
                 </div>
               </div>
