@@ -68,11 +68,11 @@ export const NewHeroSection = (): JSX.Element => {
 
               {/* Large rounded image */}
               <div className="relative mt-8">
-                <div className="w-full max-w-md rounded-[60px] overflow-hidden shadow-xl">
+                <div className="w-full max-w-md aspect-[4/3] rounded-full overflow-hidden shadow-2xl border-4 border-white/20">
                   <img
                     src="https://images.pexels.com/photos/1020974/pexels-photo-1020974.jpeg?auto=compress&cs=tinysrgb&w=800"
                     alt="European Street"
-                    className="w-full h-[300px] object-cover"
+                    className="w-full h-full object-cover"
                   />
                 </div>
               </div>
