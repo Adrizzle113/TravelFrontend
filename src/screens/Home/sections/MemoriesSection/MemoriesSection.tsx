@@ -42,7 +42,7 @@ export const MemoriesSection = (): JSX.Element => {
           </div>
 
           <div className="relative">
-            <div className="w-full aspect-[3/4] rounded-t-[200px] rounded-b-[200px] overflow-hidden shadow-2xl border-4 border-white/20">
+            <div className="w-full aspect-[3/4] rounded-full overflow-hidden shadow-2xl border-4 border-white/20">
               <img
                 src="/images/living_room_decor.png"
                 alt="Comfort"
