@@ -78,27 +78,23 @@ export const NewHeroSection = (): JSX.Element => {
               </div>
             </div>
 
-            {/* Right side - Circular image and stats */}
-            <div className="relative flex flex-col items-center justify-center">
-              {/* Decorative stars */}
-              <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-8">
-                <div className="flex gap-4">
-                  <div className="w-8 h-8 text-gray-900">✦</div>
-                  <div className="w-6 h-6 text-gray-900">✦</div>
-                </div>
-              </div>
+            {/* Right side - Organic tall image */}
+<div className="relative mb-12">
+  {/* Glow gradient */}
+  <div className="absolute inset-0 bg-gradient-to-br from-pink-200 via-pink-100 to-transparent rounded-[200px] blur-2xl scale-110"></div>
 
-              {/* Circular image with gradient background */}
-              <div className="relative mb-12">
-                <div className="absolute inset-0 bg-gradient-to-br from-pink-200 via-pink-100 to-transparent rounded-full blur-2xl transform scale-110"></div>
-                <div className="relative w-80 aspect-[3/4] rounded-full overflow-hidden shadow-2xl border-4 border-white/20">
-                  <img
-                    src="https://images.pexels.com/photos/1470502/pexels-photo-1470502.jpeg?auto=compress&cs=tinysrgb&w=800"
-                    alt="European Buildings"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              </div>
+  {/* Image container with asymmetric radius */}
+  <div className="
+    relative w-80 aspect-[3/4] overflow-hidden shadow-2xl border-4 border-white/20
+    rounded-tl-[140px] rounded-tr-[180px] rounded-br-[140px] rounded-bl-[200px]
+  ">
+    <img
+      src="https://images.pexels.com/photos/1470502/pexels-photo-1470502.jpeg?auto=compress&cs=tinysrgb&w=800"
+      alt="European Buildings"
+      className="w-full h-full object-cover"
+    />
+  </div>
+</div>
 
               {/* Stats section */}
               <div className="text-left w-full max-w-xs">
