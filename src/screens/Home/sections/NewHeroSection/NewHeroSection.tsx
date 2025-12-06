@@ -112,9 +112,9 @@ export const NewHeroSection = (): JSX.Element => {
                   Many countries have beautiful tours, then why do you just lie at home? let's explore various countries without further ado
                 </p>
               </div>
-         
+            </div>
           </div>
         </div>
-    </section>
+    
   );
 };
