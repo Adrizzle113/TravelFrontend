@@ -103,11 +103,11 @@ export const NewHeroSection = (): JSX.Element => {
   className="
     absolute inset-0
     bg-gradient-to-br
-    from-pink-100/0
-    via-[#f370bb]/70
+    from-transparent
+    via-[#f370bb]/90
     to-transparent
     rounded-[200px]
-    blur-3xl
+    blur-[70px]
     scale-110
   "
 />
