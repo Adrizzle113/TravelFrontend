@@ -1,15 +1,6 @@
 export const NewHeroSection = (): JSX.Element => {
   return (
     <section className="relative w-full min-h-screen bg-[#E8DDD3] overflow-hidden py-12 px-6">
-      {/* Decorative dots - bottom left */}
-      <div className="absolute bottom-12 left-12 opacity-40">
-        <div className="grid grid-cols-4 gap-3">
-          {[...Array(16)].map((_, i) => (
-            <div key={i} className="w-2 h-2 rounded-full bg-rose-300" />
-          ))}
-        </div>
-      </div>
-
       {/* Decorative dots - top right */}
       <div className="absolute top-32 right-24 opacity-40">
         <div className="grid grid-cols-4 gap-3">
