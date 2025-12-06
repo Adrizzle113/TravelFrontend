@@ -101,11 +101,15 @@ export const NewHeroSection = (): JSX.Element => {
               {/* Glow gradient */}
               <div
   className="
-    absolute -top-6 -right-6 
+    absolute -top-6 -right-6
     w-[180px] h-[180px]
     rounded-full
-    bg-gradient-to-br from-pink-200 via-pink-100 to-transparent
-    blur-3xl opacity-80
+    bg-gradient-to-br
+    from-pink-200
+    via-[#f370bb]
+    to-transparent
+    blur-3xl
+    opacity-90
   "
 />
 
