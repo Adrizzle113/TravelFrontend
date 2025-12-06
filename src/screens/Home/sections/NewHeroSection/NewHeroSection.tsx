@@ -96,7 +96,7 @@ export const NewHeroSection = (): JSX.Element => {
                 {/* Image container with asymmetric radius */}
   <div className="
     relative w-80 aspect-[3/4] overflow-hidden shadow-2xl border-4 border-white/20
-    rounded-tl-[140px] rounded-tr-[140px] rounded-br-[140px] rounded-bl-[200px]
+    rounded-tl-[140px] rounded-tr-[140px] rounded-br-[140px] rounded-bl-[140px]
   ">
     <img
       src="https://images.pexels.com/photos/1470502/pexels-photo-1470502.jpeg?auto=compress&cs=tinysrgb&w=800"
