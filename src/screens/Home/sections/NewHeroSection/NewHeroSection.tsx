@@ -1,35 +1,24 @@
 export const NewHeroSection = (): JSX.Element => {
   return (
-    <section className="relative w-full min-h-screen bg-[#E8DDD3] overflow-hidden py-12 px-6">
-
-      {/* Main content container */}
-      <div className="container mx-auto max-w-7xl">
-        {/* Top header */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold text-gray-900">Lifo</h2>
-          <p className="text-gray-600 text-sm">Trip Hero Header Image</p>
-        </div>
-
-        {/* White card container */}
-        <div className="bg-white rounded-[40px] p-12 shadow-lg relative overflow-hidden w-screen h-screen">
+    <section className="relative w-screen h-screen bg-black overflow-hidden p-12">
           {/* Logo badge */}
-          <div className="inline-flex items-center justify-center w-20 h-20 border-2 border-gray-900 rounded-[20px] mb-8">
-            <span className="text-lg font-light">Lifo</span>
+          <div className="inline-flex items-center justify-center w-20 h-20 border-2 border-white rounded-[20px] mb-8">
+            <span className="text-lg font-light text-white">Lifo</span>
           </div>
 
           {/* Navigation */}
           <nav className="absolute top-12 right-12 flex gap-8">
-            <a href="#" className="text-gray-900 hover:text-gray-600">Menu</a>
-            <a href="#" className="text-gray-900 hover:text-gray-600">Aboout</a>
-            <a href="#" className="text-gray-900 hover:text-gray-600">Trip</a>
-            <a href="#" className="text-gray-900 hover:text-gray-600">Service</a>
+            <a href="#" className="text-white hover:text-gray-300">Menu</a>
+            <a href="#" className="text-white hover:text-gray-300">Aboout</a>
+            <a href="#" className="text-white hover:text-gray-300">Trip</a>
+            <a href="#" className="text-white hover:text-gray-300">Service</a>
           </nav>
 
           {/* Main content grid */}
           <div className="grid lg:grid-cols-2 gap-16 items-center mt-12">
             {/* Left side - Text and images */}
             <div className="relative">
-              <h1 className="font-heading-very-big text-6xl lg:text-7xl leading-tight text-gray-900 mb-12">
+              <h1 className="font-heading-very-big text-6xl lg:text-7xl leading-tight text-white mb-12">
                 <span className="inline-flex items-center">
                   Exploring{" "}
                   <span className="inline-block w-24 h-12 mx-4 rounded-full overflow-hidden">
@@ -83,8 +72,8 @@ export const NewHeroSection = (): JSX.Element => {
               {/* Decorative stars */}
               <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-8">
                 <div className="flex gap-4">
-                  <div className="w-8 h-8 text-gray-900">✦</div>
-                  <div className="w-6 h-6 text-gray-900">✦</div>
+                  <div className="w-8 h-8 text-white">✦</div>
+                  <div className="w-6 h-6 text-white">✦</div>
                 </div>
               </div>
 
@@ -103,18 +92,16 @@ export const NewHeroSection = (): JSX.Element => {
               {/* Stats section */}
               <div className="text-left w-full max-w-xs">
                 <div className="flex items-center gap-4 mb-4">
-                  <span className="text-2xl font-light">01</span>
-                  <div className="flex-1 h-px bg-gray-300"></div>
-                  <span className="text-2xl font-light">294</span>
+                  <span className="text-2xl font-light text-white">01</span>
+                  <div className="flex-1 h-px bg-gray-600"></div>
+                  <span className="text-2xl font-light text-white">294</span>
                 </div>
-                <p className="text-gray-600 leading-relaxed">
+                <p className="text-gray-300 leading-relaxed">
                   Many countries have beautiful tours, then why do you just lie at home? let's explore various countries without further ado
                 </p>
               </div>
             </div>
           </div>
-        </div>
-      </div>
     </section>
   );
 };
