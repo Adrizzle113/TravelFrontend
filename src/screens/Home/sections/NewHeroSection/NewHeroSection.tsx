@@ -57,8 +57,8 @@ export const NewHeroSection = (): JSX.Element => {
                 className="
                   absolute inset-0 
                   rounded-[120px] 
-                  border-[1.25px] border-black 
-                  translate-x-2 translate-y-2
+                  border-[1.25px] border-black
+                  translate-x-4 -translate-y-4
                   pointer-events-none
                 "
               />
