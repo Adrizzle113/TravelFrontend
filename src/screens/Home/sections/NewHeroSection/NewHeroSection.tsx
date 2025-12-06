@@ -99,7 +99,15 @@ export const NewHeroSection = (): JSX.Element => {
 
 
               {/* Glow gradient */}
-              <div className="absolute inset-0 bg-gradient-to-br from-pink-200 via-pink-100 to-transparent rounded-[200px] blur-2xl scale-110" />
+              <div
+  className="
+    absolute -top-6 -right-6 
+    w-[180px] h-[180px]
+    rounded-full
+    bg-gradient-to-br from-pink-200 via-pink-100 to-transparent
+    blur-3xl opacity-80
+  "
+/>
 
               {/* Image container */}
               <div
