@@ -18,7 +18,7 @@ export const NewHeroSection = (): JSX.Element => {
           <div className="grid lg:grid-cols-2 gap-16 items-center mt-12">
             {/* Left side - Text and images */}
             <div className="relative">
-              <h1 className="font-heading-very-big text-6xl lg:text-7xl leading-tight text-white mb-12">
+              <h1 className="font-heading-very-big text-6xl lg:text-7xl leading-tight text-black mb-12">
                 <span className="inline-flex items-center">
                   Exploring{" "}
                   <span className="inline-block w-24 h-12 mx-4 rounded-full overflow-hidden">
