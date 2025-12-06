@@ -68,11 +68,11 @@ export const NewHeroSection = (): JSX.Element => {
 
               {/* Large rounded image */}
               <div className="relative mt-8">
-                <div className="w-full aspect-[4/3] rounded-[120px] overflow-hidden shadow-xl">
+                <div className="w-full rounded-[80px] overflow-hidden shadow-xl">
                   <img
                     src="https://images.pexels.com/photos/1020974/pexels-photo-1020974.jpeg?auto=compress&cs=tinysrgb&w=800"
                     alt="European Street"
-                    className="w-full h-full object-cover"
+                    className="w-full h-[400px] object-cover"
                   />
                 </div>
               </div>
@@ -91,7 +91,7 @@ export const NewHeroSection = (): JSX.Element => {
               {/* Circular image with gradient background */}
               <div className="relative mb-12">
                 <div className="absolute inset-0 bg-gradient-to-br from-pink-200 via-pink-100 to-transparent rounded-full blur-2xl transform scale-110"></div>
-                <div className="relative w-80 aspect-[3/4] rounded-[120px] overflow-hidden shadow-2xl border-4 border-white/20">
+                <div className="relative w-80 aspect-[3/4] rounded-full overflow-hidden shadow-2xl border-4 border-white/20">
                   <img
                     src="https://images.pexels.com/photos/1470502/pexels-photo-1470502.jpeg?auto=compress&cs=tinysrgb&w=800"
                     alt="European Buildings"
@@ -104,7 +104,7 @@ export const NewHeroSection = (): JSX.Element => {
               <div className="text-left w-full max-w-xs">
                 <div className="flex items-center gap-4 mb-4">
                   <span className="text-2xl font-light">01</span>
-                  <div className="flex-1 h-px bg-gray-250"></div>
+                  <div className="flex-1 h-px bg-gray-300"></div>
                   <span className="text-2xl font-light">294</span>
                 </div>
                 <p className="text-gray-600 leading-relaxed">
