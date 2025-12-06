@@ -104,7 +104,7 @@ export const NewHeroSection = (): JSX.Element => {
               <div className="text-left w-full max-w-xs">
                 <div className="flex items-center gap-4 mb-4">
                   <span className="text-2xl font-light">01</span>
-                  <div className="flex-1 h-px bg-gray-300"></div>
+                  <div className="flex-1 h-px bg-gray-250"></div>
                   <span className="text-2xl font-light">294</span>
                 </div>
                 <p className="text-gray-600 leading-relaxed">
