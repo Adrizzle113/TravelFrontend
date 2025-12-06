@@ -11,7 +11,7 @@ export const NewHeroSection = (): JSX.Element => {
         </div>
 
         {/* White card container */}
-        <div className="bg-white rounded-[40px] p-12 shadow-lg relative overflow-hidden">
+        <div className="bg-white rounded-[40px] p-12 shadow-lg relative overflow-hidden w-screen h-screen">
           {/* Logo badge */}
           <div className="inline-flex items-center justify-center w-20 h-20 border-2 border-gray-900 rounded-[20px] mb-8">
             <span className="text-lg font-light">Lifo</span>
