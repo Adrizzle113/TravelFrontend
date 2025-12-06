@@ -1,14 +1,6 @@
 export const NewHeroSection = (): JSX.Element => {
   return (
-    <section className="relative w-full min-h-screen bg-[#E8DDD3] overflow-hidden py-12 px-6">
-      {/* Decorative dots - top right */}
-      <div className="absolute top-32 right-24 opacity-40">
-        <div className="grid grid-cols-4 gap-3">
-          {[...Array(16)].map((_, i) => (
-            <div key={i} className="w-2 h-2 rounded-full bg-rose-300" />
-          ))}
-        </div>
-      </div>
+    <section className="relative w-full min-h-screen bg-white overflow-hidden py-12 px-6">
 
       {/* Main content container */}
       <div className="container mx-auto max-w-7xl">
@@ -99,7 +91,7 @@ export const NewHeroSection = (): JSX.Element => {
               {/* Circular image with gradient background */}
               <div className="relative mb-12">
                 <div className="absolute inset-0 bg-gradient-to-br from-pink-200 via-pink-100 to-transparent rounded-full blur-2xl transform scale-110"></div>
-                <div className="w-full aspect-[3/4] rounded-full overflow-hidden shadow-2xl border-4 border-white/20">
+                <div className="relative w-80 h-80 rounded-full overflow-hidden shadow-2xl border-8 border-white">
                   <img
                     src="https://images.pexels.com/photos/1470502/pexels-photo-1470502.jpeg?auto=compress&cs=tinysrgb&w=800"
                     alt="European Buildings"
