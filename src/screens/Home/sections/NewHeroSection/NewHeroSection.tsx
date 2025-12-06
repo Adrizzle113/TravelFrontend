@@ -99,7 +99,7 @@ export const NewHeroSection = (): JSX.Element => {
 
 
               {/* Glow gradient */}
-              <<div
+              <div
     className="
       pointer-events-none
       absolute -top-6 -right-10
