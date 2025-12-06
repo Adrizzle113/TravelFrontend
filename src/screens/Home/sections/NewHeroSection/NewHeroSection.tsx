@@ -8,10 +8,10 @@ export const NewHeroSection = (): JSX.Element => {
 
           {/* Navigation */}
           <nav className="absolute top-12 right-12 flex gap-8">
-            <a href="#" className="text-white hover:text-gray-300">Menu</a>
-            <a href="#" className="text-white hover:text-gray-300">Aboout</a>
-            <a href="#" className="text-white hover:text-gray-300">Trip</a>
-            <a href="#" className="text-white hover:text-gray-300">Service</a>
+            <a href="#" className="text-black hover:text-gray-300">Menu</a>
+            <a href="#" className="text-black hover:text-gray-300">Aboout</a>
+            <a href="#" className="text-black hover:text-gray-300">Trip</a>
+            <a href="#" className="text-black hover:text-gray-300">Service</a>
           </nav>
 
           {/* Main content grid */}
