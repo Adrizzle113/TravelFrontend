@@ -94,15 +94,18 @@ export const NewHeroSection = (): JSX.Element => {
                 {/* Glow gradient */}
                 <div className="absolute inset-0 bg-gradient-to-br from-pink-200 via-pink-100 to-transparent rounded-[200px]                   blur-2xl scale-110"></div>
                 {/* Image container with asymmetric radius */}
-  <div className="
-    relative w-80 aspect-[3/4] overflow-hidden shadow-2xl border-4 border-white/20
-    rounded-tl-[180px] rounded-tr-[180px] rounded-br-[180px] rounded-bl-[180px]
-  ">
-    <img
-      src="https://images.pexels.com/photos/1470502/pexels-photo-1470502.jpeg?auto=compress&cs=tinysrgb&w=800"
-      alt="European Buildings"
-      className="w-full h-full object-cover"
-    />
+  <div
+  className="
+    relative w-[260px] aspect-[3/4] overflow-hidden shadow-2xl border-4 border-white/20
+    rounded-[180px]
+  "
+>
+  <img
+    src="https://images.pexels.com/photos/1470502/pexels-photo-1470502.jpeg?auto=compress&cs=tinysrgb&w=800"
+    alt="European Buildings"
+    className="w-full h-full object-cover"
+  />
+</div>
                 </div>
               </div>
 
