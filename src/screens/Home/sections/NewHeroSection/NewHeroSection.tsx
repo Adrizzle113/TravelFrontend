@@ -104,7 +104,7 @@ export const NewHeroSection = (): JSX.Element => {
               {/* Image container */}
               <div
                 className="
-                  relative w-[250px] h-[350px] overflow-hidden shadow-2xl
+                  relative w-[250px] h-[380px] overflow-hidden shadow-2xl
                   rounded-[180px]
                 "
               >
