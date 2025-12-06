@@ -88,7 +88,7 @@ export const NewHeroSection = (): JSX.Element => {
       className="w-full h-[250px] object-cover"
     />
   </div>
-</div>
+
 
             {/* Right side - Circular image and stats */}
             <div className="relative flex flex-col items-center justify-center">
