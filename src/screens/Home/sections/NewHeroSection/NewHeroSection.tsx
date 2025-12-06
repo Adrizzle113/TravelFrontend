@@ -109,7 +109,7 @@ export const NewHeroSection = (): JSX.Element => {
     via-[#f370bb]
     to-transparent
     blur-3xl
-    opacity-90
+    opacity-0
   "
 />
 
