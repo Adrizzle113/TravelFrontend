@@ -10,18 +10,20 @@ export const NewHeroSection = (): JSX.Element => {
           <p className="text-gray-600 text-sm">Trip Hero Header Image</p>
         </div>
 
-          {/* Logo badge */}
+          {/* Logo badge 
           <div className="inline-flex items-center justify-center w-20 h-20 border-2 border-gray-900 rounded-[20px] mb-8">
             <span className="text-lg font-light">Lifo</span>
           </div>
+          */}
 
-          {/* Navigation */}
+          {/* Navigation
           <nav className="absolute top-12 right-12 flex gap-8">
             <a href="#" className="text-gray-900 hover:text-gray-600">Menu</a>
             <a href="#" className="text-gray-900 hover:text-gray-600">Aboout</a>
             <a href="#" className="text-gray-900 hover:text-gray-600">Trip</a>
             <a href="#" className="text-gray-900 hover:text-gray-600">Service</a>
-          </nav>
+          </nav >
+         */}
 
           {/* Main content grid */}
           <div className="grid lg:grid-cols-2 gap-16 items-center mt-12">
