@@ -91,8 +91,7 @@ export const NewHeroSection = (): JSX.Element => {
               {/* Circular image with gradient background */}
               <div className="relative mb-12">
                 <div className="absolute inset-0 bg-gradient-to-br from-pink-200 via-pink-100 to-transparent rounded-full blur-2xl transform scale-110"></div>
-                <div className="relative w-80 h-80 rounded-50px overflow-hidden shadow-2xl border-8 border-white">
-                  "w-full aspect-[3/4] rounded-full overflow-hidden shadow-2xl border-4 border-white/20">
+                <div className="relative w-80 h-80 rounded-[50px] overflow-hidden shadow-2xl border-8 border-white">
                   <img
                     src="https://images.pexels.com/photos/1470502/pexels-photo-1470502.jpeg?auto=compress&cs=tinysrgb&w=800"
                     alt="European Buildings"
@@ -114,7 +113,7 @@ export const NewHeroSection = (): JSX.Element => {
               </div>
             </div>
           </div>
-       
+        </div>
     </section>
   );
 };
