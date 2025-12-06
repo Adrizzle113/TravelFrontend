@@ -104,11 +104,13 @@ export const NewHeroSection = (): JSX.Element => {
     absolute inset-0
     bg-gradient-to-br
     from-transparent
-    via-[#f370bb]/90
+    via-[#f370bb]/80
     to-transparent
     rounded-[200px]
-    blur-[70px]
-    scale-110
+    blur-3xl
+    scale-[1.35]
+    -translate-y-10
+    translate-x-10
   "
 />
 
