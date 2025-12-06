@@ -22,7 +22,7 @@ export const MemoriesSection = (): JSX.Element => {
 
         <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto mt-20">
           <div className="relative">
-            <div className="w-full aspect-[3/4] rounded-t-[200px] overflow-hidden shadow-2xl border-4 border-white/20">
+            <div className="w-full aspect-[3/4] rounded-full overflow-hidden shadow-2xl border-4 border-white/20">
               <img
                 src="/images/bedroom_interior.png"
                 alt="Luxury Room"
