@@ -67,16 +67,28 @@ export const NewHeroSection = (): JSX.Element => {
               </h1>
 
               {/* Large rounded image left */}
-              <div className="relative mt-8">
-                <div className="w-full rounded-[120px] overflow-hidden shadow-xl">
-                  <img
-                    src="https://images.pexels.com/photos/1020974/pexels-photo-1020974.jpeg?auto=compress&cs=tinysrgb&w=800"
-                    alt="European Street"
-                    className="w-full h-[250px] object-cover"
-                  />
-                </div>
-              </div>
-            </div>
+<div className="relative mt-8">
+  
+  {/* Outline behind the image */}
+  <div
+    className="
+      absolute inset-0 
+      rounded-[120px] 
+      border-[2.5px] border-black/20 
+      translate-x-2 translate-y-2
+      pointer-events-none
+    "
+  ></div>
+
+  {/* Image Container */}
+  <div className="w-full rounded-[120px] overflow-hidden shadow-xl relative">
+    <img
+      src="https://images.pexels.com/photos/1020974/pexels-photo-1020974.jpeg?auto=compress&cs=tinysrgb&w=800"
+      alt="European Street"
+      className="w-full h-[250px] object-cover"
+    />
+  </div>
+</div>
 
             {/* Right side - Circular image and stats */}
             <div className="relative flex flex-col items-center justify-center">
