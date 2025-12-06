@@ -66,7 +66,7 @@ export const NewHeroSection = (): JSX.Element => {
                 </span>
               </h1>
 
-              {/* Large rounded image */}
+              {/* Large rounded image left */}
               <div className="relative mt-8">
                 <div className="w-full rounded-[120px] overflow-hidden shadow-xl">
                   <img
