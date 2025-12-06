@@ -91,11 +91,12 @@ export const NewHeroSection = (): JSX.Element => {
                 className="
                   absolute inset-0
                   rounded-[180px]
-                  border-[2.5px] border-black/15
-                  translate-x-2 translate-y-2
+                  border-[1.25px] border-black
+                  translate-x-4 -translate-y-4
                   pointer-events-none
                 "
               />
+
 
               {/* Glow gradient */}
               <div className="absolute inset-0 bg-gradient-to-br from-pink-200 via-pink-100 to-transparent rounded-[200px] blur-2xl scale-110" />
