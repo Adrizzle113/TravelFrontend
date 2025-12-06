@@ -1,6 +1,6 @@
 export const NewHeroSection = (): JSX.Element => {
   return (
-    <section className="relative w-screen h-screen bg-black overflow-hidden p-12">
+    <section className="relative w-screen h-screen bg-white overflow-hidden p-12">
           {/* Logo badge */}
           <div className="inline-flex items-center justify-center w-20 h-20 border-2 border-white rounded-[20px] mb-8">
             <span className="text-lg font-light text-white">Lifo</span>
