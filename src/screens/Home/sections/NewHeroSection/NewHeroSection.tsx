@@ -105,7 +105,7 @@ export const NewHeroSection = (): JSX.Element => {
     alt="European Buildings"
     className="w-full h-full object-cover"
   />
-</div>
+
                 </div>
               </div>
 
