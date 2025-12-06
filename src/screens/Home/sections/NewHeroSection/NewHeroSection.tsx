@@ -72,7 +72,7 @@ export const NewHeroSection = (): JSX.Element => {
                   <img
                     src="https://images.pexels.com/photos/1020974/pexels-photo-1020974.jpeg?auto=compress&cs=tinysrgb&w=800"
                     alt="European Street"
-                    className="w-full h-[300px] object-cover"
+                    className="w-full h-[250px] object-cover"
                   />
                 </div>
               </div>
