@@ -44,7 +44,6 @@ export const NewHeroSection = (): JSX.Element => {
                 </span>
                 AGENTS{" "}
               </span>
-              </span>
             </h1>
 
            {/* Large rounded image left with outline */}
