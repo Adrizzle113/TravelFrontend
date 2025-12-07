@@ -59,27 +59,6 @@ export const NewHeroSection = (): JSX.Element => {
 
 
 
-            {/* ============================= */}
-            {/*   LEFT IMAGE + OUTLINE + GLOW */}
-            {/* ============================= */}
-            <div className="relative mt-8">
-
-              {/* Glow */}
-              <div
-                className="
-                  absolute -bottom-12 -left-10
-                  w-[260px] h-[260px]
-                  bg-gradient-to-br
-                  from-transparent
-                  via-[#688A5D]/95
-                  to-transparent
-                  rounded-full
-                  blur-3xl
-                  opacity-100
-                  pointer-events-none
-                "
-              />
-
             
 
 
