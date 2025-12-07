@@ -64,7 +64,7 @@ export const NewHeroSection = (): JSX.Element => {
             {/* ============================= */}
             <div className="relative mt-8">
 
-              {/* Glow */}
+              {/* Glow
               <div
                 className="
                   absolute -bottom-12 -left-10
@@ -79,8 +79,9 @@ export const NewHeroSection = (): JSX.Element => {
                   pointer-events-none
                 "
               />
+              */}
 
-              {/* Outline */}
+              {/* Outline 
               <div
                 className="
                   absolute inset-0 
@@ -90,8 +91,9 @@ export const NewHeroSection = (): JSX.Element => {
                   pointer-events-none
                 "
               />
+              */}
 
-              {/* Image */}
+              {/* Image
               <div className="relative w-full rounded-[120px] overflow-hidden shadow-xl">
                 <img
                   src="https://images.pexels.com/photos/1020974/pexels-photo-1020974.jpeg?auto=compress&cs=tinysrgb&w=800"
@@ -100,6 +102,7 @@ export const NewHeroSection = (): JSX.Element => {
               </div>
             </div>
           </div>
+          */}
 
           {/* ==================================== */}
           {/*            RIGHT COLUMN               */}
