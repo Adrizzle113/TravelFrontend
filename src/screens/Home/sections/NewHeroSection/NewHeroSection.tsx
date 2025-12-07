@@ -50,7 +50,7 @@ export const NewHeroSection = (): JSX.Element => {
         <img
           src="https://images.pexels.com/photos/2034335/pexels-photo-2034335.jpeg?auto=compress&cs=tinysrgb&w=200"
           alt="Brazil"
-          className="w-[50%] h-full object-cover"
+          className="w-full h-full object-cover"
         />
       </span>
     </span>
