@@ -9,7 +9,7 @@ export const NewHeroSection = (): JSX.Element => {
             {/* ============================= */}
             {/*   HEADLINE WITH INLINE IMAGES */}
             {/* ============================= */}
-            <h1 className="font-heading-very-big text-4xl md:text-5xl lg:text-6xl xl:text-7xl leading-none text-gray-900 mb-12">
+      <h1 className="font-heading-very-big text-4xl md:text-5xl lg:text-6xl xl:text-7xl leading-none text-gray-900 mb-12">
   <span className="flex flex-col gap-[0.12em]">
     {/* Line 1: BETTER [image] RATES */}
     <span className="inline-flex gap-3">
@@ -36,10 +36,17 @@ export const NewHeroSection = (): JSX.Element => {
       HIGHER COMMISSIONS
     </span>
 
-    {/* Line 3: MADE FOR BRAZILIAN AGENTS [tall image] */}
-    <span className="inline-flex gap-3">
-      <span>MADE FOR BRAZILIAN AGENTS</span>
-      <span className="inline-flex ml-0 aspect-[0.7/1] rounded-full overflow-hidden align-middle">
+    {/* Line 3: MADE FOR / BRAZILIAN / AGENTS + tall image */}
+    <span className="inline-flex items-start gap-3">
+      {/* stacked text block */}
+      <span className="flex flex-col leading-none">
+        <span>MADE FOR</span>
+        <span>BRAZILIAN</span>
+        <span>AGENTS</span>
+      </span>
+
+      {/* tall pill image */}
+      <span className="inline-flex h-[3.2em] md:h-[3.6em] lg:h-[3.9em] aspect-[0.7/1] rounded-full overflow-hidden align-middle">
         <img
           src="https://images.pexels.com/photos/2034335/pexels-photo-2034335.jpeg?auto=compress&cs=tinysrgb&w=200"
           alt="Brazil"
@@ -49,6 +56,7 @@ export const NewHeroSection = (): JSX.Element => {
     </span>
   </span>
 </h1>
+
 
 
             {/* ============================= */}
