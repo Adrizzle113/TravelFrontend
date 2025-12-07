@@ -7,10 +7,10 @@ export const NewHeroSection = (): JSX.Element => {
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           {/* Left side - Text and images */}
           <div className="relative">
-            <h1 className="font-heading-very-big text-6xl lg:text-7xl leading-tight text-gray-900 mb-12">
+            <h1 className="font-heading-very-big text-4xl md:text-5xl lg:text-6xl xl:text-7xl leading-tight text-gray-900 mb-12">
               <span className="inline-flex items-center">
                 BETTER{" "}
-                <span className="inline-block w-24 h-12 mx-4 rounded-full overflow-hidden">
+                <span className="inline-block w-16 h-8 md:w-20 md:h-10 lg:w-24 lg:h-12 xl:w-28 xl:h-14 mx-2 md:mx-3 lg:mx-4 rounded-full overflow-hidden">
                   <img
                     src="https://images.pexels.com/photos/161758/governor-s-mansion-montgomery-alabama-grand-staircase-161758.jpeg?auto=compress&cs=tinysrgb&w=200"
                     alt="Hotel"
@@ -21,7 +21,7 @@ export const NewHeroSection = (): JSX.Element => {
               </span>
               <br />
               <span className="inline-flex items-center">
-                <span className="inline-block w-24 h-12 mx-4 rounded-full overflow-hidden">
+                <span className="inline-block w-16 h-8 md:w-20 md:h-10 lg:w-24 lg:h-12 xl:w-28 xl:h-14 mx-2 md:mx-3 lg:mx-4 rounded-full overflow-hidden">
                   <img
                     src="https://images.pexels.com/photos/386009/pexels-photo-386009.jpeg?auto=compress&cs=tinysrgb&w=200"
                     alt="Commission"
@@ -35,7 +35,7 @@ export const NewHeroSection = (): JSX.Element => {
               <br />
               <span className="inline-flex items-center">
                 BRAZILIAN AGENTS{" "}
-                <span className="inline-block w-24 h-12 mx-4 rounded-full overflow-hidden">
+                <span className="inline-block w-16 h-8 md:w-20 md:h-10 lg:w-24 lg:h-12 xl:w-28 xl:h-14 mx-2 md:mx-3 lg:mx-4 rounded-full overflow-hidden">
                   <img
                     src="https://images.pexels.com/photos/2034335/pexels-photo-2034335.jpeg?auto=compress&cs=tinysrgb&w=200"
                     alt="Brazil"
