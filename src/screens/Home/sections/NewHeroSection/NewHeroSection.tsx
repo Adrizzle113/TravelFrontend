@@ -63,6 +63,23 @@ export const NewHeroSection = (): JSX.Element => {
                 "
               />
 
+              {/* Glow for LEFT image — same style as right image */}
+<div
+  className="
+    absolute -top-10 -right-14
+    w-[260px] h-[260px]
+    bg-gradient-to-br
+    from-transparent
+    via-[#f370bb]/95
+    to-transparent
+    rounded-full
+    blur-3xl
+    opacity-100
+    pointer-events-none
+    -z-10
+  "
+/>
+
               {/* Image Container */}
               <div className="relative w-full rounded-[120px] overflow-hidden shadow-xl">
                 <img
@@ -105,7 +122,7 @@ export const NewHeroSection = (): JSX.Element => {
                 w-[200px] h-[200px]
                 bg-gradient-to-br
                 from-transparent
-                via-[#F8FAEC]/95
+                via-[#688A5D]/95
                 to-transparent
                 rounded-full
                 blur-2xl
