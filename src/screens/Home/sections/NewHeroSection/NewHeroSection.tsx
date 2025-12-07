@@ -12,7 +12,7 @@ export const NewHeroSection = (): JSX.Element => {
             <h1 className="font-heading-very-big text-4xl md:text-5xl lg:text-6xl xl:text-7xl leading-none text-gray-900 mb-12">
   <span className="flex flex-col gap-[0.12em]">
     {/* Line 1: BETTER [image] RATES */}
-    <span className="inline-flex items-baseline flex-wrap gap-3">
+    <span className="inline-flex items-baseline gap-3">
       BETTER
       <span className="inline-flex h-[1em] aspect-[2.5/1] rounded-full overflow-hidden align-middle">
         <img
@@ -25,7 +25,7 @@ export const NewHeroSection = (): JSX.Element => {
     </span>
 
     {/* Line 2: [image] HIGHER COMMISSIONS */}
-    <span className="inline-flex items-baseline flex-wrap gap-3">
+    <span className="inline-flex items-baseline gap-3">
       <span className="inline-flex h-[1em] aspect-[2.5/1] rounded-full overflow-hidden align-middle">
         <img
           src="https://images.pexels.com/photos/386009/pexels-photo-386009.jpeg?auto=compress&cs=tinysrgb&w=200"
@@ -37,7 +37,7 @@ export const NewHeroSection = (): JSX.Element => {
     </span>
 
     {/* Line 4: BRAZILIAN AGENTS [tall image] */}
-    <span className="inline-flex items-baseline flex-wrap gap-3">
+    <span className="inline-flex items-baseline gap-3">
       MADE FOR BRAZILIAN AGENTS
       <span className="inline-flex h-[1.4em] aspect-[0.7/1] rounded-full overflow-hidden align-middle">
         <img
