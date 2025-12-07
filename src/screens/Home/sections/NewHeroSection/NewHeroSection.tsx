@@ -1,10 +1,10 @@
 export const NewHeroSection = (): JSX.Element => {
   return (
-    <section className="relative w-full min-h-screen bg-white overflow-hidden py-12 px-6">
+    <section className="relative w-full h-screen bg-white overflow-hidden flex items-center">
       {/* Main content container */}
-      <div className="container mx-auto max-w-7xl">
+      <div className="container mx-auto max-w-7xl px-6">
         {/* Main content grid */}
-        <div className="grid lg:grid-cols-2 gap-16 items-center mt-12">
+        <div className="grid lg:grid-cols-2 gap-16 items-center">
           {/* Left side - Text and images */}
           <div className="relative">
             <h1 className="font-heading-very-big text-6xl lg:text-7xl leading-tight text-gray-900 mb-12">

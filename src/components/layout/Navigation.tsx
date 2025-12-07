@@ -1,9 +1,6 @@
 import {
   ChevronDownIcon,
-  FacebookIcon,
-  InstagramIcon,
   MenuIcon,
-  TwitterIcon,
 } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "../ui/button";
@@ -25,81 +22,62 @@ import {
 export const Navigation = (): JSX.Element => {
   const location = useLocation();
   const navigate = useNavigate();
-  
-  const socialLinks = [
-    { icon: <FacebookIcon className="text-[#f3ecdc]" />, name: "Facebook" },
-    { icon: <TwitterIcon className="text-[#f3ecdc]" />, name: "Twitter" },
-    { icon: <InstagramIcon className="text-[#f3ecdc]" />, name: "Instagram" },
-    {
-      icon: (
-        <div className="[font-family:'Font_Awesome_6_Brands-Regular',Helvetica] font-normal text-[#f3ecdc] text-xl">
-          pinterest
-        </div>
-      ),
-      name: "Pinterest",
-    },
-  ];
 
   const navItems = [
-    { label: "HOME", path: "/", active: location.pathname === "/" },
-    { label: "ABOUT US", path: "/about", active: location.pathname === "/about" },
-    { label: "CONTACT US", path: "/contact", active: location.pathname === "/contact" },
-    { 
-      label: "BLOG", 
-      hasDropdown: true, 
+    { label: "Travel Agencies", path: "/travel-agencies", active: location.pathname === "/travel-agencies" },
+    {
+      label: "More",
+      hasDropdown: true,
       active: false,
-      items: ["Latest Posts", "Categories"],
-      path: "/blog"
+      items: [
+        { label: "About Us", path: "/about" },
+        { label: "Contact Us", path: "/contact" },
+        { label: "Services", path: "/services" }
+      ],
+      path: "/more"
     },
+    { label: "White Label", path: "/white-label", active: location.pathname === "/white-label" },
+    { label: "Individual Bookings", path: "/individual-bookings", active: location.pathname === "/individual-bookings" },
+    { label: "Blog", path: "/blog", active: location.pathname === "/blog" },
   ];
 
-  const handleGetStarted = () => {
+  const handleLogin = () => {
     navigate('/auth/login');
   };
 
+  const handleSignUp = () => {
+    navigate('/auth/register');
+  };
+
   return (
-    <div className="absolute top-0 left-0 right-0 z-50 flex flex-col items-start w-full">
-      <div className="flex flex-col md:flex-row w-full items-center justify-center gap-[30px] px-5 md:px-[100px] py-5">
-        <div className="w-full flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-[11px]">
-            <img
-              className="w-[38px] h-[38px]"
-              alt="House Logo"
-              src="/group-7529.png"
-            />
-            <div className="[font-family:'Poppins',Helvetica] font-medium text-white text-3xl tracking-[4.50px]">
-              HOUSE.
-            </div>
+    <nav className="absolute top-0 left-0 right-0 z-50 w-full bg-transparent">
+      <div className="container mx-auto px-6 py-6">
+        <div className="flex items-center justify-between">
+          <Link to="/" className="flex items-center">
+            <span className="text-2xl font-bold text-gray-900">BookJá</span>
           </Link>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center justify-center py-[35px]">
+          <div className="hidden lg:flex items-center justify-center flex-1 mx-12">
             <NavigationMenu>
-              <NavigationMenuList className="flex items-center gap-[35px] whitespace-nowrap">
+              <NavigationMenuList className="flex items-center gap-8">
                 {navItems.map((item, index) => (
                   <NavigationMenuItem key={index}>
                     {item.hasDropdown ? (
                       <>
-                        <NavigationMenuTrigger className="flex items-center gap-2.5 bg-transparent hover:bg-transparent focus:bg-transparent">
-                          <span
-                            className={`font-accent font-[number:var(--accent-font-weight)] ${
-                              item.active ? "text-white" : "text-[#ffffffbf]"
-                            } text-[length:var(--accent-font-size)] tracking-[var(--accent-letter-spacing)] leading-[var(--accent-line-height)] [font-style:var(--accent-font-style)]`}
-                          >
-                            {item.label}
-                          </span>
-                          <ChevronDownIcon className="text-[#ffffffbf] w-4 h-4" />
+                        <NavigationMenuTrigger className="flex items-center gap-1 bg-transparent hover:bg-transparent focus:bg-transparent text-gray-700 hover:text-gray-900 font-medium text-sm">
+                          {item.label}
+                          <ChevronDownIcon className="w-4 h-4" />
                         </NavigationMenuTrigger>
                         <NavigationMenuContent>
-                          <div className="flex flex-col p-2">
+                          <div className="flex flex-col p-2 min-w-[200px]">
                             {item.items?.map((subItem, subIndex) => (
-                              <Button
+                              <Link
                                 key={subIndex}
-                                variant="ghost"
-                                className="justify-start"
+                                to={subItem.path}
+                                className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded"
                               >
-                                {subItem}
-                              </Button>
+                                {subItem.label}
+                              </Link>
                             ))}
                           </div>
                         </NavigationMenuContent>
@@ -107,9 +85,9 @@ export const Navigation = (): JSX.Element => {
                     ) : (
                       <Link
                         to={item.path}
-                        className={`font-accent font-[number:var(--accent-font-weight)] ${
-                          item.active ? "text-white" : "text-[#ffffffbf]"
-                        } text-[length:var(--accent-font-size)] tracking-[var(--accent-letter-spacing)] leading-[var(--accent-line-height)] [font-style:var(--accent-font-style)]`}
+                        className={`font-medium text-sm ${
+                          item.active ? "text-gray-900" : "text-gray-700"
+                        } hover:text-gray-900 transition-colors`}
                       >
                         {item.label}
                       </Link>
@@ -118,73 +96,70 @@ export const Navigation = (): JSX.Element => {
                 ))}
               </NavigationMenuList>
             </NavigationMenu>
-          </nav>
+          </div>
 
-          <div className="flex items-center gap-[30px]">
-            <Button 
-              onClick={handleGetStarted}
-              className="hidden lg:flex px-10 py-5 bg-[#f3ecdc] rounded-[30px] h-auto"
+          <div className="hidden lg:flex items-center gap-4">
+            <Button
+              onClick={handleLogin}
+              variant="ghost"
+              className="text-gray-700 hover:text-gray-900 font-medium text-sm"
             >
-              <span className="font-accent font-[number:var(--accent-font-weight)] text-[#588157] text-[length:var(--accent-font-size)] tracking-[var(--accent-letter-spacing)] leading-[var(--accent-line-height)] [font-style:var(--accent-font-style)]">
-                GET STARTED
-              </span>
+              Login
             </Button>
+            <Button
+              onClick={handleSignUp}
+              className="bg-gray-900 hover:bg-gray-800 text-white font-medium text-sm px-6 rounded-full"
+            >
+              Sign Up
+            </Button>
+          </div>
 
-            {/* Mobile Menu Button */}
-            <div className="lg:hidden">
-              <Sheet>
-                <SheetTrigger asChild>
-                  <div className="p-3 cursor-pointer">
-                    <MenuIcon className="w-8 h-8 text-white" />
-                  </div>
-                </SheetTrigger>
-                <SheetContent side="right" className="w-[300px] bg-[#344e41] p-0">
-                  <SheetHeader className="p-6 border-b border-[#ffffff1a]">
-                    <SheetTitle className="text-[#f3ecdc]">Menu</SheetTitle>
-                  </SheetHeader>
-                  <div className="flex flex-col p-6">
-                    {navItems.map((item, index) => (
-                      <Link
-                        key={index}
-                        to={item.path}
-                        className={`py-3 px-4 rounded-lg ${
-                          item.active
-                            ? "text-white bg-[#ffffff1a]"
-                            : "text-[#ffffffbf]"
-                        } font-accent text-lg hover:bg-[#ffffff1a] transition-colors`}
-                      >
-                        {item.label}
-                      </Link>
-                    ))}
-                    <Button 
-                      onClick={handleGetStarted}
-                      className="mt-6 w-full px-10 py-5 bg-[#f3ecdc] rounded-[30px] h-auto"
+          <div className="lg:hidden">
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <MenuIcon className="w-6 h-6 text-gray-900" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-[300px]">
+                <SheetHeader>
+                  <SheetTitle>Menu</SheetTitle>
+                </SheetHeader>
+                <div className="flex flex-col gap-4 mt-6">
+                  {navItems.map((item, index) => (
+                    <Link
+                      key={index}
+                      to={item.path}
+                      className={`py-2 px-4 rounded-lg ${
+                        item.active
+                          ? "text-gray-900 bg-gray-100"
+                          : "text-gray-700"
+                      } font-medium text-sm hover:bg-gray-100 transition-colors`}
                     >
-                      <span className="font-accent font-[number:var(--accent-font-weight)] text-[#588157] text-[length:var(--accent-font-size)] tracking-[var(--accent-letter-spacing)] leading-[var(--accent-line-height)] [font-style:var(--accent-font-style)]">
-                        GET STARTED
-                      </span>
+                      {item.label}
+                    </Link>
+                  ))}
+                  <div className="flex flex-col gap-2 mt-4 pt-4 border-t">
+                    <Button
+                      onClick={handleLogin}
+                      variant="outline"
+                      className="w-full"
+                    >
+                      Login
                     </Button>
-                    <div className="mt-6 pt-6 border-t border-[#ffffff1a]">
-                      <div className="flex justify-center gap-4">
-                        {socialLinks.map((link, index) => (
-                          <Button
-                            key={index}
-                            variant="ghost"
-                            size="icon"
-                            className="hover:bg-[#ffffff1a]"
-                          >
-                            {link.icon}
-                          </Button>
-                        ))}
-                      </div>
-                    </div>
+                    <Button
+                      onClick={handleSignUp}
+                      className="w-full bg-gray-900 hover:bg-gray-800 text-white"
+                    >
+                      Sign Up
+                    </Button>
                   </div>
-                </SheetContent>
-              </Sheet>
-            </div>
+                </div>
+              </SheetContent>
+            </Sheet>
           </div>
         </div>
       </div>
-    </div>
+    </nav>
   );
 };
