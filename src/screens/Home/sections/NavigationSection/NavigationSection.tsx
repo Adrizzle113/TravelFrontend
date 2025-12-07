@@ -11,7 +11,7 @@ import { Button } from "../../../../components/ui/button";
 
 export const NavigationSection = (): JSX.Element => {
   const socialLinks = [
-    { icon: <FacebookIcon className="text-[#f3ecdc]" />, name: "Facebook" },
+    { icon: <FacebookIcon className="text-[black]" />, name: "Facebook" },
     { icon: <TwitterIcon className="text-[#f3ecdc]" />, name: "Twitter" },
     { icon: <InstagramIcon className="text-[#f3ecdc]" />, name: "Instagram" },
     {
