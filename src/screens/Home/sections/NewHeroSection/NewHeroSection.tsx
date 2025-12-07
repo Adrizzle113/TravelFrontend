@@ -35,7 +35,7 @@ export const NewHeroSection = (): JSX.Element => {
               <br />
               <span className="inline-flex items-center">
                 BRAZILIAN AGENTS{" "}
-                <span className="inline-block w-16 h-8 md:w-20 md:h-10 lg:w-24 lg:h-12 xl:w-28 xl:h-14 mx-2 md:mx-3 lg:mx-4 rounded-full overflow-hidden">
+                <span className="inline-block w-20 h-32 md:w-24 md:h-40 lg:w-32 lg:h-48 xl:w-36 xl:h-56 mx-2 md:mx-3 lg:mx-4 rounded-full overflow-hidden">
                   <img
                     src="https://images.pexels.com/photos/2034335/pexels-photo-2034335.jpeg?auto=compress&cs=tinysrgb&w=200"
                     alt="Brazil"
