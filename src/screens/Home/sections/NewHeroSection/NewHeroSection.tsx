@@ -31,8 +31,10 @@ export const NewHeroSection = (): JSX.Element => {
                 HIGHER COMMISSIONS
               </span>
               <br />
+              MADE FOR
+              <br />
               <span className="inline-flex items-center">
-                MADE FOR BRAZILIAN{" "}
+                BRAZILIAN AGENTS{" "}
                 <span className="inline-block w-24 h-12 mx-4 rounded-full overflow-hidden">
                   <img
                     src="https://images.pexels.com/photos/2034335/pexels-photo-2034335.jpeg?auto=compress&cs=tinysrgb&w=200"
@@ -40,7 +42,6 @@ export const NewHeroSection = (): JSX.Element => {
                     className="w-full h-full object-cover"
                   />
                 </span>
-                AGENTS{" "}
               </span>
             </h1>
 
