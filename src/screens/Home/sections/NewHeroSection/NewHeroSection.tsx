@@ -36,14 +36,9 @@ export const NewHeroSection = (): JSX.Element => {
       HIGHER COMMISSIONS
     </span>
 
-    {/* Line 3: MADE FOR */}
-    <span className="inline-flex items-baseline">
-      MADE FOR
-    </span>
-
     {/* Line 4: BRAZILIAN AGENTS [tall image] */}
     <span className="inline-flex items-baseline flex-wrap gap-3">
-      BRAZILIAN AGENTS
+      MADE FOR BRAZILIAN AGENTS
       <span className="inline-flex h-[1.4em] aspect-[0.7/1] rounded-full overflow-hidden align-middle">
         <img
           src="https://images.pexels.com/photos/2034335/pexels-photo-2034335.jpeg?auto=compress&cs=tinysrgb&w=200"
