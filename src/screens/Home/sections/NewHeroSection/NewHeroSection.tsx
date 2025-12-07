@@ -9,53 +9,51 @@ export const NewHeroSection = (): JSX.Element => {
             {/* ============================= */}
             {/*   HEADLINE WITH INLINE IMAGES */}
             {/* ============================= */}
-            <h1 className="font-heading-very-big text-4xl md:text-5xl lg:text-6xl xl:text-7xl leading-[1.05] text-gray-900 mb-12">
+            <h1 className="font-heading-very-big text-4xl md:text-5xl lg:text-6xl xl:text-7xl leading-none text-gray-900 mb-12">
+  <span className="flex flex-col gap-[0.12em]">
+    {/* Line 1: BETTER [image] RATES */}
+    <span className="inline-flex items-baseline flex-wrap gap-3">
+      BETTER
+      <span className="inline-flex h-[1em] aspect-[2.5/1] rounded-full overflow-hidden align-middle">
+        <img
+          src="https://images.pexels.com/photos/161758/governor-s-mansion-montgomery-alabama-grand-staircase-161758.jpeg?auto=compress&cs=tinysrgb&w=200"
+          alt="Hotel"
+          className="w-full h-full object-cover"
+        />
+      </span>
+      RATES
+    </span>
 
-              {/* LINE 1 */}
-              <span className="block">
-                <span className="inline-flex items-baseline flex-wrap gap-3">
-                  BETTER
-                  {/* Inline Pill Image */}
-                  <span className="inline-flex h-[1em] aspect-[2.5/1] rounded-full overflow-hidden align-middle">
-                    <img
-                      src="https://images.pexels.com/photos/161758/governor-s-mansion-montgomery-alabama-grand-staircase-161758.jpeg?auto=compress&cs=tinysrgb&w=200"
-                      className="w-full h-full object-cover"
-                    />
-                  </span>
-                  RATES
-                </span>
-              </span>
+    {/* Line 2: [image] HIGHER COMMISSIONS */}
+    <span className="inline-flex items-baseline flex-wrap gap-3">
+      <span className="inline-flex h-[1em] aspect-[2.5/1] rounded-full overflow-hidden align-middle">
+        <img
+          src="https://images.pexels.com/photos/386009/pexels-photo-386009.jpeg?auto=compress&cs=tinysrgb&w=200"
+          alt="Commission"
+          className="w-full h-full object-cover"
+        />
+      </span>
+      HIGHER COMMISSIONS
+    </span>
 
-              {/* LINE 2 */}
-              <span className="block mt-2">
-                <span className="inline-flex items-baseline flex-wrap gap-3">
-                  <span className="inline-flex h-[1em] aspect-[2.5/1] rounded-full overflow-hidden align-middle">
-                    <img
-                      src="https://images.pexels.com/photos/386009/pexels-photo-386009.jpeg?auto=compress&cs=tinysrgb&w=200"
-                      className="w-full h-full object-cover"
-                    />
-                  </span>
-                  HIGHER COMMISSIONS
-                </span>
-              </span>
+    {/* Line 3: MADE FOR */}
+    <span className="inline-flex items-baseline">
+      MADE FOR
+    </span>
 
-              {/* LINE 3 */}
-              <span className="block mt-2">MADE FOR</span>
-
-              {/* LINE 4 */}
-              <span className="block mt-2">
-                <span className="inline-flex items-baseline flex-wrap gap-3">
-                  BRAZILIAN AGENTS
-                  {/* Tall Pill Image */}
-                  <span className="inline-flex h-[1.3em] aspect-[0.7/1] rounded-full overflow-hidden align-middle">
-                    <img
-                      src="https://images.pexels.com/photos/2034335/pexels-photo-2034335.jpeg?auto=compress&cs=tinysrgb&w=200"
-                      className="w-full h-full object-cover"
-                    />
-                  </span>
-                </span>
-              </span>
-            </h1>
+    {/* Line 4: BRAZILIAN AGENTS [tall image] */}
+    <span className="inline-flex items-baseline flex-wrap gap-3">
+      BRAZILIAN AGENTS
+      <span className="inline-flex h-[1.4em] aspect-[0.7/1] rounded-full overflow-hidden align-middle">
+        <img
+          src="https://images.pexels.com/photos/2034335/pexels-photo-2034335.jpeg?auto=compress&cs=tinysrgb&w=200"
+          alt="Brazil"
+          className="w-full h-full object-cover"
+        />
+      </span>
+    </span>
+  </span>
+</h1>
 
             {/* ============================= */}
             {/*   LEFT IMAGE + OUTLINE + GLOW */}
