@@ -80,16 +80,7 @@ export const NewHeroSection = (): JSX.Element => {
                 "
               />
 
-              {/* Outline */}
-              <div
-                className="
-                  absolute inset-0 
-                  rounded-[120px]
-                  border-[1.25px] border-black
-                  translate-x-4 -translate-y-4
-                  pointer-events-none
-                "
-              />
+            
 
 
 
