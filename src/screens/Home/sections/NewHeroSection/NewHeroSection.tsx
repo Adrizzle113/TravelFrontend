@@ -1,6 +1,6 @@
 export const NewHeroSection = (): JSX.Element => {
   return (
-    <section className="relative w-full min-h-screen bg-[#F8FAEC] overflow-hidden py-12 px-6">
+    <section className="relative w-full min-h-screen bg-white overflow-hidden py-12 px-6">
       {/* Main content container */}
       <div className="container mx-auto max-w-7xl">
         {/* Top header */}
