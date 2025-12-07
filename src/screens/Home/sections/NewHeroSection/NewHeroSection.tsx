@@ -129,7 +129,7 @@ export const NewHeroSection = (): JSX.Element => {
           </div>
 
         </div>
-      </div>
+      
     </section>
   );
 };
