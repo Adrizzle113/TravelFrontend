@@ -14,7 +14,7 @@ export const NewHeroSection = (): JSX.Element => {
     {/* Line 1: BETTER [image] RATES */}
     <span className="inline-flex items-baseline gap-3">
       BETTER
-      <span className="inline-flex h-[1em] aspect-[2.5/1] rounded-full overflow-hidden align-middle">
+      <span className="inline-flex aspect-[2.5/1] rounded-full overflow-hidden align-middle">
         <img
           src="https://images.pexels.com/photos/161758/governor-s-mansion-montgomery-alabama-grand-staircase-161758.jpeg?auto=compress&cs=tinysrgb&w=200"
           alt="Hotel"
@@ -39,7 +39,7 @@ export const NewHeroSection = (): JSX.Element => {
     {/* Line 4: BRAZILIAN AGENTS [tall image] */}
     <span className="inline-flex items-baseline gap-3">
       MADE FOR BRAZILIAN AGENTS
-      <span className="inline-flex h-[1.4em] aspect-[0.7/1] rounded-full overflow-hidden align-middle">
+      <span className="inline-flex aspect-[0.7/1] rounded-full overflow-hidden align-middle">
         <img
           src="https://images.pexels.com/photos/2034335/pexels-photo-2034335.jpeg?auto=compress&cs=tinysrgb&w=200"
           alt="Brazil"
