@@ -87,7 +87,7 @@ export const NewHeroSection = (): JSX.Element => {
       className="w-full h-[250px] object-cover"
     />
   </div>
-</div>
+
 
 
           {/* Right side - Circular/organic image and stats */}
