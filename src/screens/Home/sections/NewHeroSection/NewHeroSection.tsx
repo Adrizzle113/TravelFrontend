@@ -105,7 +105,7 @@ export const NewHeroSection = (): JSX.Element => {
                 w-[200px] h-[200px]
                 bg-gradient-to-br
                 from-transparent
-                via-[#688A5D]/95
+                via-[#F8FAEC]/95
                 to-transparent
                 rounded-full
                 blur-2xl
