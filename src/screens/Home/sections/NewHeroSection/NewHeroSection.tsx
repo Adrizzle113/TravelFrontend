@@ -66,7 +66,7 @@ export const NewHeroSection = (): JSX.Element => {
               {/* Glow for LEFT image — same style as right image */}
               <div
                 className="
-                  absolute -bottom-10 -right-12
+                  absolute -bottom-10 -left-12
                   w-[260px] h-[260px]
                   bg-gradient-to-br
                   from-transparent
