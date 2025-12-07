@@ -28,9 +28,9 @@ export const NewHeroSection = (): JSX.Element => {
                     alt="Commission"
                     className="w-full h-full object-cover"
                   />
-                </span>
                 HIGHER
-                COMMISSIONS,
+                COMMISSIONS
+                  </span>
               </span>
               <br />
               <span className="inline-flex items-center">
