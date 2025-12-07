@@ -26,7 +26,7 @@ export const NewHeroSection = (): JSX.Element => {
 
     {/* Line 2: [image] HIGHER COMMISSIONS */}
     <span className="inline-flex gap-3">
-      <span className="inline-flex h-[1em] aspect-[2.5/1] rounded-full overflow-hidden align-middle">
+      <span className="inline-flex aspect-[2.5/1] rounded-full overflow-hidden align-middle">
         <img
           src="https://images.pexels.com/photos/386009/pexels-photo-386009.jpeg?auto=compress&cs=tinysrgb&w=200"
           alt="Commission"
