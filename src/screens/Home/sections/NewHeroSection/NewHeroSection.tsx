@@ -60,37 +60,9 @@ export const NewHeroSection = (): JSX.Element => {
 
 
             {/* ============================= */}
-            {/*   LEFT IMAGE + OUTLINE + GLOW */}
+            {/*   LEFT IMAGE */}
             {/* ============================= */}
             <div className="relative mt-8">
-
-              {/* Glow */}
-              <div
-                className="
-                  absolute -bottom-12 -left-10
-                  w-[260px] h-[260px]
-                  bg-gradient-to-br
-                  from-transparent
-                  via-[#688A5D]/95
-                  to-transparent
-                  rounded-full
-                  blur-3xl
-                  opacity-100
-                  pointer-events-none
-                "
-              />
-
-              {/* Outline */}
-              <div
-                className="
-                  absolute inset-0 
-                  rounded-[120px]
-                  border-[1.25px] border-black
-                  translate-x-4 -translate-y-4
-                  pointer-events-none
-                "
-              />
-
               {/* Image */}
               <div className="relative w-full rounded-[120px] overflow-hidden shadow-xl">
                 <img
@@ -114,34 +86,6 @@ export const NewHeroSection = (): JSX.Element => {
 
             {/* IMAGE WRAPPER */}
             <div className="relative mb-12">
-
-              {/* Outline */}
-              <div
-                className="
-                  absolute inset-0
-                  rounded-[180px]
-                  border-[1.25px] border-black
-                  translate-x-4 -translate-y-4
-                  pointer-events-none
-                "
-              />
-
-              {/* Glow */}
-              <div
-                className="
-                  absolute -top-10 -right-12
-                  w-[200px] h-[200px]
-                  bg-gradient-to-br
-                  from-transparent
-                  via-[#688A5D]/95
-                  to-transparent
-                  rounded-full
-                  blur-2xl
-                  opacity-100
-                  pointer-events-none
-                "
-              />
-
               {/* Image */}
               <div className="relative w-[250px] h-[370px] rounded-[180px] overflow-hidden shadow-2xl">
                 <img
