@@ -37,7 +37,7 @@ export const NewHeroSection = (): JSX.Element => {
     </span>
 
     {/* Line 3: MADE FOR BRAZILIAN AGENTS [tall image] */}
-    <span className="inline-flex items-baseline">
+    <span className="inline-flex ">
       <span>MADE FOR BRAZILIAN AGENTS</span>
       <span className="inline-flex ml-2 aspect-[0.7/1] rounded-full overflow-hidden align-middle">
         <img
