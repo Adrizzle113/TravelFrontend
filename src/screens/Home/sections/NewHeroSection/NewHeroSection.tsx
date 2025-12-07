@@ -51,43 +51,43 @@ export const NewHeroSection = (): JSX.Element => {
             </h1>
 
            {/* Large rounded image left with outline */}
-<div className="relative mt-8">
-  {/* Outline behind the image */}
-  <div
-    className="
-      absolute inset-0 
-      rounded-[120px] 
-      border-[1.25px] border-black
-      translate-x-4 -translate-y-4
-      pointer-events-none
-    "
-  />
-
-  {/* Glow for LEFT image — same style as right image */}
-  <div
-    className="
-      absolute -top-10 -right-12
-      w-[260px] h-[260px]
-      bg-gradient-to-br
-      from-transparent
-      via-[#688A5D]/95
-      to-transparent
-      rounded-full
-      blur-3xl
-      opacity-100
-      pointer-events-none
-    "
-  />
-
-  {/* Image Container */}
-  <div className="relative w-full rounded-[120px] overflow-hidden shadow-xl">
-    <img
-      src="https://images.pexels.com/photos/1020974/pexels-photo-1020974.jpeg?auto=compress&cs=tinysrgb&w=800"
-      alt="European Street"
-      className="w-full h-[250px] object-cover"
-    />
-  </div>
-</div>
+            <div className="relative mt-8">
+              {/* Outline behind the image */}
+              <div
+                className="
+                  absolute inset-0 
+                  rounded-[120px] 
+                  border-[1.25px] border-black
+                  translate-x-4 -translate-y-4
+                  pointer-events-none
+                "
+              />
+            
+              {/* Glow for LEFT image — same style as right image */}
+              <div
+                className="
+                  absolute -top-10 -right-12
+                  w-[260px] h-[260px]
+                  bg-gradient-to-br
+                  from-transparent
+                  via-[#688A5D]/95
+                  to-transparent
+                  rounded-full
+                  blur-3xl
+                  opacity-100
+                  pointer-events-none
+                "
+              />
+            
+              {/* Image Container */}
+              <div className="relative w-full rounded-[120px] overflow-hidden shadow-xl">
+                <img
+                  src="https://images.pexels.com/photos/1020974/pexels-photo-1020974.jpeg?auto=compress&cs=tinysrgb&w=800"
+                  alt="European Street"
+                  className="w-full h-[250px] object-cover"
+                />
+              </div>
+            </div>
           </div>
 
 
