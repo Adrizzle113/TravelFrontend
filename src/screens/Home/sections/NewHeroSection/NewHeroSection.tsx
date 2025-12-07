@@ -91,15 +91,7 @@ export const NewHeroSection = (): JSX.Element => {
                 "
               />
 
-              {/* Image */}
-              <div className="relative w-full rounded-[120px] overflow-hidden shadow-xl">
-                <img
-                  src="https://images.pexels.com/photos/1020974/pexels-photo-1020974.jpeg?auto=compress&cs=tinysrgb&w=800"
-                  className="w-full h-[250px] object-cover"
-                />
-              </div>
-            </div>
-          </div>
+
 
           {/* ==================================== */}
           {/*            RIGHT COLUMN               */}
