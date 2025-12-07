@@ -62,7 +62,7 @@ export const NewHeroSection = (): JSX.Element => {
             {/* ============================= */}
             {/*   LEFT IMAGE + OUTLINE + GLOW */}
             {/* ============================= */}
-            <div className="relative mt-8">
+        
 
              
 
