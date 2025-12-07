@@ -9,35 +9,35 @@ export const NewHeroSection = (): JSX.Element => {
           <div className="relative">
             <h1 className="font-heading-very-big text-6xl lg:text-7xl leading-tight text-gray-900 mb-12">
               <span className="inline-flex items-center">
-                Exploring{" "}
+                BETTER{" "}
                 <span className="inline-block w-24 h-12 mx-4 rounded-full overflow-hidden">
                   <img
                     src="https://images.pexels.com/photos/161758/governor-s-mansion-montgomery-alabama-grand-staircase-161758.jpeg?auto=compress&cs=tinysrgb&w=200"
-                    alt="Architecture"
+                    alt="Hotel"
                     className="w-full h-full object-cover"
                   />
                 </span>
-                The
+                RATES,
               </span>
               <br />
               <span className="inline-flex items-center">
-                Luxury{" "}
+                HIGHER{" "}
                 <span className="inline-block w-24 h-12 mx-4 rounded-full overflow-hidden">
                   <img
                     src="https://images.pexels.com/photos/386009/pexels-photo-386009.jpeg?auto=compress&cs=tinysrgb&w=200"
-                    alt="Travel"
+                    alt="Commission"
                     className="w-full h-full object-cover"
                   />
                 </span>
-                Trip in
+                COMMISSIONS,
               </span>
               <br />
               <span className="inline-flex items-center">
-                Many Country{" "}
+                MADE FOR BRAZILIAN AGENTS{" "}
                 <span className="inline-block w-24 h-12 mx-4 rounded-full overflow-hidden">
                   <img
                     src="https://images.pexels.com/photos/2034335/pexels-photo-2034335.jpeg?auto=compress&cs=tinysrgb&w=200"
-                    alt="Destination"
+                    alt="Brazil"
                     className="w-full h-full object-cover"
                   />
                 </span>
@@ -148,8 +148,8 @@ export const NewHeroSection = (): JSX.Element => {
                 <span className="text-2xl font-light">294</span>
               </div>
               <p className="text-gray-600 leading-relaxed">
-                Many countries have beautiful tours, then why do you just lie at
-                home? Let&apos;s explore various countries without further ado.
+                Empowering Brazilian travel agents with exclusive rates and
+                competitive commissions. Your success is our priority.
               </p>
             </div>
           </div>
