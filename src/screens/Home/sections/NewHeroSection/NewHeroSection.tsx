@@ -21,16 +21,14 @@ export const NewHeroSection = (): JSX.Element => {
               </span>
               <br />
               <span className="inline-flex items-center">
-                {" "}
                 <span className="inline-block w-24 h-12 mx-4 rounded-full overflow-hidden">
                   <img
                     src="https://images.pexels.com/photos/386009/pexels-photo-386009.jpeg?auto=compress&cs=tinysrgb&w=200"
                     alt="Commission"
                     className="w-full h-full object-cover"
                   />
-                HIGHER
-                COMMISSIONS
-                  </span>
+                </span>
+                HIGHER COMMISSIONS
               </span>
               <br />
               <span className="inline-flex items-center">
