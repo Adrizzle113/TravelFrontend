@@ -8,42 +8,78 @@ export const NewHeroSection = (): JSX.Element => {
           {/* Left side - Text and images */}
           <div className="relative">
             <h1 className="font-heading-very-big text-4xl md:text-5xl lg:text-6xl xl:text-7xl leading-tight text-gray-900 mb-12">
-              <span className="inline-flex items-center">
-                BETTER{" "}
-                <span className="inline-block w-16 h-8 md:w-20 md:h-10 lg:w-24 lg:h-12 xl:w-28 xl:h-14 mx-2 md:mx-3 lg:mx-4 rounded-full overflow-hidden">
-                  <img
-                    src="https://images.pexels.com/photos/161758/governor-s-mansion-montgomery-alabama-grand-staircase-161758.jpeg?auto=compress&cs=tinysrgb&w=200"
-                    alt="Hotel"
-                    className="w-full h-full object-cover"
-                  />
-                </span>
-                RATES
-              </span>
-              <br />
-              <span className="inline-flex items-center">
-                <span className="inline-block w-16 h-8 md:w-20 md:h-10 lg:w-24 lg:h-12 xl:w-28 xl:h-14 mx-2 md:mx-3 lg:mx-4 rounded-full overflow-hidden">
-                  <img
-                    src="https://images.pexels.com/photos/386009/pexels-photo-386009.jpeg?auto=compress&cs=tinysrgb&w=200"
-                    alt="Commission"
-                    className="w-full h-full object-cover"
-                  />
-                </span>
-                HIGHER COMMISSIONS
-              </span>
-              <br />
-              MADE FOR
-              <br />
-              <span className="inline-flex items-center">
-                BRAZILIAN AGENTS{" "}
-                <span className="inline-block w-20 h-32 md:w-24 md:h-40 lg:w-32 lg:h-48 xl:w-36 xl:h-56 mx-2 md:mx-3 lg:mx-4 rounded-full overflow-hidden">
-                  <img
-                    src="https://images.pexels.com/photos/2034335/pexels-photo-2034335.jpeg?auto=compress&cs=tinysrgb&w=200"
-                    alt="Brazil"
-                    className="w-full h-full object-cover"
-                  />
-                </span>
-              </span>
-            </h1>
+  {/* Line 1: BETTER [image] RATES */}
+  <span className="block">
+    <span className="inline-flex flex-wrap items-center gap-3">
+      <span>BETTER</span>
+      <span
+        className="
+          inline-flex
+          h-[1.2em] md:h-[1.3em] lg:h-[1.35em]
+          aspect-[2.6/1]
+          mx-1 md:mx-2
+          rounded-full overflow-hidden flex-shrink-0
+        "
+      >
+        <img
+          src="https://images.pexels.com/photos/161758/governor-s-mansion-montgomery-alabama-grand-staircase-161758.jpeg?auto=compress&cs=tinysrgb&w=200"
+          alt="Hotel"
+          className="w-full h-full object-cover"
+        />
+      </span>
+      <span>RATES</span>
+    </span>
+  </span>
+
+  {/* Line 2: [image] HIGHER COMMISSIONS */}
+  <span className="block mt-2">
+    <span className="inline-flex flex-wrap items-center gap-3">
+      <span
+        className="
+          inline-flex
+          h-[1.2em] md:h-[1.3em] lg:h-[1.35em]
+          aspect-[2.6/1]
+          mx-1 md:mx-2
+          rounded-full overflow-hidden flex-shrink-0
+        "
+      >
+        <img
+          src="https://images.pexels.com/photos/386009/pexels-photo-386009.jpeg?auto=compress&cs=tinysrgb&w=200"
+          alt="Commission"
+          className="w-full h-full object-cover"
+        />
+      </span>
+      <span>HIGHER COMMISSIONS</span>
+    </span>
+  </span>
+
+  {/* Line 3: MADE FOR */}
+  <span className="block mt-2">
+    MADE FOR
+  </span>
+
+  {/* Line 4: BRAZILIAN AGENTS [tall image] */}
+  <span className="block mt-2">
+    <span className="inline-flex items-center gap-3">
+      <span>BRAZILIAN AGENTS</span>
+      <span
+        className="
+          inline-flex
+          h-[2.4em] md:h-[2.8em] lg:h-[3em]
+          aspect-[0.7/1]
+          mx-2
+          rounded-full overflow-hidden flex-shrink-0
+        "
+      >
+        <img
+          src="https://images.pexels.com/photos/2034335/pexels-photo-2034335.jpeg?auto=compress&cs=tinysrgb&w=200"
+          alt="Brazil"
+          className="w-full h-full object-cover"
+        />
+      </span>
+    </span>
+  </span>
+</h1>
 
            {/* Large rounded image left with outline */}
             <div className="relative mt-8">
