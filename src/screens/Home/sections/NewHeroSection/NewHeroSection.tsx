@@ -46,7 +46,7 @@ export const NewHeroSection = (): JSX.Element => {
       </span>
 
       {/* tall pill image */}
-      <span className="inline-flex aspect-[0.9/1] rounded-full overflow-hidden align-middle">
+      <span className="inline-flex aspect-[0.7/1] rounded-full overflow-hidden align-middle">
         <img
           src="https://images.pexels.com/photos/2034335/pexels-photo-2034335.jpeg?auto=compress&cs=tinysrgb&w=200"
           alt="Brazil"
@@ -62,9 +62,44 @@ export const NewHeroSection = (): JSX.Element => {
             {/* ============================= */}
             {/*   LEFT IMAGE + OUTLINE + GLOW */}
             {/* ============================= */}
-        
+            <div className="relative mt-8">
 
-             
+              {/* Glow */}
+              <div
+                className="
+                  absolute -bottom-12 -left-10
+                  w-[260px] h-[260px]
+                  bg-gradient-to-br
+                  from-transparent
+                  via-[#688A5D]/95
+                  to-transparent
+                  rounded-full
+                  blur-3xl
+                  opacity-100
+                  pointer-events-none
+                "
+              />
+
+              {/* Outline */}
+              <div
+                className="
+                  absolute inset-0 
+                  rounded-[120px]
+                  border-[1.25px] border-black
+                  translate-x-4 -translate-y-4
+                  pointer-events-none
+                "
+              />
+
+              {/* Image */}
+              <div className="relative w-full rounded-[120px] overflow-hidden shadow-xl">
+                <img
+                  src="https://images.pexels.com/photos/1020974/pexels-photo-1020974.jpeg?auto=compress&cs=tinysrgb&w=800"
+                  className="w-full h-[250px] object-cover"
+                />
+              </div>
+            </div>
+          </div>
 
           {/* ==================================== */}
           {/*            RIGHT COLUMN               */}
