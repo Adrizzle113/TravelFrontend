@@ -7,10 +7,10 @@ export const NewHeroSection = (): JSX.Element => {
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           {/* Left side - Text and images */}
           <div className="relative">
-            <h1 className="font-heading-very-big text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-tight text-gray-900 mb-12">
-              <span className="inline-flex items-center flex-wrap">
+            <h1 className="font-heading-very-big text-6xl lg:text-7xl leading-tight text-gray-900 mb-12">
+              <span className="inline-flex items-center">
                 BETTER{" "}
-                <span className="inline-block w-20 h-10 sm:w-24 sm:h-12 mx-2 sm:mx-4 rounded-full overflow-hidden">
+                <span className="inline-block w-24 h-12 mx-4 rounded-full overflow-hidden">
                   <img
                     src="https://images.pexels.com/photos/161758/governor-s-mansion-montgomery-alabama-grand-staircase-161758.jpeg?auto=compress&cs=tinysrgb&w=200"
                     alt="Hotel"
@@ -20,20 +20,21 @@ export const NewHeroSection = (): JSX.Element => {
                 RATES,
               </span>
               <br />
-              <span className="inline-flex items-center flex-wrap">
-                <span className="inline-block w-20 h-10 sm:w-24 sm:h-12 mr-2 sm:mr-4 rounded-full overflow-hidden">
+              <span className="inline-flex items-center">
+                HIGHER{" "}
+                <span className="inline-block w-24 h-12 mx-4 rounded-full overflow-hidden">
                   <img
                     src="https://images.pexels.com/photos/386009/pexels-photo-386009.jpeg?auto=compress&cs=tinysrgb&w=200"
                     alt="Commission"
                     className="w-full h-full object-cover"
                   />
                 </span>
-                {" "}HIGHER COMMISSIONS,
+                COMMISSIONS,
               </span>
               <br />
-              <span className="inline-flex items-center flex-wrap">
+              <span className="inline-flex items-center">
                 MADE FOR BRAZILIAN AGENTS{" "}
-                <span className="inline-block w-20 h-10 sm:w-24 sm:h-12 mx-2 sm:mx-4 rounded-full overflow-hidden">
+                <span className="inline-block w-24 h-12 mx-4 rounded-full overflow-hidden">
                   <img
                     src="https://images.pexels.com/photos/2034335/pexels-photo-2034335.jpeg?auto=compress&cs=tinysrgb&w=200"
                     alt="Brazil"
