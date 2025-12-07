@@ -3,12 +3,6 @@ export const NewHeroSection = (): JSX.Element => {
     <section className="relative w-full min-h-screen bg-white overflow-hidden py-12 px-6">
       {/* Main content container */}
       <div className="container mx-auto max-w-7xl">
-        {/* Top header */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold text-gray-900">Lifo</h2>
-          <p className="text-gray-600 text-sm">Trip Hero Header Image</p>
-        </div>
-
         {/* Main content grid */}
         <div className="grid lg:grid-cols-2 gap-16 items-center mt-12">
           {/* Left side - Text and images */}
