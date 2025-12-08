@@ -46,7 +46,7 @@ export const NewHeroSection = (): JSX.Element => {
       </span>
 
       {/* tall pill image */}
-      <span className="inline-flex aspect-[0.7/1] rounded-full overflow-hidden align-middle">
+      <span className="inline-flex aspect-[0.9/1] rounded-full overflow-hidden align-middle">
         <img
           src="https://images.pexels.com/photos/2034335/pexels-photo-2034335.jpeg?auto=compress&cs=tinysrgb&w=200"
           alt="Brazil"
