@@ -8,7 +8,7 @@ export const NewHeroSection = (): JSX.Element => {
               <span className="flex flex-col gap-[0.12em]">
                 <span className="inline-flex gap-3 md:gap-4 items-center flex-wrap">
                   BETTER
-                  <span className="inline-flex aspect-[2.5/1] rounded-full overflow-hidden align-middle">
+                  <span className="inline-flex w-24 sm:w-32 md:w-40 lg:w-48 xl:w-56 aspect-[2.5/1] rounded-full overflow-hidden align-middle">
                     <img
                       src="https://images.pexels.com/photos/161758/governor-s-mansion-montgomery-alabama-grand-staircase-161758.jpeg?auto=compress&cs=tinysrgb&w=600"
                       alt="Hotel"
@@ -19,7 +19,7 @@ export const NewHeroSection = (): JSX.Element => {
                 </span>
 
                 <span className="inline-flex gap-3 md:gap-4 items-center flex-wrap">
-                  <span className="inline-flex aspect-[2.5/1] rounded-full overflow-hidden align-middle">
+                  <span className="inline-flex w-24 sm:w-32 md:w-40 lg:w-48 xl:w-56 aspect-[2.5/1] rounded-full overflow-hidden align-middle">
                     <img
                       src="https://images.pexels.com/photos/386009/pexels-photo-386009.jpeg?auto=compress&cs=tinysrgb&w=600"
                       alt="Commission"
@@ -36,7 +36,7 @@ export const NewHeroSection = (): JSX.Element => {
                     <span>AGENTS</span>
                   </span>
 
-                  <span className="inline-flex aspect-[0.9/1] rounded-full overflow-hidden align-middle">
+                  <span className="inline-flex w-20 sm:w-24 md:w-32 lg:w-40 xl:w-48 aspect-[0.9/1] rounded-full overflow-hidden align-middle">
                     <img
                       src="https://images.pexels.com/photos/2034335/pexels-photo-2034335.jpeg?auto=compress&cs=tinysrgb&w=600"
                       alt="Brazil"
