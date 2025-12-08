@@ -62,18 +62,19 @@ export const NewHeroSection = (): JSX.Element => {
 
           {/* ==================================== */}
           {/*            RIGHT COLUMN               */}
-          {/* ==================================== */}
-          <div className="relative flex flex-col items-center justify-center">
+          {/* ==================================== 
+          <div className="relative flex flex-col items-center justify-center"> */}
 
-            {/* Small Decorative Stars */}
+            {/* Small Decorative Stars 
             <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-8 flex gap-4">
               <div className="text-gray-900 text-2xl">✦</div>
               <div className="text-gray-900 text-lg">✦</div>
             </div>
+             */}
 
-            {/* IMAGE WRAPPER */}
+            {/* IMAGE WRAPPER 
             <div className="relative mb-12">
-              {/* Image */}
+              {/* Image 
               <div className="relative w-[250px] h-[370px] rounded-[180px] overflow-hidden shadow-2xl">
                 <img
                   src="https://images.pexels.com/photos/1470502/pexels-photo-1470502.jpeg?auto=compress&cs=tinysrgb&w=800"
@@ -82,7 +83,7 @@ export const NewHeroSection = (): JSX.Element => {
               </div>
             </div>
 
-            {/* Stats */}
+            {/* Stats
             <div className="text-left w-full max-w-xs">
               <div className="flex items-center gap-4 mb-4">
                 <span className="text-2xl font-light">01</span>
@@ -96,6 +97,7 @@ export const NewHeroSection = (): JSX.Element => {
               </p>
             </div>
           </div>
+         */}
 
         </div>
       </div>
