@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "../../../components/ui/button";
 import { Card, CardContent } from "../../../components/ui/card";
+import { Input } from "../../../components/ui/input";
 import {
   Select,
   SelectContent,
@@ -41,6 +42,12 @@ export const SearchBar = ({
 }: SearchBarProps): JSX.Element => {
   // Form state
   const [location, setLocation] = useState("");
+  const [locationId, setLocationId] = useState<string>(""); // Store the region ID
+  const [destinationQuery, setDestinationQuery] = useState(""); // User input for destination
+  const [regions, setRegions] = useState<any[]>([]); // Regions from API
+  const [showDestinationDropdown, setShowDestinationDropdown] = useState(false);
+  const [isLoadingDestinations, setIsLoadingDestinations] = useState(false);
+  const destinationInputRef = useRef<HTMLDivElement>(null);
   const [checkIn, setCheckIn] = useState<Date>();
   const [checkOut, setCheckOut] = useState<Date>();
   const [guests, setGuests] = useState("2");
@@ -59,22 +66,6 @@ export const SearchBar = ({
   // Use external searching state if provided
   const isCurrentlySearching = externalSearching || searching;
 
-  const destinationMapping: { [key: string]: string } = {
-    "Rio de Janeiro, Brazil": "965847972",
-    "New York, USA": "965842003",
-    "London, UK": "965831259",
-    "Tokyo, Japan": "965914346",
-    "Paris, France": "2734",
-    "Bangkok, Thailand": "604",
-    Singapore: "3168",
-    "Las Vegas, USA": "2008",
-    "Dubai, UAE": "6053839",
-    "Rome, Italy": "3023",
-    "Los Angeles, USA": "2011",
-  };
-
-  const destinationOptions = Object.keys(destinationMapping);
-
   // Get user ID from auth system
   const getUserId = () => {
     return (
@@ -82,6 +73,66 @@ export const SearchBar = ({
       localStorage.getItem("userEmail")?.replace("@", "_").replace(".", "_") ||
       `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
     );
+  };
+
+  // Debounced destination search
+  useEffect(() => {
+    // Only search if user has typed ≥ 3 characters
+    if (!destinationQuery || destinationQuery.trim().length < 3) {
+      setRegions([]);
+      setShowDestinationDropdown(false);
+      setIsLoadingDestinations(false);
+      return;
+    }
+
+    // 400ms debounce
+    const timeoutId = setTimeout(async () => {
+      setIsLoadingDestinations(true);
+      setShowDestinationDropdown(true); // Show dropdown with loading state
+      try {
+        const { data } = await ratehawkApi.getDestination(destinationQuery.trim());
+        if (data && data.regions) {
+          setRegions(data.regions);
+          setShowDestinationDropdown(true);
+        } else {
+          setRegions([]);
+          setShowDestinationDropdown(true); // Keep dropdown open to show "no results"
+        }
+      } catch (error) {
+        console.error("Error fetching destinations:", error);
+        setRegions([]);
+        setShowDestinationDropdown(true); // Keep dropdown open to show error state
+      } finally {
+        setIsLoadingDestinations(false);
+      }
+    }, 400); // 400ms debounce
+
+    return () => clearTimeout(timeoutId);
+  }, [destinationQuery]);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        destinationInputRef.current &&
+        !destinationInputRef.current.contains(event.target as Node)
+      ) {
+        setShowDestinationDropdown(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  // Handle destination selection
+  const handleDestinationSelect = (region: any) => {
+    setLocation(`${region.name}, ${region.country}`);
+    setLocationId(region.id.toString());
+    setDestinationQuery(`${region.name}, ${region.country}`);
+    setShowDestinationDropdown(false);
   };
 
   const handleSearch = async () => {
@@ -122,9 +173,9 @@ export const SearchBar = ({
         return;
       }
 
-      // Map destination to RateHawk ID
-      const destinationId = destinationMapping[location] || location;
-      console.log("🗺️ Destination mapping:", { location, destinationId });
+      // Use stored location ID or fallback to location string
+      const destinationId = locationId || location;
+      console.log("🗺️ Destination mapping:", { location, locationId, destinationId });
 
       // Format guests for RateHawk API
       const guestsNumber = parseInt(guests) || 2;
@@ -262,27 +313,100 @@ export const SearchBar = ({
           )}
 
           {/* Main Search Form */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4 lg:gap-3">
-            {/* Destination */}
-            <div className="relative lg:col-span-1">
+          <div className="space-y-3 sm:space-y-4">
+            {/* Row 1: Destination */}
+            <div className="grid grid-cols-1">
+              <div className="relative" ref={destinationInputRef}>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Destination
               </label>
-              <Select value={location} onValueChange={setLocation}>
-                <SelectTrigger className="h-11 sm:h-12 lg:h-14 bg-gray-50/80 border-gray-200 rounded-xl sm:rounded-[15px] text-sm sm:text-base hover:bg-white hover:border-app-primary transition-all duration-200">
-                  <SearchIcon className="mr-2 h-4 w-4 sm:h-5 sm:w-5 text-gray-400 flex-shrink-0" />
-                  <SelectValue placeholder="Select destination" />
-                </SelectTrigger>
-                <SelectContent className="bg-white border shadow-lg rounded-xl z-50">
-                  {destinationOptions.map((destination) => (
-                    <SelectItem key={destination} value={destination}>
-                      {destination}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                <div className="relative">
+                  <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-gray-400 flex-shrink-0 pointer-events-none z-10" />
+                  <Input
+                    type="text"
+                    value={destinationQuery}
+                    onChange={(e) => {
+                      setDestinationQuery(e.target.value);
+                      if (!e.target.value) {
+                        setLocation("");
+                        setLocationId("");
+                        setRegions([]);
+                        setShowDestinationDropdown(false);
+                      }
+                    }}
+                    placeholder="Search destination..."
+                    className="h-11 sm:h-12 lg:h-14 pl-12 pr-14 bg-gray-50/80 border-gray-200 rounded-xl sm:rounded-[15px] text-sm sm:text-base placeholder:text-gray-500 hover:bg-white hover:border-app-primary hover:shadow-md focus-visible:ring-2 focus-visible:ring-app-primary transition-all duration-200"
+                  />
+                  {destinationQuery && !isLoadingDestinations && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        setDestinationQuery("");
+                        setLocation("");
+                        setLocationId("");
+                        setRegions([]);
+                        setShowDestinationDropdown(false);
+                      }}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 h-6 w-6 p-0 hover:bg-gray-200 rounded-full z-20"
+                    >
+                      <XIcon className="h-3 w-3" />
+                    </Button>
+                  )}
+                  {isLoadingDestinations && (
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2 z-20">
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-app-primary"></div>
+                    </div>
+                  )}
+                </div>
+                {/* Helper text */}
+                {destinationQuery.trim().length > 0 && destinationQuery.trim().length < 3 && (
+                  <p className="mt-1.5 text-xs text-gray-500">
+                    Type at least 3 letters to search
+                  </p>
+                )}
+                {/* Dropdown for regions */}
+                {showDestinationDropdown && destinationQuery.trim().length >= 3 && (
+                  <div className="absolute z-50 w-full mt-2 bg-white border border-gray-200 shadow-xl rounded-xl max-h-[250px] overflow-auto transition-all duration-200">
+                    {/* Loading indicator inside dropdown */}
+                    {isLoadingDestinations && (
+                      <div className="px-5 py-4 flex items-center justify-center gap-2 text-sm text-gray-600">
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-app-primary"></div>
+                        <span>Searching destinations…</span>
+                      </div>
+                    )}
+                    {/* Results */}
+                    {!isLoadingDestinations && regions.length > 0 && (
+                      <>
+                        {regions.map((region) => (
+                          <div
+                            key={region.id}
+                            onClick={() => handleDestinationSelect(region)}
+                            className="px-5 py-4 hover:bg-gray-50 cursor-pointer transition-all duration-150 border-b border-gray-100 last:border-b-0 first:rounded-t-xl last:rounded-b-xl active:bg-gray-100"
+                          >
+                            <div className="font-semibold text-sm text-gray-900 mb-1">
+                              {region.name}
+                            </div>
+                            <div className="text-xs text-gray-500">
+                              {region.country} • {region.type || "Region"}
+                            </div>
+                          </div>
+                        ))}
+                      </>
+                    )}
+                    {/* No results */}
+                    {!isLoadingDestinations && regions.length === 0 && (
+                      <div className="px-5 py-4 text-sm text-gray-500 text-center">
+                        No destinations found
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
 
+            {/* Row 2: Dates, guests, search */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-3">
             {/* Check-in Date */}
             <div className="lg:col-span-1">
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -404,6 +528,7 @@ export const SearchBar = ({
                   </>
                 )}
               </Button>
+              </div>
             </div>
           </div>
 
@@ -559,8 +684,7 @@ export const SearchBar = ({
             <div className="mt-4 p-3 bg-gray-50 border border-gray-200 rounded-lg text-xs text-gray-600">
               <strong>Debug Info:</strong>
               <br />• Backend URL: {API_BASE_URL}
-              <br />• Selected destination: {location} →{" "}
-              {destinationMapping[location] || "Not mapped"}
+              <br />• Selected destination: {location} → ID: {locationId || "Not selected"}
               <br />• Guests format: {guests} guests, {rooms} room(s) →{" "}
               {JSON.stringify(
                 Array.from({ length: parseInt(rooms) || 1 }, () => ({

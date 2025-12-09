@@ -21,6 +21,7 @@ export const API_CONFIG = {
     HEALTH: "/api/health",
     COUNTRIES: "/api/countries",
     RATEHAWK_BOOKING_FORM: "/api/create-booking-form",
+    DESTINATION: "/api/destination",
   },
 };
 
@@ -163,6 +164,13 @@ export const ratehawkApi = {
       body: JSON.stringify(payload),
     });
   },
+
+  getDestination: async (query: string) => {
+    return apiCall(API_CONFIG.ENDPOINTS.DESTINATION, {
+      method: "POST",
+      body: JSON.stringify({ query }),
+    });
+  },
 };
 
 // Auth API calls
@@ -198,6 +206,15 @@ export const authApi = {
       },
     });
   },
+
+
+  getDestination: async (query: string) => {
+    return apiCall(API_CONFIG.ENDPOINTS.DESTINATION, {
+      method: "POST",
+      body: JSON.stringify({ query }),
+    });
+  },
+
 };
 
 // Countries API calls
