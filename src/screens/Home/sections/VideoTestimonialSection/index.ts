@@ -1,0 +1,1 @@
+export { VideoTestimonialSection } from './VideoTestimonialSection';

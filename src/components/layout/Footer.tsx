@@ -1,147 +1,146 @@
 import {
-  ChevronRightIcon,
   FacebookIcon,
   InstagramIcon,
+  LinkedinIcon,
   MapPinIcon,
+  MailIcon,
   PhoneIcon,
-  StarIcon,
   TwitterIcon,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Separator } from "../ui/separator";
 
-const quickLinks = [
-  { text: "Home", path: "/" },
+const companyLinks = [
   { text: "About Us", path: "/about" },
-  { text: "Check-in Check-out", path: "/check" },
-  { text: "Layanan", path: "/services" },
-  { text: "Blog", path: "/blog" },
+  { text: "Destinations", path: "/destinations" },
+  { text: "Tour Packages", path: "/packages" },
+  { text: "Services", path: "/services" },
+  { text: "Contact Us", path: "/contact" },
 ];
 
-const siteLinks = [
-  { text: "Syarat dan ketentuan", path: "/terms" },
-  { text: "Disclaimer", path: "/disclaimer" },
-  { text: "Hubungi kami", path: "/contact" },
-  { text: "GDPR", path: "/gdpr" },
-  { text: "Aturan pemakaian", path: "/rules" },
+const discoverLinks = [
+  { text: "Italy", path: "/destinations" },
+  { text: "Indonesia", path: "/destinations" },
+  { text: "Maldives", path: "/destinations" },
+  { text: "Thailand", path: "/destinations" },
+  { text: "Nepal", path: "/destinations" },
+];
+
+const locations = [
+  "New York, USA",
+  "London, UK",
+  "Paris, France",
+  "Tokyo, Japan",
 ];
 
 const socialLinks = [
-  { icon: <FacebookIcon className="w-5 h-5" />, name: "facebook" },
-  { icon: <TwitterIcon className="w-5 h-5" />, name: "twitter" },
-  { icon: <InstagramIcon className="w-5 h-5" />, name: "instagram" },
-  { icon: <StarIcon className="w-5 h-5" />, name: "pinterest" },
-];
-
-const contactInfo = [
-  { icon: <MapPinIcon className="w-5 h-5" />, text: "Jakarta, Indonesia" },
-  { icon: <StarIcon className="w-5 h-5" />, text: "Hello@Email.com" },
-  { icon: <PhoneIcon className="w-5 h-5" />, text: "( +62 ) 123 456 789" },
+  { icon: <FacebookIcon className="w-5 h-5" />, name: "facebook", url: "#" },
+  { icon: <LinkedinIcon className="w-5 h-5" />, name: "linkedin", url: "#" },
+  { icon: <TwitterIcon className="w-5 h-5" />, name: "twitter", url: "#" },
+  { icon: <InstagramIcon className="w-5 h-5" />, name: "instagram", url: "#" },
 ];
 
 export const Footer = (): JSX.Element => {
   return (
-    <footer className="flex flex-col w-full items-start gap-[60px] pt-[100px] pb-[30px] px-[100px] bg-app-accent">
-      <div className="flex flex-wrap items-start gap-[30px] relative w-full">
-        {/* Brand Column */}
-        <div className="flex flex-col w-full md:w-[391px] items-start gap-[25px] pr-[60px]">
-          <Link to="/" className="flex items-center gap-[11px]">
-            <img
-              className="w-[38px] h-[38px]"
-              alt="House Logo"
-              src="/group-7529-1.png"
-            />
-            <div className="[font-family:'Poppins',Helvetica] font-medium text-white text-3xl tracking-[4.50px]">
-              HOUSE.
-            </div>
-          </Link>
-
-          <div className="flex flex-col gap-[15px]">
-            <p className="font-body font-[number:var(--body-font-weight)] text-[#ffffffbf] text-[length:var(--body-font-size)] tracking-[var(--body-letter-spacing)] leading-[var(--body-line-height)] [font-style:var(--body-font-style)]">
-              Aplikasi terbaik layanan penginapan <br />
-              di seluruh apartemen dan hotel di Indoensia
+    <footer className="bg-eexplo-dark-gray text-white py-16">
+      <div className="container mx-auto px-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+          {/* Company Info Column */}
+          <div>
+            <Link to="/" className="inline-block mb-4">
+              <h3 className="font-inter font-bold text-2xl">Eexplo</h3>
+            </Link>
+            <p className="font-inter text-white/70 mb-4 leading-relaxed">
+              Turn the world into your playground. Discover extraordinary destinations and create unforgettable memories since 2010.
             </p>
+            <div className="flex items-center gap-3">
+              {socialLinks.map((social, index) => (
+                <a
+                  key={index}
+                  href={social.url}
+                  className="w-10 h-10 rounded-full bg-white/10 hover:bg-eexplo-accent-orange flex items-center justify-center transition-colors"
+                  aria-label={social.name}
+                >
+                  {social.icon}
+                </a>
+              ))}
+            </div>
           </div>
 
-          <div className="flex items-center gap-3">
-            {socialLinks.map((social, index) => (
-              <div
-                key={index}
-                className="text-[#f3ecdc] text-xl cursor-pointer"
-              >
-                {social.icon}
-              </div>
-            ))}
+          {/* Company Links Column */}
+          <div>
+            <h4 className="font-inter font-bold text-lg mb-4">Company</h4>
+            <ul className="space-y-2">
+              {companyLinks.map((link, index) => (
+                <li key={index}>
+                  <Link
+                    to={link.path}
+                    className="font-inter text-white/70 hover:text-eexplo-accent-orange transition-colors"
+                  >
+                    {link.text}
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </div>
-        </div>
 
-        {/* Quick Links Column */}
-        <div className="flex flex-col items-start gap-[25px] flex-1">
-          <h3 className="font-heading-standar font-[number:var(--heading-standar-font-weight)] text-[#f3ecdc] text-[length:var(--heading-standar-font-size)] tracking-[var(--heading-standar-letter-spacing)] leading-[var(--heading-standar-line-height)]">
-            Quick Links
-          </h3>
+          {/* Discover Links Column */}
+          <div>
+            <h4 className="font-inter font-bold text-lg mb-4">Discover</h4>
+            <ul className="space-y-2">
+              {discoverLinks.map((link, index) => (
+                <li key={index}>
+                  <Link
+                    to={link.path}
+                    className="font-inter text-white/70 hover:text-eexplo-accent-orange transition-colors"
+                  >
+                    {link.text}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
 
-          <div className="flex flex-col items-start gap-[15px] w-full">
-            {quickLinks.map((link, index) => (
-              <Link
-                key={index}
-                to={link.path}
-                className="flex items-center w-full gap-[15px] cursor-pointer"
-              >
-                <ChevronRightIcon className="w-5 h-5 text-[#f3ecdc]" />
-                <span className="font-body font-[number:var(--body-font-weight)] text-[#ffffffbf] text-[length:var(--body-font-size)] tracking-[var(--body-letter-spacing)] leading-[var(--body-line-height)]">
-                  {link.text}
+          {/* Contact Column */}
+          <div>
+            <h4 className="font-inter font-bold text-lg mb-4">Contact Us</h4>
+            <ul className="space-y-3">
+              <li className="flex items-start gap-2">
+                <MapPinIcon className="w-5 h-5 text-eexplo-accent-orange flex-shrink-0 mt-0.5" />
+                <span className="font-inter text-white/70">
+                  123 Travel Street, NY 10001
                 </span>
-              </Link>
-            ))}
-          </div>
-        </div>
-
-        {/* Site Links Column */}
-        <div className="flex flex-col items-start gap-[25px] flex-1">
-          <h3 className="font-heading-standar font-[number:var(--heading-standar-font-weight)] text-[#f3ecdc] text-[length:var(--heading-standar-font-size)] tracking-[var(--heading-standar-letter-spacing)] leading-[var(--heading-standar-line-height)]">
-            Site Links
-          </h3>
-
-          <div className="flex flex-col items-start gap-[15px] w-full">
-            {siteLinks.map((link, index) => (
-              <Link
-                key={index}
-                to={link.path}
-                className="flex items-center w-full gap-[15px] cursor-pointer"
-              >
-                <ChevronRightIcon className="w-5 h-5 text-[#f3ecdc]" />
-                <span className="font-body font-[number:var(--body-font-weight)] text-[#ffffffbf] text-[length:var(--body-font-size)] tracking-[var(--body-letter-spacing)] leading-[var(--body-line-height)]">
-                  {link.text}
+              </li>
+              <li className="flex items-start gap-2">
+                <MailIcon className="w-5 h-5 text-eexplo-accent-orange flex-shrink-0 mt-0.5" />
+                <span className="font-inter text-white/70">
+                  hello@eexplo.com
                 </span>
-              </Link>
-            ))}
-          </div>
-        </div>
-
-        {/* Contact Column */}
-        <div className="flex flex-col items-start gap-[25px] flex-1">
-          <h3 className="font-heading-standar font-[number:var(--heading-standar-font-weight)] text-[#f3ecdc] text-[length:var(--heading-standar-font-size)] tracking-[var(--heading-standar-letter-spacing)] leading-[var(--heading-standar-line-height)]">
-            Tetap bersama kami
-          </h3>
-
-          <div className="flex flex-col items-start gap-[15px] w-full">
-            {contactInfo.map((info, index) => (
-              <div key={index} className="flex items-start w-full gap-[15px]">
-                <div className="text-[#f3ecdc]">{info.icon}</div>
-                <span className="font-body font-[number:var(--body-font-weight)] text-[#ffffffbf] text-[length:var(--body-font-size)] tracking-[var(--body-letter-spacing)] leading-[var(--body-line-height)]">
-                  {info.text}
+              </li>
+              <li className="flex items-start gap-2">
+                <PhoneIcon className="w-5 h-5 text-eexplo-accent-orange flex-shrink-0 mt-0.5" />
+                <span className="font-inter text-white/70">
+                  +1 (555) 123-4567
                 </span>
-              </div>
-            ))}
+              </li>
+            </ul>
           </div>
         </div>
-      </div>
 
-      <div className="w-full pt-[30px]">
-        <Separator className="bg-[#ffffff4c] mb-[30px]" />
-        <div className="text-center font-accent font-[number:var(--accent-font-weight)] text-[#f3ecdc] text-[length:var(--accent-font-size)] tracking-[var(--accent-letter-spacing)] leading-[var(--accent-line-height)]">
-          COPYRIGHT DIESNATALIS
+        <Separator className="bg-white/20 mb-6" />
+
+        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+          <p className="font-inter text-white/60 text-sm">
+            © 2024 Eexplo. All rights reserved.
+          </p>
+          <div className="flex gap-6">
+            <Link to="/terms" className="font-inter text-white/60 hover:text-white text-sm transition-colors">
+              Privacy Policy
+            </Link>
+            <Link to="/terms" className="font-inter text-white/60 hover:text-white text-sm transition-colors">
+              Terms of Service
+            </Link>
+          </div>
         </div>
       </div>
     </footer>

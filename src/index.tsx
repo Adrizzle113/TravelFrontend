@@ -1,6 +1,8 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { Layout } from "./components/layout/Layout";
 import { DashboardLayout } from "./components/layout/DashboardLayout";
 import { Home } from "./screens/Home";
@@ -18,6 +20,10 @@ import { Dashboard } from "./screens/Dashboard";
 import { UserManagement } from "./screens/Admin/UserManagement";
 import { SimpleAuth } from "./components/SimpleAuth";
 import BookingForm from "./screens/BookingForm";
+import { Destinations } from "./screens/Destinations";
+import { Packages } from "./screens/Packages";
+import { Services } from "./screens/Services";
+import { Blog } from "./screens/Blog";
 
 createRoot(document.getElementById("app") as HTMLElement).render(
   <StrictMode>
@@ -50,7 +56,10 @@ createRoot(document.getElementById("app") as HTMLElement).render(
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<ContactUs />} />
           <Route path="/search" element={<Search />} />
-
+          <Route path="/destinations" element={<Destinations />} />
+          <Route path="/packages" element={<Packages />} />
+          <Route path="/services" element={<Services />} />
+          <Route path="/blog" element={<Blog />} />
           <Route path="/hoteldetails" element={<HotelDetails />} />
           <Route
             path="/hotel_booking_form/:hotelId/:roomId"
@@ -59,6 +68,13 @@ createRoot(document.getElementById("app") as HTMLElement).render(
           <Route path="/hoteldetails/:hotelId" element={<HotelDetails />} />
         </Route>
       </Routes>
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        closeOnClick
+        pauseOnHover
+      />
     </BrowserRouter>
   </StrictMode>
 );

@@ -21,6 +21,7 @@ export default {
 			fontFamily: {
 				'heading': ['"Gallery Modern"', 'serif'],
 				'body': ['"EB Garamond"', 'serif'],
+				'inter': ['Inter', 'sans-serif'],
 			},
 			colors: {
 				brand: {
@@ -29,6 +30,16 @@ export default {
 					'deep-olive': '#323B2D',
 					'pastel-green': '#F6FDED',
 					'ultra-dark': '#192216',
+				},
+				eexplo: {
+					'warm-gray': '#F5F5F5',
+					'dark-gray': '#2C2C2C',
+					'medium-gray': '#666666',
+					'light-gray': '#E5E5E5',
+					'accent-orange': '#FF6B35',
+					'accent-teal': '#00A9A5',
+					'text-primary': '#1A1A1A',
+					'text-secondary': '#757575',
 				},
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
@@ -95,11 +106,40 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				'fade-in': {
+					from: {
+						opacity: '0',
+						transform: 'translateY(20px)'
+					},
+					to: {
+						opacity: '1',
+						transform: 'translateY(0)'
+					}
+				},
+				'scroll-left': {
+					from: {
+						transform: 'translateX(0)'
+					},
+					to: {
+						transform: 'translateX(-50%)'
+					}
+				},
+				'zoom-in': {
+					from: {
+						transform: 'scale(1)'
+					},
+					to: {
+						transform: 'scale(1.1)'
+					}
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'fade-in': 'fade-in 0.6s ease-out',
+				'scroll-left': 'scroll-left 30s linear infinite',
+				'zoom-in': 'zoom-in 0.3s ease-out'
 			}
 		}
 	},

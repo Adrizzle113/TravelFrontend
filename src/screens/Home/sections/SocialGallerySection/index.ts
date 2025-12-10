@@ -1,0 +1,1 @@
+export { SocialGallerySection } from './SocialGallerySection';

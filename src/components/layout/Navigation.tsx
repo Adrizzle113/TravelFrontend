@@ -24,7 +24,10 @@ export const Navigation = (): JSX.Element => {
   const navigate = useNavigate();
 
   const navItems = [
-    { label: "Travel Agencies", path: "/travel-agencies", active: location.pathname === "/travel-agencies" },
+    { label: "Destinations", path: "/destinations", active: location.pathname === "/destinations" },
+    { label: "Packages", path: "/packages", active: location.pathname === "/packages" },
+    { label: "Services", path: "/services", active: location.pathname === "/services" },
+    { label: "Blog", path: "/blog", active: location.pathname === "/blog" },
     {
       label: "More",
       hasDropdown: true,
@@ -32,13 +35,13 @@ export const Navigation = (): JSX.Element => {
       items: [
         { label: "About Us", path: "/about" },
         { label: "Contact Us", path: "/contact" },
-        { label: "Services", path: "/services" }
+        { label: "Hotel Search", path: "/search" },
+        { label: "Travel Agencies", path: "/travel-agencies" },
+        { label: "White Label", path: "/white-label" },
+        { label: "Individual Bookings", path: "/individual-bookings" }
       ],
       path: "/more"
     },
-    { label: "White Label", path: "/white-label", active: location.pathname === "/white-label" },
-    { label: "Individual Bookings", path: "/individual-bookings", active: location.pathname === "/individual-bookings" },
-    { label: "Blog", path: "/blog", active: location.pathname === "/blog" },
   ];
 
   const handleLogin = () => {
