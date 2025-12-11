@@ -520,6 +520,25 @@ const BookingForm: React.FC = () => {
     }
   };
 
+  const chIN = bookingFormResponse?.data.hotelDetails.searchContext.checkin;
+  const SelectedRoomPrice =
+    bookingFormResponse?.data.hotelDetails.selectedRoomData.price;
+  const chOUT = bookingFormResponse?.data.hotelDetails.searchContext.checkout;
+  function calculateNights(checkin: string, checkout: string): number {
+    const start = new Date(checkin);
+    const end = new Date(checkout);
+
+    const diffTime = end.getTime() - start.getTime();
+
+    const nights = diffTime / (1000 * 60 * 60 * 24);
+
+    return nights;
+  }
+
+  // Example usage
+  const nights = calculateNights(chIN, chOUT);
+  const SelectedRoomtotalPrice = (SelectedRoomPrice * nights).toFixed(2);
+
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="container mx-auto px-4 max-w-7xl">
@@ -1222,7 +1241,8 @@ const BookingForm: React.FC = () => {
                         <div className="text-right">
                           <p className="text-sm text-gray-600">Payment total</p>
                           <p className="text-2xl font-bold text-gray-800">
-                            {selectedCurrency} {calculateTotalPrice()}
+                            {selectedCurrency} {SelectedRoomtotalPrice}
+                            {/* //calculateTotalPrice */}
                           </p>
                         </div>
                       </div>
