@@ -5,7 +5,7 @@ export const EexploHeroSection = () => {
   const navigate = useNavigate();
 
   return (
-    <section className="relative h-screen w-full flex items-center justify-center overflow-hidden">
+    <section className="relative h-screen w-full flex items-center justify-center overflow-hidden -mt-[130px] pt-[120px] pb-[120px] px-[40px]">
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{
