@@ -178,13 +178,14 @@ export const BookingSection = ({
         {/* Main Booking Button */}
         <Button
           onClick={onBookNow}
+          disabled={!selectedRoom}
           className={`w-full py-3 text-lg mb-4 ${
             selectedRoom
               ? "bg-green-600 hover:bg-green-700 text-white"
-              : "bg-app-primary hover:bg-app-primary/90 text-white"
+              : "bg-gray-400 text-white cursor-not-allowed opacity-60"
           }`}
         >
-          Book Now
+          {selectedRoom ? "Book Now" : "Please Select a Room"}
         </Button>
 
         {/* Booking Benefits */}
